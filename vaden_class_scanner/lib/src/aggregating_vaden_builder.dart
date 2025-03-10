@@ -58,6 +58,8 @@ class AggregatingVadenBuilder implements Builder {
 
   final paramChecker = TypeChecker.fromRuntime(Param);
   final queryChecker = TypeChecker.fromRuntime(Query);
+  final headerChecker = TypeChecker.fromRuntime(Header);
+  final contextChecker = TypeChecker.fromRuntime(Context);
 
   @override
   Future<void> build(BuildStep buildStep) async {
@@ -487,6 +489,25 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
 """);
           }
           paramCodeList.add("final ${parameter.name} = request.url.queryParameters['$qname'];");
+        } else if (headerChecker.hasAnnotationOf(parameter)) {
+          final hname = headerChecker.firstAnnotationOf(parameter)?.getField('name')?.toStringValue() ?? parameter.name;
+          if (api != null) {
+            bodyBuffer.writeln("""
+paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
+  'name': '$hname',
+  'in': 'header',
+  'required': ${!_isNullable(parameter.type)},
+  'schema': {
+    'type': 'string',
+  },
+});
+""");
+          }
+          paramCodeList.add("final ${parameter.name} = request.headers['$hname'];");
+        } else if (contextChecker.hasAnnotationOf(parameter)) {
+          final cname = contextChecker.firstAnnotationOf(parameter)?.getField('name')?.toStringValue() ?? parameter.name;
+          final ctype = parameter.type.getDisplayString();
+          paramCodeList.add("final ${parameter.name} = request.context['$cname'] as $ctype;");
         } else {
           final paramType = parameter.type.getDisplayString();
           if (paramType == 'Request' || paramType == 'Request?') {

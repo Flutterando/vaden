@@ -85,3 +85,13 @@ class Param {
 class Body {
   const Body();
 }
+
+class Header {
+  final String name;
+  const Header(this.name);
+}
+
+class Context {
+  final String name;
+  const Context(this.name);
+}
