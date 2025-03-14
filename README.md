@@ -65,6 +65,12 @@ Join our community for support and updates:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+
+### Financial Support
+
+If you find VADEN useful for your projects, consider supporting our development efforts:
+- [Support us on Apoia.se](https://apoia.se/vaden) - Help ensure the continued development and maintenance of this project.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
