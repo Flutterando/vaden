@@ -12,16 +12,26 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.8
+  #System Features
+  auto_injector: ^2.1.0
+  provider: ^6.1.2
   result_dart: ^2.0.0
   result_command: ^1.3.0
-  auto_injector: ^2.1.0
-  flutter_svg: ^2.0.17
+  
+  #Services
+  http: ^1.3.0
   dio: ^5.8.0+1
   url_launcher: ^6.3.1
+
+  #Designer
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.17
   google_fonts: ^6.2.1
-  http: ^1.3.0
-  provider: ^6.1.2
+
+  #Internation
+  flutter_localizations: 
+    sdk: flutter
+  localization: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +48,7 @@ flutter:
     - assets/icons/
     - assets/logo/
     - assets/bg/
+    - lib/i18n/
 
   # fonts:
   #   - family: Schyler

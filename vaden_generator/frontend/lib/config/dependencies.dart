@@ -1,4 +1,6 @@
 import 'package:auto_injector/auto_injector.dart';
+import '../viewmodels/main_viewmodels.dart';
+import 'constants.dart';
 
 import '../data/repositories/generate_repository.dart';
 import '../data/repositories/remote_generate_repository.dart';
@@ -15,6 +17,7 @@ void setupInjection() {
   injector.addSingleton(ClientHttp.new);
   injector.addSingleton(UrlLauncherService.new);
   injector.addSingleton<GenerateRepository>(RemoteGenerateRepository.new);
+  injector.addSingleton(MainViewmodel.new);
   injector.addSingleton(GenerateViewmodel.new);
 
   injector.commit();

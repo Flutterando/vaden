@@ -1,0 +1,21 @@
+{
+    "Add":"Adicionar",
+    "Copyright": "Copyright",
+    "Dependencies":"Dependencias",
+    "Description":"Descrição",
+    "English": "Inglês",
+    "Spanish": "Espanhol",
+    "Portuguese": "Portugues",
+    "IN_DEVELOPMENT":"EM DESENVOLVIMENTO",
+    "Add_dependencies":"Add dependencies",
+    "Community_made":"Feito pela comunidade",
+    "Create_new_project":"Criar novo projeto",
+    "Dart_version":"Versão Dart",
+    "Generate_project":"Gerar projeto",
+    "loading_dependencies_error":"Erro ao carregar dependências",
+    "No_dependencies_available":"Nenhuma dependência disponível",
+    "Project_name":"Nome do projeto",
+    "Try_again":"Tentar novamente",
+    "Vaden_Backend":"Vaden Backend",
+    "Vaden_Project":"Projeto Vaden"
+  }

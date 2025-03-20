@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:localization/localization.dart';
 
 import '../../config/dependencies.dart';
 import '../core/ui/ui.dart';
+import '../widgets/internation/internation_widget.dart';
 import 'viewmodels/generate_viewmodel.dart';
 
 class GeneratePage extends StatefulWidget {
@@ -49,6 +51,7 @@ class _GeneratePageState extends State<GeneratePage> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -63,7 +66,7 @@ class _GeneratePageState extends State<GeneratePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: VadenAppBar(
-          title: 'IN DEVELOPMENT',
+          title: 'IN_DEVELOPMENT'.i18n(),
           mode: VadenAppBarMode.development, // Pode ser alterado para .production
           fontSize: fontSize,
           letterSpacing: letterSpacing,
@@ -106,15 +109,7 @@ class _GeneratePageState extends State<GeneratePage> {
                       top: 0,
                       bottom: 0,
                       child: Center(
-                        child: SizedBox(
-                          width: 200,
-                          child: VadenDropdown(
-                            options: ['Português', 'Inglês'],
-                            selectedOption: 'Português',
-                            width: 200,
-                            fontSize: 16.0,
-                          ),
-                        ),
+                        child: InternationWidget(),
                       ),
                     ),
                   ],
@@ -128,7 +123,7 @@ class _GeneratePageState extends State<GeneratePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Criar novo projeto',
+                        'Create_new_project'.i18n(),
                         style: GoogleFonts.anekBangla(
                           color: VadenColors.txtSecondary,
                           fontSize: 20,
@@ -155,8 +150,8 @@ class _GeneratePageState extends State<GeneratePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           VadenTextInput(
-                            label: 'Nome do projeto',
-                            hint: 'vaden_backend',
+                            label: 'Project_name'.i18n(),
+                            hint: 'Vaden_Backend'.i18n(),
                             controller: _projectNameEC,
                             onChanged: (value) {
                               final validation = viewModel.validateProjectName(value);
@@ -170,8 +165,8 @@ class _GeneratePageState extends State<GeneratePage> {
                           ),
                           const SizedBox(height: 32),
                           VadenTextInput(
-                            label: 'Descrição',
-                            hint: 'Projeto Vaden',
+                            label: 'Description'.i18n(),
+                            hint: 'Vaden_Project'.i18n(),
                             controller: _projectDescriptionEC,
                             onChanged: viewModel.setDescriptionProjectCommand.execute,
                             verticalPadding: 20,
@@ -181,8 +176,11 @@ class _GeneratePageState extends State<GeneratePage> {
                             width: double.infinity,
                             child: VadenDropdown(
                               options: viewModel.dartVersions,
+                              title: 'Dart_version'.i18n(),
+                              selectedOption: 'Dart_version'.i18n(),
                               title: 'Versão Dart',
                               selectedOption: viewModel.latestDartVersion,
+
                               onOptionSelected: viewModel.setDartVersionProjectCommand.execute,
                               width: double.infinity,
                               fontSize: 16.0,
@@ -202,7 +200,7 @@ class _GeneratePageState extends State<GeneratePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Dependências',
+                        'Dependencies'.i18n(),
                         style: GoogleFonts.anekBangla(
                           color: VadenColors.txtSecondary,
                           fontSize: 20,
@@ -239,7 +237,9 @@ class _GeneratePageState extends State<GeneratePage> {
                                   height: viewModel.projectDependencies.isEmpty ? 56 : null,
                                   child: viewModel.projectDependencies.isEmpty
                                       ? VadenTextInput(
-                                          label: 'Adicionar dependências',
+
+                                          label: 'Add_dependencies'.i18n(),
+
                                           hint: '',
                                           verticalPadding: viewModel.projectDependencies.isEmpty //
                                               ? 20
@@ -261,7 +261,7 @@ class _GeneratePageState extends State<GeneratePage> {
                                 width: 124,
                                 height: 56,
                                 child: VadenButtonExtension.primary(
-                                  title: 'Adicionar',
+                                  title: 'Add'.i18n(),
                                   onPressed: _openDependenciesDialog,
                                   icon: null,
                                   width: 120,
@@ -275,7 +275,7 @@ class _GeneratePageState extends State<GeneratePage> {
                       ListenableBuilder(
                         listenable: viewModel,
                         builder: (context, child) {
-                          final String title = 'Gerar projeto';
+                          final String title = 'Generate_project'.i18n();
                           final double width = 320;
 
                           return Center(
@@ -313,7 +313,7 @@ class _GeneratePageState extends State<GeneratePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Feito pela comunidade ',
+                                  '${'Community_made'.i18n()} ',
                                   style: GoogleFonts.anekBangla(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w300,
@@ -333,7 +333,7 @@ class _GeneratePageState extends State<GeneratePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Copyright ',
+                                  '${'Copyright'.i18n()} ',
                                   style: GoogleFonts.anekBangla(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
