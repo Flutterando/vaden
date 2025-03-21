@@ -20,6 +20,7 @@ class VadenColors {
   static const Color mainCardColor = Color(0xFFF8F8F9);
   static const Color greyColor = backgroundError;
   static const Color disabledColor = Color(0xFFB6B6B6);
+  static const Color disabledColor2 = Color(0xFFDADADA);
   static const Color supportColor = Color(0xFF717171);
   static const Color supportColor2 = Color(0xFF737077);
   static const Color dialogBgColor = Color(0xFF19171C);

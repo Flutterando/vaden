@@ -254,10 +254,9 @@ class _GeneratePageState extends State<GeneratePage> {
                               SizedBox(
                                 width: 124,
                                 height: 56,
-                                child: VadenButtonExtension.primary(
-                                  title: 'Add'.i18n(),
+                                child: VadenButton(
+                                  label: 'Add'.i18n(),
                                   onPressed: _openDependenciesDialog,
-                                  icon: null,
                                   width: 120,
                                 ),
                               ),
@@ -272,26 +271,19 @@ class _GeneratePageState extends State<GeneratePage> {
                           project,
                         ]),
                         builder: (context, child) {
-                          final String title = 'Generate_project'.i18n();
-                          final double width = 320;
-
+                          final bool isValid = projectValidator.validate(project).isValid;
                           return Center(
-                            child: projectValidator.validate(project).isValid
-                                ? VadenButtonExtension.primary(
-                                    title: title,
-                                    onPressed: () =>
-                                        viewModel.createProjectCommand.execute(project),
-                                    icon: null,
-                                    width: width,
-                                    isLoading: viewModel.createProjectCommand.isRunning,
-                                  )
-                                : VadenButtonExtension.outlined(
-                                    title: title,
-                                    onPressed: () {},
-                                    icon: null,
-                                    width: width,
-                                    borderColor: VadenColors.stkWhite,
-                                  ),
+                            child: VadenButton(
+                              label: 'Generate_project'.i18n(),
+                              style: isValid
+                                  ? VadenButtonStyle.filled
+                                  : VadenButtonStyle.outlinedWhite,
+                              onPressed: isValid
+                                  ? () => viewModel.createProjectCommand.execute(project)
+                                  : () {},
+                              width: 320,
+                              isLoading: viewModel.createProjectCommand.isRunning,
+                            ),
                           );
                         },
                       ),
