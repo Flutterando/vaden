@@ -5,8 +5,8 @@ import 'package:localization/localization.dart';
 
 import 'config/dependencies.dart';
 import 'main_viewmodels.dart';
+import 'routes.dart';
 import 'ui/core/themes/theme.dart';
-import 'ui/generate/generate_page.dart';
 import 'ui/widgets/internation/internation_widget.dart';
 
 void main() {
@@ -36,12 +36,13 @@ class _MainAppState extends State<MainApp> {
     return ListenableBuilder(
       listenable: viewmodel,
       builder: (context, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: 'Vaden generator',
           themeMode: ThemeMode.system,
           theme: lightTheme,
           darkTheme: dartTheme,
           locale: viewmodel.locale,
+          routerConfig: router,
           localizationsDelegates: [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
@@ -67,7 +68,6 @@ class _MainAppState extends State<MainApp> {
 
             return defaultLocale;
           },
-          home: const GeneratePage(),
         );
       },
     );
