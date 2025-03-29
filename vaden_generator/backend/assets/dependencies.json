@@ -3,43 +3,50 @@
         "name": "Swagger (OpenAPI)",
         "description": "Swagger (OpenAPI) is a specification for describing and documenting REST APIs.",
         "key": "openapi",
-        "tag": "DOCUMENTATION"
+        "tag": "DOCUMENTATION",
+        "requirements":[]
     },
     {
         "name": "WebSocket",
         "description": "A communication protocol that provides full-duplex communication channels over a single TCP connection.",
         "key": "websocket",
-        "tag": "MESSAGING"
+        "tag": "MESSAGING",
+        "requirements":[]
     },
     {
         "name": "Dio",
         "description": "A powerful Http client for Dart, which supports Interceptors, Global configuration, FormData, Request Cancellation, File downloading, Timeout etc.",
         "key": "dio",
-        "tag": "HTTP"
+        "tag": "HTTP",
+        "requirements":[]
     },
     {
         "name": "Redis",
         "description": "Redis protocol for client-server communication and data exchange.",
         "key": "redis",
-        "tag": "DATABASE"
+        "tag": "DATABASE",
+        "requirements":[]
     },
     {
         "name": "PostgreSQL",
         "description": "Temporary driver uses to connecting to and querying PostgreSQL databases.",
         "key": "postgres",
-        "tag": "DATABASE"
+        "tag": "DATABASE",
+        "requirements":[]
     },
     {
         "name": "SQLite",
         "description": "A lightweight, file-based, serverless database engine that provides local data storage for applications.",
         "key": "sqlite",
-        "tag": "DATABASE"
+        "tag": "DATABASE",
+        "requirements":[]
     },
     {
         "name": "Cron",
         "description": "Cron Jobs, run tasks periodically at fixed times or intervals..",
         "key": "cron",
-        "tag": "SYSTEM"
+        "tag": "SYSTEM",
+        "requirements":[]
     }
 ]
 
