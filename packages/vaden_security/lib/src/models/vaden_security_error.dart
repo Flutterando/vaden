@@ -5,4 +5,9 @@ class VadenSecurityError {
   final String error;
 
   VadenSecurityError(this.error);
+
+  @override
+  String toString() {
+    return error;
+  }
 }

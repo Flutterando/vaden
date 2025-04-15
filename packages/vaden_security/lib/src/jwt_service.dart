@@ -40,8 +40,12 @@ class JwtService {
     Map<String, dynamic> claims = const {},
   }) {
     final accessToken = _generateToken(user, claims: claims);
-    final refreshToken =
-        _generateToken(user, claims: claims, isRefreshToken: true);
+    final refreshToken = _generateToken(user,
+        claims: {
+          ...claims,
+          'refresh': true,
+        },
+        isRefreshToken: true);
 
     return Tokenization(
       accessToken: accessToken,
