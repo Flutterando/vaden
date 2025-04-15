@@ -1,7 +1,7 @@
 ---
 name: 📜 Story
 about: Tire dúvidas ou peça esclarecimentos sobre o projeto.
-title: "📜 [Story] - "
+title: "📜 [STORY] - "
 labels: story
 assignees: ''
 ---
@@ -10,9 +10,6 @@ assignees: ''
 
 #### 🎯 Descrição
 Descreva a história do usuário de forma clara e objetiva.
-
-#### 👤 Persona
-Quem é o usuário principal dessa história? Descreva seu perfil e necessidades.
 
 #### 🎯 Objetivo
 Explique qual problema ou necessidade essa história busca resolver.
@@ -34,9 +31,6 @@ Descreva o fluxo de ações que o usuário deve seguir para atingir o objetivo d
 
 #### 🔗 Dependências
 Liste quaisquer dependências externas necessárias para a conclusão desta história.
-
-#### 📊 Impacto
-Descreva como essa história afeta o sistema ou os usuários.
 
 #### 📝 Notas Adicionais
 Adicione qualquer informação extra relevante, como links de referência, designs ou discussões anteriores.
