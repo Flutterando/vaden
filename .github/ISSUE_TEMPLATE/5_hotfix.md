@@ -1,6 +1,5 @@
 ---
 name: 🔥 Hotfix
-
 about: Sugira uma nova funcionalidade ou melhoria para o projeto.
 title: "[HOTFIX] "
 labels: bug
