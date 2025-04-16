@@ -119,7 +119,9 @@ String _fromJson(ClassElement classElement) {
       } else if (parameter.type.isDartCoreList) {
         final param = parameter.type as ParameterizedType;
         final arg = param.typeArguments.first.getDisplayString();
-        paramValue = "json['$paramName'].cast<$arg>()";
+        paramValue = isNotNull
+            ? "json['$paramName'].cast<$arg>()"
+            : "json['$paramName'] == null ? null : json['$paramName'].cast<$arg>()";
       } else {
         paramValue = "json['$paramName']";
       }
