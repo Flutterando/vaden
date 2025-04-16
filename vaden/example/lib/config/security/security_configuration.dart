@@ -19,6 +19,7 @@ class SecurityConfiguration {
       RequestMatcher('/auth/**/*').permitAll(),
       RequestMatcher('/docs/**/*').permitAll(),
       RequestMatcher('/hello/**/*').permitAll(),
+      RequestMatcher('/dto/**/*').permitAll(),
       RequestMatcher('/tablet/**/*', HttpMethod.get).permitAll(),
       AnyRequest().authenticated(),
     ]);
