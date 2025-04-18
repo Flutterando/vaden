@@ -83,6 +83,7 @@ environment:
 
 dependencies:
   vaden: {{vaden}}
+  vaden_security: {{vaden_security}}
 
 dev_dependencies:
   build_runner: {{build_runner}}
