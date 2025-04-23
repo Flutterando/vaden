@@ -42,32 +42,56 @@ class InitialProjectGenerator extends FileGenerator {
     await dockerIgnore.create(recursive: true);
     await dockerIgnore.writeAsString(_dockerIgnoreContent);
 
-    final publicIndex = File('${directory.path}${Platform.pathSeparator}public${Platform.pathSeparator}index.html');
+    final publicIndex = File(
+      '${directory.path}${Platform.pathSeparator}public${Platform.pathSeparator}index.html',
+    );
     await publicIndex.create(recursive: true);
     await publicIndex.writeAsString(parseVariables(_publicIndexContent, variables));
 
-    final binServer = File('${directory.path}${Platform.pathSeparator}bin${Platform.pathSeparator}server.dart');
+    final binServer = File(
+      '${directory.path}${Platform.pathSeparator}bin${Platform.pathSeparator}server.dart',
+    );
     await binServer.create(recursive: true);
     await binServer.writeAsString(parseVariables(_binServerContent, variables));
 
-    final libConfigAppConfiguration = File('${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_configuration.dart');
+    final libConfigAppConfiguration = File(
+      '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_configuration.dart',
+    );
     await libConfigAppConfiguration.create(recursive: true);
     await libConfigAppConfiguration.writeAsString(_libConfigAppConfigurationContent);
 
-    final libConfigAppModule = File('${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_module.dart');
-    await libConfigAppModule.create(recursive: true);
-    await libConfigAppModule.writeAsString(_libConfigAppModuleContent);
+    final List<String> dependenciesKeys = variables['dependenciesKeys'] as List<String>? ?? [];
+    final bool hasVadenSecurity = dependenciesKeys.contains('vaden_security');
 
-    final libConfigResourcesResourceConfiguration =
-        File('${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}resources${Platform.pathSeparator}resource_configuration.dart');
+    if (hasVadenSecurity) {
+      final vadenSecurityVersion = variables['vaden_security'] ?? '^0.0.3';
+      await fileManager.insertLineInFile(
+        pubspec,
+        RegExp(r'dependencies:'),
+        '  vaden_security: $vadenSecurityVersion',
+        position: InsertLinePosition.after,
+      );
+
+      final appModulePath =
+          '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_module.dart';
+      final libConfigAppModule = File(appModulePath);
+      await libConfigAppModule.create(recursive: true);
+      await libConfigAppModule.writeAsString(_libConfigAppModuleContent);
+    }
+
+    final libConfigResourcesResourceConfiguration = File(
+        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}resources${Platform.pathSeparator}resource_configuration.dart',);
     await libConfigResourcesResourceConfiguration.create(recursive: true);
-    await libConfigResourcesResourceConfiguration.writeAsString(_libConfigResourcesResourceConfigurationContent);
+    await libConfigResourcesResourceConfiguration
+        .writeAsString(_libConfigResourcesResourceConfigurationContent);
 
-    final srcHelloController = File('${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}src${Platform.pathSeparator}hello_controller.dart');
+    final srcHelloController = File(
+        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}src${Platform.pathSeparator}hello_controller.dart',);
     await srcHelloController.create(recursive: true);
     await srcHelloController.writeAsString(_srcHelloControllerContent);
 
-    final libConfigAppControllerAdvice = File('${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_controller_advice.dart');
+    final libConfigAppControllerAdvice = File(
+        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_controller_advice.dart',);
     await libConfigAppControllerAdvice.create(recursive: true);
     await libConfigAppControllerAdvice.writeAsString(_libConfigAppControllerAdviceContent);
   }
@@ -235,6 +259,7 @@ class AppConfiguration {
 ''';
 
 const _libConfigAppModuleContent = '''import 'package:vaden/vaden.dart';
+import 'package:vaden_security/vaden_security.dart';
 
 @VadenModule([VadenSecurity])
 class AppModule {}

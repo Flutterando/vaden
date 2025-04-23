@@ -47,6 +47,13 @@
         "key": "cron",
         "tag": "SYSTEM",
         "requirements":[]
+    },
+    {
+        "name": "Vaden Security",
+        "description": "Vaden Security is a package that provides a security layer for Vaden.",
+        "key": "vaden_security",
+        "tag": "SECURITY",
+        "requirements":[]
     }
 ]
 

@@ -32,12 +32,12 @@ class FileManager {
     final tempDirName = Uuid().v4();
 
     return Directory(
-            '${dir.path}${Platform.pathSeparator}$tempDirName${Platform.pathSeparator}$name') //
-        .create(recursive: true);
+      '${dir.path}${Platform.pathSeparator}$tempDirName${Platform.pathSeparator}$name',
+    ).create(recursive: true);
   }
 
-  FileGenerator getGenerator(String key) {
-    return _generators[key]!;
+  FileGenerator? getGenerator(String key) {
+    return _generators[key];
   }
 
   Future<void> insertLineInFile(
@@ -73,10 +73,10 @@ class FileManager {
   Future<List<int>> createZip(String folderPath, String projectName) async {
     final archive = Archive();
 
-    final files = Directory(folderPath)
-        .listSync(recursive: true)
-        .whereType<File>()
-        .toList();
+    final files = Directory(folderPath) //
+    .listSync(recursive: true) //
+    .whereType<File>() //
+    .toList();
 
     for (var file in files) {
       final fileBytes = await file.readAsBytes();

@@ -15,7 +15,10 @@ class DartVersion with Validator<DartVersion> {
     builder //
         .ruleFor((p) => p.id, key: 'dartVersion')
         .notEmpty()
-        .matchesPattern(r"^\d+\.\d+\.\d+$", message: "Invalid dart version");
+        .matchesPattern(
+          r"^\d+\.\d+\.\d+$",
+          message: "Invalid dart version",
+        );
 
     return builder;
   }

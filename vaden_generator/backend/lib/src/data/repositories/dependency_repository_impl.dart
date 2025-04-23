@@ -23,10 +23,12 @@ class DependencyRepositoryImpl implements DependencyRepository {
     final file = File('assets${Platform.pathSeparator}dependencies.json');
 
     if (!file.existsSync()) {
-      return Failure(ResponseException(
-        404,
-        {'message': 'Dependencies file not found'},
-      ));
+      return Failure(
+        ResponseException(
+          404,
+          {'message': 'Dependencies file not found'},
+        ),
+      );
     }
 
     final content = await file.readAsString();
