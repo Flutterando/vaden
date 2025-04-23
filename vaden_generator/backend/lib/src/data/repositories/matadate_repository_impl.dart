@@ -23,10 +23,12 @@ class MatadateRepositoryImpl implements MatadateRepository {
     final file = File('assets${Platform.pathSeparator}metadata.json');
 
     if (!file.existsSync()) {
-      return Failure(ResponseException(
-        404,
-        {'message': 'Metadata file not found'},
-      ));
+      return Failure(
+        ResponseException(
+          404,
+          {'message': 'Metadata file not found'},
+        ),
+      );
     }
 
     final content = await file.readAsString();
