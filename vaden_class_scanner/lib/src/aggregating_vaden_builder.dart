@@ -31,6 +31,7 @@ class AggregatingVadenBuilder implements Builder {
   final componentChecker = TypeChecker.fromRuntime(BaseComponent);
   final dtoChecker = TypeChecker.fromRuntime(DTO);
   final moduleChecker = TypeChecker.fromRuntime(VadenModule);
+  final parseChecker = TypeChecker.fromRuntime(Parse);
 
   @override
   Future<void> build(BuildStep buildStep) async {
@@ -211,6 +212,8 @@ class _DSON extends DSON {
     if (dtoChecker.hasAnnotationOf(classElement) || configurationChecker.hasAnnotationOf(classElement)) {
       return '';
     } else if (moduleChecker.hasAnnotationOf(classElement)) {
+      return '';
+    } else if (parseChecker.hasAnnotationOf(classElement)) {
       return '';
     }
 

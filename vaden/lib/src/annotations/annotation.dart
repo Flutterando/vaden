@@ -587,6 +587,13 @@ class Context {
   const Context(this.name);
 }
 
+class Parse implements BaseComponent {
+  const Parse();
+
+  @override
+  final bool registerWithInterfaceOrSuperType = false;
+}
+
 class UseParse {
   final Type parser;
 
