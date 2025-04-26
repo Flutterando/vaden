@@ -126,8 +126,9 @@ class LocalStorage extends Storage {
   /// - [FileSystemException]: If the directory exists but cannot be read.
   @override
   Future<List<String>> listFiles([String? folder]) async {
-    final directory =
-        Directory(folder == null ? folderPath : '$folderPath/$folder');
+    final directory = Directory(
+      folder == null ? folderPath : '$folderPath/$folder',
+    );
     if (!await directory.exists()) {
       return [];
     }
