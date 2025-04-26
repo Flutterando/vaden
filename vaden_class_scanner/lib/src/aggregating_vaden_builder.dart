@@ -61,25 +61,29 @@ class AggregatingVadenBuilder implements Builder {
     aggregatedBuffer.writeln();
     aggregatedBuffer.writeln('''
   Future<HttpServer> run() async {
-    final pipeline = _injector.get<Pipeline>();
-    final handler = pipeline.addHandler((request) async {
-      try {
-        final response = await _router(request);
-        return response;
-      } catch (e, stack) {
-        print(e);
-        print(stack);
-        return _handleException(e);
-      }
-    });
+    final initialization = _injector.get<InitializationSettings>();
+    if (initialization.operator()) {
+      final pipeline = _injector.get<Pipeline>();
+      final handler = pipeline.addHandler((request) async {
+        try {
+          final response = await _router(request);
+          return response;
+        } catch (e, stack) {
+          print(e);
+          print(stack);
+          return _handleException(e);
+        }
+      });
 
-    final settings = _injector.get<ApplicationSettings>();
-    final port = settings['server']['port'] ?? 8080;
-    final host = settings['server']['host'] ?? '0.0.0.0';
+      final settings = _injector.get<ApplicationSettings>();
+      final port = settings['server']['port'] ?? 8080;
+      final host = settings['server']['host'] ?? '0.0.0.0';
 
-    final server = await serve(handler, host, port);
+      final server = await serve(handler, host, port);
 
-    return server;
+      return server;
+    }
+    throw Exception('Initialization failed');
   }
 ''');
     aggregatedBuffer.writeln();
