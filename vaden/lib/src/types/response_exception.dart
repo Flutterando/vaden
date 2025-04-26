@@ -69,70 +69,236 @@ class ResponseException<W> implements Exception {
   /// - [headers]: Additional HTTP headers to include in the response (optional).
   const ResponseException(this.code, this.body, {this.headers = const {}});
 
-  factory ResponseException.internalServerError(W message,
-      {Map<String, String> headers = const {}}) {
+  /// Creates a ResponseException for 500 Internal Server Error responses.
+  ///
+  /// Use this factory when an unexpected server error occurs that cannot be handled gracefully.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.internalServerError(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(500, message, headers: headers);
   }
 
-  factory ResponseException.notFound(W message,
-      {Map<String, String> headers = const {}}) {
+  /// Creates a ResponseException for 404 Not Found responses.
+  ///
+  /// Use this factory when the requested resource does not exist.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.notFound(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(404, message, headers: headers);
   }
-  factory ResponseException.badRequest(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 400 Bad Request responses.
+  ///
+  /// Use this factory when the client sends a request with invalid syntax or parameters.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.badRequest(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(400, message, headers: headers);
   }
-  factory ResponseException.unauthorized(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 401 Unauthorized responses.
+  ///
+  /// Use this factory when authentication is required but was not provided or is invalid.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.unauthorized(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(401, message, headers: headers);
   }
-  factory ResponseException.forbidden(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 403 Forbidden responses.
+  ///
+  /// Use this factory when the client is authenticated but does not have permission to access the resource.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.forbidden(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(403, message, headers: headers);
   }
-  factory ResponseException.conflict(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 409 Conflict responses.
+  ///
+  /// Use this factory when the request conflicts with the current state of the server,
+  /// such as when trying to create a resource that already exists.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.conflict(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(409, message, headers: headers);
   }
-  factory ResponseException.unprocessableEntity(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 422 Unprocessable Entity responses.
+  ///
+  /// Use this factory when the server understands the content type of the request entity,
+  /// and the syntax of the request entity is correct, but it was unable to process the
+  /// contained instructions.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.unprocessableEntity(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(422, message, headers: headers);
   }
-  factory ResponseException.notAcceptable(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 406 Not Acceptable responses.
+  ///
+  /// Use this factory when the server cannot produce a response matching the list
+  /// of acceptable values defined in the request's headers.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.notAcceptable(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(406, message, headers: headers);
   }
-  factory ResponseException.notImplemented(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 501 Not Implemented responses.
+  ///
+  /// Use this factory when the server does not support the functionality required to fulfill the request.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.notImplemented(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(501, message, headers: headers);
   }
-  factory ResponseException.serviceUnavailable(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 503 Service Unavailable responses.
+  ///
+  /// Use this factory when the server is currently unable to handle the request due to
+  /// temporary overloading or maintenance of the server.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.serviceUnavailable(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(503, message, headers: headers);
   }
-  factory ResponseException.gatewayTimeout(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 504 Gateway Timeout responses.
+  ///
+  /// Use this factory when the server, while acting as a gateway or proxy, did not receive
+  /// a timely response from an upstream server.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.gatewayTimeout(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(504, message, headers: headers);
   }
-  factory ResponseException.tooManyRequests(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 429 Too Many Requests responses.
+  ///
+  /// Use this factory when the user has sent too many requests in a given amount of time ("rate limiting").
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.tooManyRequests(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(429, message, headers: headers);
   }
-  factory ResponseException.notModified(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 304 Not Modified responses.
+  ///
+  /// Use this factory when the resource has not been modified since the version
+  /// specified by the request headers If-Modified-Since or If-None-Match.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.notModified(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(304, message, headers: headers);
   }
-  factory ResponseException.methodNotAllowed(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 405 Method Not Allowed responses.
+  ///
+  /// Use this factory when the request method is known by the server but is not supported
+  /// by the target resource.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.methodNotAllowed(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(405, message, headers: headers);
   }
 
-  factory ResponseException.requestTimeout(W message,
-      {Map<String, String> headers = const {}}) {
+  /// Creates a ResponseException for 408 Request Timeout responses.
+  ///
+  /// Use this factory when the server would like to shut down this unused connection.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.requestTimeout(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(408, message, headers: headers);
   }
-  factory ResponseException.preconditionFailed(W message,
-      {Map<String, String> headers = const {}}) {
+
+  /// Creates a ResponseException for 412 Precondition Failed responses.
+  ///
+  /// Use this factory when one or more conditions given in the request header fields
+  /// evaluated to false when tested on the server.
+  ///
+  /// Parameters:
+  /// - [message]: The error message or body content.
+  /// - [headers]: Additional HTTP headers to include in the response (optional).
+  factory ResponseException.preconditionFailed(
+    W message, {
+    Map<String, String> headers = const {},
+  }) {
     return ResponseException(412, message, headers: headers);
   }
 
@@ -154,46 +320,67 @@ class ResponseException<W> implements Exception {
   /// - A shelf Response object with the appropriate status code, body, and headers.
   Response generateResponse(DSON dson) {
     if (body is String) {
-      return Response(code,
-          body: body, headers: _enforceContentType(headers, 'text/plain'));
+      return Response(
+        code,
+        body: body,
+        headers: _enforceContentType(headers, 'text/plain'),
+      );
     } else if (body is List<int>) {
-      return Response(code,
-          body: body,
-          headers: _enforceContentType(headers, 'application/octet-stream'));
+      return Response(
+        code,
+        body: body,
+        headers: _enforceContentType(headers, 'application/octet-stream'),
+      );
     } else if (body is Map<String, dynamic>) {
-      return Response(code,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        code,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is Map<String, Object>) {
-      return Response(code,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        code,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is Map<String, String>) {
-      return Response(code,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        code,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is List<Map<String, dynamic>>) {
-      return Response(code,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        code,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is List<Map<String, String>>) {
-      return Response(code,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        code,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is List<Map<String, Object>>) {
-      return Response(code,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        code,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else {
       if (body is List) {
         final json = (body as List).map((e) => dson.toJson(e)).toList();
-        return Response(code,
-            body: jsonEncode(json),
-            headers: _enforceContentType(headers, 'application/json'));
+        return Response(
+          code,
+          body: jsonEncode(json),
+          headers: _enforceContentType(headers, 'application/json'),
+        );
       }
-      return Response(code,
-          body: jsonEncode(dson.toJson(body)),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        code,
+        body: jsonEncode(dson.toJson(body)),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     }
   }
 
@@ -210,7 +397,9 @@ class ResponseException<W> implements Exception {
   /// Returns:
   /// - A new headers map with the Content-Type header added if necessary.
   Map<String, String> _enforceContentType(
-      Map<String, String> headers, String contentType) {
+    Map<String, String> headers,
+    String contentType,
+  ) {
     final Map<String, String> enforcedHeaders =
         Map<String, String>.from(headers);
 
