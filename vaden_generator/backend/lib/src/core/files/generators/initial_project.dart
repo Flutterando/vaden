@@ -247,6 +247,11 @@ class AppConfiguration {
   ApplicationSettings settings() {
     return ApplicationSettings.load('application.yaml');
   }
+  
+  @Bean()
+  Future<InitializationSettings> boot(Initialization init) async {
+    return InitializationSettings.load([]);
+  }
 
   @Bean()
   Pipeline globalMiddleware(ApplicationSettings settings) {
