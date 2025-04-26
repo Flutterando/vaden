@@ -250,6 +250,7 @@ class AppConfiguration {
   
   @Bean()
   Future<InitializationSettings> boot(Initialization init) async {
+  Future<InitializationSettings> boot() async {
     return InitializationSettings.load([]);
   }
 
