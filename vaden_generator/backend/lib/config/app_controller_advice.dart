@@ -12,9 +12,11 @@ class AppControllerAdvice {
   Future<Response> handleDioException(DioException e) async {
     return Response(
       e.response?.statusCode ?? 500,
-      body: jsonEncode({
-        'message': e.response?.data['message'] ?? 'Internal server error',
-      }),
+      body: jsonEncode(
+        {
+          'message': e.response?.data['message'] ?? 'Internal server error',
+        },
+      ),
     );
   }
 
@@ -26,9 +28,11 @@ class AppControllerAdvice {
   @ExceptionHandler(Exception)
   Response handleException(Exception e) {
     return Response.internalServerError(
-      body: jsonEncode({
-        'message': 'Internal server error',
-      }),
+      body: jsonEncode(
+        {
+          'message': 'Internal server error',
+        },
+      ),
     );
   }
 }

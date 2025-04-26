@@ -23,7 +23,9 @@ class GenerateController {
   );
 
   @ApiOperation(
-      summary: 'Get dependencies', description: 'Get all dependencies')
+    summary: 'Get dependencies',
+    description: 'Get all dependencies',
+  )
   @ApiResponse(
     200,
     description: 'Dependencies returned',
@@ -64,13 +66,13 @@ class GenerateController {
     content: ApiContent(type: 'application/json', schema: ProjectLinkDTO),
   )
   @Post('/create')
-  Future<ProjectLinkDTO> createDeprecated(
-      @Body() ProjectDepreciated dto) async {
+  Future<ProjectLinkDTO> createDeprecated(@Body() ProjectDepreciated dto) async {
     final newDto = Project(
-        dependenciesKeys: dto.dependencies.map((d) => d.key).toList(),
-        projectName: dto.projectName,
-        projectDescription: dto.projectDescription,
-        dartVersion: dto.dartVersion);
+      dependenciesKeys: dto.dependencies.map((d) => d.key).toList(),
+      projectName: dto.projectName,
+      projectDescription: dto.projectDescription,
+      dartVersion: dto.dartVersion,
+    );
 
     return await _createProject.call(newDto).getOrThrow();
   }

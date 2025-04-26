@@ -6,7 +6,9 @@ import 'package:result_dart/result_dart.dart';
 
 abstract interface class GenerateService {
   AsyncResult<ProjectWithTempPath> createTempProject(
-      Project project, Directory tempFolder);
+    Project project,
+    Directory tempFolder,
+  );
   AsyncResult<ProjectWithTempPath> addDependencies(ProjectWithTempPath project);
   AsyncResult<ProjectLinkDTO> createZipLink(ProjectWithTempPath project);
 }

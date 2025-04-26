@@ -6,7 +6,7 @@ import 'package:vaden/vaden_openapi.dart';
 
 void main() {
   test('vaden application ...', () async {
-    final app = VadenApplication();
+    final app = VadenApplicationImpl();
 
     await app.setup();
 
