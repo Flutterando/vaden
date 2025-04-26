@@ -124,12 +124,14 @@ class OpenApiConfig {
   /// Returns:
   /// - A list of Tag objects representing the different sections of the API.
   List<Tag> get tags {
-    return _apis.map((api) {
-      return Tag(
-        name: api.tag,
-        description: api.description,
-      );
-    }).toList();
+    return _apis.map(
+      (api) {
+        return Tag(
+          name: api.tag,
+          description: api.description,
+        );
+      },
+    ).toList();
   }
 
   /// Gets the paths section of the OpenAPI document.
@@ -142,9 +144,11 @@ class OpenApiConfig {
   /// Returns:
   /// - A map of path strings to PathItem objects representing the API endpoints.
   Map<String, PathItem> get paths {
-    return _paths.map((key, value) {
-      return MapEntry(key, PathItem.fromJson(value));
-    });
+    return _paths.map(
+      (key, value) {
+        return MapEntry(key, PathItem.fromJson(value));
+      },
+    );
   }
 
   /// Gets the schemas section of the OpenAPI document.
@@ -159,8 +163,10 @@ class OpenApiConfig {
   /// Returns:
   /// - A map of type names to Schema objects representing the data models used in the API.
   Map<String, Schema> get schemas {
-    return _components.map((key, value) {
-      return MapEntry(key.toString(), Schema.fromJson(value));
-    });
+    return _components.map(
+      (key, value) {
+        return MapEntry(key.toString(), Schema.fromJson(value));
+      },
+    );
   }
 }

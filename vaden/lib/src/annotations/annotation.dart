@@ -6,6 +6,7 @@
 library;
 
 part 'openapi.dart';
+
 part 'rest.dart';
 
 /// Base interface for all component annotations.
@@ -43,8 +44,8 @@ final class Component implements BaseComponent {
   ///
   /// [registerWithInterfaceOrSuperType] - When true, the component will be registered
   /// with its interface or supertype in the dependency injection container.
-  /// Defaults to true.
-  const Component([this.registerWithInterfaceOrSuperType = true]);
+  /// Defaults to false.
+  const Component([this.registerWithInterfaceOrSuperType = false]);
 }
 
 /// Marks a class as a service in the application.
@@ -587,13 +588,54 @@ class Context {
   const Context(this.name);
 }
 
+/// Specifies a custom parser to be used for a parameter.
+///
+/// Use this annotation to apply a custom parser to convert incoming request data
+/// to the required type. This is useful for complex data types or custom formats.
+///
+/// Example:
+/// ```dart
+/// @Controller('/api/dates')
+/// class DateController {
+///   @Get('/')
+///   Future<Response> getDate(
+///     Request request,
+///     @Query('date') @UseParse(DateTimeParser) DateTime date,
+///   ) {
+///     // The date query parameter will be parsed using DateTimeParser
+///     // ...
+///   }
+/// }
+/// ```
 class UseParse {
+  /// The parser type to use for converting the parameter.
   final Type parser;
 
+  /// Creates a UseParse annotation with the specified parser type.
+  ///
+  /// [parser] - The parser type to use for converting the parameter.
   const UseParse(this.parser);
 }
 
+/// Defines a Vaden module that can import other modules.
+///
+/// Modules are used to organize and structure large applications by grouping
+/// related components. A module can import other modules to access their components.
+///
+/// Example:
+/// ```dart
+/// @VadenModule([AuthModule, DatabaseModule])
+/// class AppModule {
+///   // This module imports AuthModule and DatabaseModule
+/// }
+/// ```
 class VadenModule {
+  /// The list of modules to import.
   final List<Type> imports;
+
+  /// Creates a VadenModule annotation with the specified imports.
+  ///
+  /// [imports] - The list of module types to import.
   const VadenModule(this.imports);
 }
+
