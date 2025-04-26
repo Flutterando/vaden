@@ -62,6 +62,7 @@ export 'src/types/types.dart';
 
 // Utility classes and services
 export 'src/utils/app_configuration.dart';
+export 'src/utils/app_initialization.dart';
 export 'src/utils/openapi_config.dart';
 export 'src/utils/resource_service.dart';
 export 'src/utils/storage/storage.dart';
