@@ -587,13 +587,70 @@ class Context {
   const Context(this.name);
 }
 
+/// Marks a class as a reusable ParamParse definition.
+///
+/// Classes annotated with [Parse] become globally discoverable,
+/// allowing them to be reused across multiple DTOs for serialization
+/// and deserialization logic.
+///
+/// Example:
+/// ```dart
+/// @Parse()
+/// class DateTimeParse extends ParamParse<DateTime?, String> {
+///   const DateTimeParse();
+///
+///   @override
+///   String toJson(DateTime? param) => param?.toIso8601String() ?? '';
+///
+///   @override
+///   DateTime? fromJson(String? json) => DateTime.tryParse(json ?? '');
+/// }
+/// ```
+class Parse implements BaseComponent {
+  /// Creates a Parse annotation.
+  const Parse();
+
+  @override
+  final bool registerWithInterfaceOrSuperType = false;
+}
+
+/// Specifies a parser to use for a field in a DTO.
+///
+/// [UseParse] allows you to associate a specific [ParamParse] class
+/// with a field, enabling custom serialization and deserialization logic.
+///
+/// Example:
+/// ```dart
+/// @DTO()
+/// class ExampleDTO {
+///   @UseParse(DateTimeParse)
+///   final DateTime timestamp;
+///
+///   ExampleDTO({required this.timestamp});
+/// }
+/// ```
 class UseParse {
+  /// The parser class to use for this field.
   final Type parser;
 
+  /// Creates a UseParse annotation specifying the parser class.
   const UseParse(this.parser);
 }
 
+/// Defines a Vaden module that can import multiple components.
+///
+/// [VadenModule] allows grouping and importing components, configurations,
+/// services, and other modules into a single module for better project organization.
+///
+/// Example:
+/// ```dart
+/// @VadenModule([UserService, AuthService, DatabaseConfig])
+/// class AppModule {}
+/// ```
 class VadenModule {
+  /// The list of types to import into the module.
   final List<Type> imports;
+
+  /// Creates a VadenModule annotation with the specified imports.
   const VadenModule(this.imports);
 }
