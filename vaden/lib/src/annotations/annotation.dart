@@ -6,6 +6,7 @@
 library;
 
 part 'openapi.dart';
+
 part 'rest.dart';
 
 /// Base interface for all component annotations.
@@ -43,8 +44,8 @@ final class Component implements BaseComponent {
   ///
   /// [registerWithInterfaceOrSuperType] - When true, the component will be registered
   /// with its interface or supertype in the dependency injection container.
-  /// Defaults to true.
-  const Component([this.registerWithInterfaceOrSuperType = true]);
+  /// Defaults to false.
+  const Component([this.registerWithInterfaceOrSuperType = false]);
 }
 
 /// Marks a class as a service in the application.
@@ -587,70 +588,54 @@ class Context {
   const Context(this.name);
 }
 
-/// Marks a class as a reusable ParamParse definition.
+/// Specifies a custom parser to be used for a parameter.
 ///
-/// Classes annotated with [Parse] become globally discoverable,
-/// allowing them to be reused across multiple DTOs for serialization
-/// and deserialization logic.
-///
-/// Example:
-/// ```dart
-/// @Parse()
-/// class DateTimeParse extends ParamParse<DateTime?, String> {
-///   const DateTimeParse();
-///
-///   @override
-///   String toJson(DateTime? param) => param?.toIso8601String() ?? '';
-///
-///   @override
-///   DateTime? fromJson(String? json) => DateTime.tryParse(json ?? '');
-/// }
-/// ```
-class Parse implements BaseComponent {
-  /// Creates a Parse annotation.
-  const Parse();
-
-  @override
-  final bool registerWithInterfaceOrSuperType = false;
-}
-
-/// Specifies a parser to use for a field in a DTO.
-///
-/// [UseParse] allows you to associate a specific [ParamParse] class
-/// with a field, enabling custom serialization and deserialization logic.
+/// Use this annotation to apply a custom parser to convert incoming request data
+/// to the required type. This is useful for complex data types or custom formats.
 ///
 /// Example:
 /// ```dart
-/// @DTO()
-/// class ExampleDTO {
-///   @UseParse(DateTimeParse)
-///   final DateTime timestamp;
-///
-///   ExampleDTO({required this.timestamp});
+/// @Controller('/api/dates')
+/// class DateController {
+///   @Get('/')
+///   Future<Response> getDate(
+///     Request request,
+///     @Query('date') @UseParse(DateTimeParser) DateTime date,
+///   ) {
+///     // The date query parameter will be parsed using DateTimeParser
+///     // ...
+///   }
 /// }
 /// ```
 class UseParse {
-  /// The parser class to use for this field.
+  /// The parser type to use for converting the parameter.
   final Type parser;
 
-  /// Creates a UseParse annotation specifying the parser class.
+  /// Creates a UseParse annotation with the specified parser type.
+  ///
+  /// [parser] - The parser type to use for converting the parameter.
   const UseParse(this.parser);
 }
 
-/// Defines a Vaden module that can import multiple components.
+/// Defines a Vaden module that can import other modules.
 ///
-/// [VadenModule] allows grouping and importing components, configurations,
-/// services, and other modules into a single module for better project organization.
+/// Modules are used to organize and structure large applications by grouping
+/// related components. A module can import other modules to access their components.
 ///
 /// Example:
 /// ```dart
-/// @VadenModule([UserService, AuthService, DatabaseConfig])
-/// class AppModule {}
+/// @VadenModule([AuthModule, DatabaseModule])
+/// class AppModule {
+///   // This module imports AuthModule and DatabaseModule
+/// }
 /// ```
 class VadenModule {
-  /// The list of types to import into the module.
+  /// The list of modules to import.
   final List<Type> imports;
 
   /// Creates a VadenModule annotation with the specified imports.
+  ///
+  /// [imports] - The list of module types to import.
   const VadenModule(this.imports);
 }
+
