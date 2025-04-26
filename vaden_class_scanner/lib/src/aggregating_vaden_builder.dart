@@ -52,16 +52,23 @@ class AggregatingVadenBuilder implements Builder {
     importsBuffer.writeln("import 'package:vaden/vaden.dart';");
     importsBuffer.writeln();
 
-    aggregatedBuffer.writeln('class VadenApplication {');
-    aggregatedBuffer.writeln();
-    aggregatedBuffer.writeln('  final _router = Router();');
-    aggregatedBuffer.writeln('  final _injector = AutoInjector();');
-    aggregatedBuffer.writeln('  Injector get injector => _injector;');
-    aggregatedBuffer.writeln();
-    aggregatedBuffer.writeln('  VadenApplication();');
-    aggregatedBuffer.writeln();
     aggregatedBuffer.writeln('''
-  Future<HttpServer> run() async {
+class VadenApplicationImpl implements VadenApplication {
+  final _router = Router();
+  final _injector = AutoInjector();
+  
+  @override
+  Injector get injector => _injector;  
+  
+  @override
+  Router get router => _router;
+
+  VadenApplicationImpl();
+
+  @override
+  Future<HttpServer> run(List<String> args) async {
+    _injector.tryGet<CommandLineRunner>()?.run(args);
+    _injector.tryGet<ApplicationRunner>()?.run(this);
     final pipeline = _injector.get<Pipeline>();
     final handler = pipeline.addHandler((request) async {
       try {
@@ -84,6 +91,7 @@ class AggregatingVadenBuilder implements Builder {
   }
 ''');
     aggregatedBuffer.writeln();
+    aggregatedBuffer.writeln('@override');
     aggregatedBuffer.writeln('Future<void> setup() async {');
     aggregatedBuffer.writeln('final paths = <String, dynamic>{};');
     aggregatedBuffer.writeln('final apis = <Api>[];');

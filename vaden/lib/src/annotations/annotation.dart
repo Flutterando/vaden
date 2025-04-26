@@ -43,8 +43,8 @@ final class Component implements BaseComponent {
   ///
   /// [registerWithInterfaceOrSuperType] - When true, the component will be registered
   /// with its interface or supertype in the dependency injection container.
-  /// Defaults to false.
-  const Component([this.registerWithInterfaceOrSuperType = false]);
+  /// Defaults to true.
+  const Component([this.registerWithInterfaceOrSuperType = true]);
 }
 
 /// Marks a class as a service in the application.
