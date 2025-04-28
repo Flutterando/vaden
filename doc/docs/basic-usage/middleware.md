@@ -57,7 +57,7 @@ Response getProfile() => Response.ok('Profile');
 Middleware classes must implement the following interface:
 
 ```dart
-class MyMiddleware implements Middleware {
+class MyMiddleware implements VadenMiddleware {
   FutureOr<Response> handle(Request request, Handler next) async {
     return next(request);
   }
@@ -80,7 +80,7 @@ class AdminController {
 A guard must extend `Guard`, which itself implements `Middleware`:
 
 ```dart
-class MyGuard extends Guard {
+class MyGuard extends VadenGuard {
   FutureOr<bool> canActivate(Request request) async {
     return true;
   }

@@ -24,13 +24,15 @@ my_vaden_project/
 This is the main entry point of your application. It loads the generated vaden_application.dart and starts the HTTP server:
 
 ```dart
-import 'package:my_vaden_project/vaden_application.dart';
-import 'package:shelf/shelf_io.dart';
+import 'package:example/vaden_application.dart';
 
-void main() async {
-  final app = await createApplication();
-  await serve(app.handler, 'localhost', 8080);
+Future<void> main(List<String> args) async {
+  final vaden = VadenApplicationImpl();
+  await vaden.setup();
+  final server = await vaden.run(args);
+  print('Server listening on port ${server.port}');
 }
+
 ```
 
 ## lib/vaden_application.dart
