@@ -72,26 +72,27 @@ class InitialProjectGenerator extends FileGenerator {
         position: InsertLinePosition.after,
       );
 
-      final appModulePath =
-          '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_module.dart';
+      final appModulePath = '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_module.dart';
       final libConfigAppModule = File(appModulePath);
       await libConfigAppModule.create(recursive: true);
       await libConfigAppModule.writeAsString(_libConfigAppModuleContent);
     }
 
     final libConfigResourcesResourceConfiguration = File(
-        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}resources${Platform.pathSeparator}resource_configuration.dart',);
+      '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}resources${Platform.pathSeparator}resource_configuration.dart',
+    );
     await libConfigResourcesResourceConfiguration.create(recursive: true);
-    await libConfigResourcesResourceConfiguration
-        .writeAsString(_libConfigResourcesResourceConfigurationContent);
+    await libConfigResourcesResourceConfiguration.writeAsString(_libConfigResourcesResourceConfigurationContent);
 
     final srcHelloController = File(
-        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}src${Platform.pathSeparator}hello_controller.dart',);
+      '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}src${Platform.pathSeparator}hello_controller.dart',
+    );
     await srcHelloController.create(recursive: true);
     await srcHelloController.writeAsString(_srcHelloControllerContent);
 
     final libConfigAppControllerAdvice = File(
-        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_controller_advice.dart',);
+      '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_controller_advice.dart',
+    );
     await libConfigAppControllerAdvice.create(recursive: true);
     await libConfigAppControllerAdvice.writeAsString(_libConfigAppControllerAdviceContent);
   }
@@ -230,10 +231,10 @@ const _publicIndexContent = '''<!DOCTYPE html>
 
 const _binServerContent = r'''import 'package:{{name}}/vaden_application.dart';
 
-void main() async {
-  final vaden = VadenApplication();
+Future<void> main(List<String> args) async {
+  final vaden = VadenApplicationImpl();
   await vaden.setup();
-  final server = await vaden.run();
+  final server = await vaden.run(args);
   print('Server listening on port ${server.port}');
 }
 

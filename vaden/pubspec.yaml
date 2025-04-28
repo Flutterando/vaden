@@ -1,6 +1,6 @@
 name: vaden
 description: Dart backend project create by Flutterando community. Using and action!
-version: 0.0.10
+version: 0.0.11
 repository: https://github.com/Flutterando/vaden
 
 environment:

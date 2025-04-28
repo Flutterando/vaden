@@ -1,20 +1,20 @@
 name: backend
 description: A server app using the shelf package and Docker.
-version: 1.0.0
+version: 1.0.1
 # repository: https://github.com/my_org/my_repo
 
 environment:
   sdk: ^3.6.0
 
 dependencies:
-  vaden: ^0.0.10
+  vaden: ^0.0.11
   result_dart: ^2.0.1
   uuid: ^4.5.1
   archive: ^4.0.4
   dio: ^5.8.0+1
 
 dev_dependencies:
-  vaden_class_scanner: ^0.0.11
+  vaden_class_scanner: ^0.0.12
   lints: ^5.0.0
   test: ^1.24.0
   build_runner: ^2.4.14
