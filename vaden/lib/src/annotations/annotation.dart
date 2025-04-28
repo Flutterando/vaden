@@ -588,67 +588,81 @@ class Context {
   const Context(this.name);
 }
 
-/// Marks a parameter or class to use a custom parsing strategy.
+/// Marks a `ParamParse` class as globally discoverable.
 ///
-/// The `Parse` annotation indicates that a parameter should undergo custom
-/// parsing when handling HTTP requests in the Vaden framework. It works together
-/// with the `UseParse` annotation, which specifies the actual parser to apply.
+/// The `Parse` annotation is applied to a custom `ParamParse` class,
+/// making it available for use across multiple DTOs, even when the parser
+/// is defined in a separate file.
 ///
-/// Use this annotation when you need more control over how input data from
-/// requests (such as query parameters, path variables, or request bodies) are
-/// transformed into Dart objects.
+/// By marking a `ParamParse` class with `@Parse()`, the system can
+/// automatically find and apply it without needing manual registration.
 ///
 /// Example:
 /// ```dart
-/// @Controller('/api/dates')
-/// class DateController {
-///   @Get('/')
-///   Future<Response> getDate(
-///     Request request,
-///     @Query('date') @Parse() @UseParse(DateTimeParser) DateTime date,
-///   ) {
-///     // The 'date' query parameter will be parsed using DateTimeParser
-///     // before being passed into this method.
+/// @Parse()
+/// class DateTimeParse extends ParamParse<DateTime?, String> {
+///   const DateTimeParse();
+///
+///   @override
+///   String toJson(DateTime? param) {
+///     return param?.toIso8601String() ?? '';
+///   }
+///
+///   @override
+///   DateTime? fromJson(String? json) {
+///     return DateTime.tryParse(json ?? '');
 ///   }
 /// }
 /// ```
+///
+/// In this example, `DateTimeParse` becomes available for `@UseParse` in any DTO field.
 final class Parse implements BaseComponent {
   /// Creates a Parse annotation.
   ///
-  /// This annotation itself does not require any parameters. It simply marks
-  /// that a field or parameter should be parsed using a specified parser.
+  /// It marks a `ParamParse` class as available for global use.
   const Parse();
 
   @override
   final bool registerWithInterfaceOrSuperType = false;
 }
 
-/// Specifies a custom parser to be used for a parameter.
+/// Specifies which custom `ParamParse` class should be used for a DTO field.
 ///
-/// Use this annotation to apply a custom parser to convert incoming request data
-/// to the required type. This is useful for complex data types or custom formats.
+/// The `UseParse` annotation is applied to a field in a DTO to indicate that
+/// it should be serialized and deserialized using a specific `ParamParse` class.
+///
+/// The parser class must be annotated with `@Parse()` to be globally discoverable.
 ///
 /// Example:
 /// ```dart
-/// @Controller('/api/dates')
-/// class DateController {
-///   @Get('/')
-///   Future<Response> getDate(
-///     Request request,
-///     @Query('date') @UseParse(DateTimeParser) DateTime date,
-///   ) {
-///     // The date query parameter will be parsed using DateTimeParser
-///     // ...
-///   }
+/// @DTO()
+/// class BaseDto {
+///   final String id;
+///
+///   @UseParse(DateTimeParse)
+///   final DateTime createdAt;
+///
+///   @UseParse(DateTimeParse)
+///   final DateTime? updatedAt;
+///
+///   BaseDto({
+///     required this.id,
+///     required this.createdAt,
+///     required this.updatedAt,
+///   });
 /// }
 /// ```
+///
+/// Here, `DateTimeParse` will be used to parse both `createdAt` and `updatedAt` fields.
+///
+/// The `DateTimeParse` class must be defined and annotated with `@Parse()`.
 class UseParse {
-  /// The parser type to use for converting the parameter.
+  /// The `ParamParse` class to use for parsing the field.
   final Type parser;
 
-  /// Creates a UseParse annotation with the specified parser type.
+  /// Creates a UseParse annotation specifying the parser class.
   ///
-  /// [parser] - The parser type to use for converting the parameter.
+  /// [parser] is the `ParamParse` class responsible for parsing this field.
   const UseParse(this.parser);
 }
 

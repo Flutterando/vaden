@@ -99,6 +99,29 @@ class DateTimeParse extends ParamParse<DateTime?, String> {
 }
 ```
 
+### `@Parse` Annotation
+
+The `@Parse` annotation allows `ParamParse` classes (such as `DateTimeParse`) to be defined in separate files and reused across multiple DTOs.
+
+When a `ParamParse` class is annotated with `@Parse`, it becomes globally discoverable, enabling it to be imported and used across different DTOs without needing to duplicate parsing logic.
+
+**Parse Class (in its own file):**
+```dart
+@Parse()
+class DateTimeParse extends ParamParse<DateTime?, String> {
+  const DateTimeParse();
+
+  @override
+  String toJson(DateTime? param) {
+    return param?.toIso8601String() ?? '';
+  }
+
+  @override
+  DateTime? fromJson(String? json) {
+    return DateTime.tryParse(json ?? '');
+  }
+}
+
 ## Deserialization with `@Body()`
 
 When a controller method uses `@Body()`, Vaden will:
@@ -137,31 +160,6 @@ class DebugService {
   }
 }
 ```
-
-## `@Parse` Annotation
-
-The `@Parse` annotation allows `ParamParse` classes (such as `DateTimeParse`) to be defined in separate files and reused across multiple DTOs.
-
-When a `ParamParse` class is annotated with `@Parse`, it becomes globally discoverable, enabling it to be imported and used across different DTOs without needing to duplicate parsing logic.
-
-### Example
-
-**Parse Class (in its own file):**
-```dart
-@Parse()
-class DateTimeParse extends ParamParse<DateTime?, String> {
-  const DateTimeParse();
-
-  @override
-  String toJson(DateTime? param) {
-    return param?.toIso8601String() ?? '';
-  }
-
-  @override
-  DateTime? fromJson(String? json) {
-    return DateTime.tryParse(json ?? '');
-  }
-}
 
 ## Benefits
 
