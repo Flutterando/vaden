@@ -588,6 +588,41 @@ class Context {
   const Context(this.name);
 }
 
+/// Marks a parameter or class to use a custom parsing strategy.
+///
+/// The `Parse` annotation indicates that a parameter should undergo custom
+/// parsing when handling HTTP requests in the Vaden framework. It works together
+/// with the `UseParse` annotation, which specifies the actual parser to apply.
+///
+/// Use this annotation when you need more control over how input data from
+/// requests (such as query parameters, path variables, or request bodies) are
+/// transformed into Dart objects.
+///
+/// Example:
+/// ```dart
+/// @Controller('/api/dates')
+/// class DateController {
+///   @Get('/')
+///   Future<Response> getDate(
+///     Request request,
+///     @Query('date') @Parse() @UseParse(DateTimeParser) DateTime date,
+///   ) {
+///     // The 'date' query parameter will be parsed using DateTimeParser
+///     // before being passed into this method.
+///   }
+/// }
+/// ```
+final class Parse implements BaseComponent {
+  /// Creates a Parse annotation.
+  ///
+  /// This annotation itself does not require any parameters. It simply marks
+  /// that a field or parameter should be parsed using a specified parser.
+  const Parse();
+
+  @override
+  final bool registerWithInterfaceOrSuperType = false;
+}
+
 /// Specifies a custom parser to be used for a parameter.
 ///
 /// Use this annotation to apply a custom parser to convert incoming request data
@@ -638,4 +673,3 @@ class VadenModule {
   /// [imports] - The list of module types to import.
   const VadenModule(this.imports);
 }
-
