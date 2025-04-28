@@ -1,4 +1,4 @@
-## 0.0.11 (2025/04/28)
+## 0.0.12 (2025/04/28)
 
 - Added Parse.
 - Fix primitive nullable list.

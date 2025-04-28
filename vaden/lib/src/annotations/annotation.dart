@@ -6,7 +6,6 @@
 library;
 
 part 'openapi.dart';
-
 part 'rest.dart';
 
 /// Base interface for all component annotations.
@@ -580,12 +579,12 @@ class Header {
 /// ```
 class Context {
   /// The name of the context value in the request.
-  final String name;
+  final String? name;
 
   /// Creates a Context annotation with the specified name.
   ///
   /// [name] - The name of the context value in the request.
-  const Context(this.name);
+  const Context([this.name]);
 }
 
 /// Marks a `ParamParse` class as globally discoverable.
