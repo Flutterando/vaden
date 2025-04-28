@@ -1,8 +1,8 @@
 import 'package:backend/vaden_application.dart';
 
-void main() async {
-  final vaden = VadenApplication();
+Future<void> main(List<String> args) async {
+  final vaden = VadenApplicationImpl();
   await vaden.setup();
-  final server = await vaden.run();
+  final server = await vaden.run(args);
   print('Server listening on port ${server.port}');
 }
