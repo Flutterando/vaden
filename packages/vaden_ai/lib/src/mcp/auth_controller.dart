@@ -14,8 +14,8 @@ class MCPController {
   @ApiResponse(200,
       description: 'MCP successfully',
       content: ApiContent(type: 'application/json', schema: McpResponse))
-  @Get('/me')
-  Future<McpResponse> me(@Body() McpRequests requests) async {
+  @Get()
+  Future<McpResponse> mcp(@Body() McpRequests requests) async {
     return userDetails;
   }
 }
