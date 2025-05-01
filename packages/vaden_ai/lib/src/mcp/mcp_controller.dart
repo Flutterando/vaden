@@ -18,7 +18,7 @@ class MCPController {
   Future<Response> mcp(Request request) async {
     return JsonRcpParse.fromRequest(request) //
         .flatMap(_teste)
-        .toMcpResponse();
+        .toJsonRcpResponse();
   }
 
 //So teste

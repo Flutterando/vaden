@@ -41,9 +41,12 @@ class JsonRcpParse {
 }
 
 extension JsonRcpParseExtension on AsyncResult<McpResponse> {
-  Future<Response> toMcpResponse() async {
+  Future<Response> toJsonRcpResponse() async {
     return fold(
-      (s) => Response.ok(s.toJson()),
+      (s) {
+        if (s.id == null) return Response.ok(null);
+        return Response.ok(s.toJson());
+      },
       (e) {
         if (e is VadenAiException) {
           return Response.ok(e.toJson());
