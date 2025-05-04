@@ -1,6 +1,6 @@
 ---
 name: 🚀 Feature Request
-about: Sugira uma nova funcionalidade ou melhoria para o projeto.
+about: Suggest a new feature or improvement for the project.
 title: "[FEATURE] "
 labels: enhancement
 assignees: ''
@@ -9,28 +9,28 @@ assignees: ''
 
 ### 🚀 **Feature Request**
 
-#### 💡 **Descrição da Funcionalidade**
-Descreva a nova funcionalidade ou melhoria que você gostaria de ver no projeto.
+#### 💡 **Feature Description**
+Describe the new feature or improvement you would like to see in the project.
 
-#### 🎯 **Objetivo**
-Explique o objetivo dessa funcionalidade e o problema que ela resolve. Como ela beneficia os usuários ou o sistema?
+#### 🎯 **Objective**
+Explain the objective of this feature and the problem it solves. How does it benefit users or the system?
 
-#### ✅ **Critérios de Aceitação**
-Liste os critérios que devem ser atendidos para considerar essa funcionalidade completa.
+#### ✅ **Acceptance Criteria**
+List the criteria that must be met to consider this feature complete.
 
-Exemplo:
-- [ ] O usuário pode realizar a ação X.
-- [ ] O sistema exibe a mensagem Y após a ação.
-- [ ] A funcionalidade é responsiva e funciona em todos os dispositivos.
+Example:
+- [ ] The user can perform action X.
+- [ ] The system displays message Y after the action.
+- [ ] The feature is responsive and works on all devices.
 
-#### 🔄 **Passos Alternativos**
-Se aplicável, descreva outras soluções que você considerou ou alternativas possíveis.
+#### 🔄 **Alternative Steps**
+If applicable, describe other solutions you considered or possible alternatives.
 
-#### 📊 **Impacto**
-Explique o impacto esperado dessa funcionalidade no projeto.
+#### 📊 **Impact**
+Explain the expected impact of this feature on the project.
 
-#### 📝 **Notas Adicionais**
-Adicione qualquer informação extra relevante, como links de referência, designs, protótipos ou discussões anteriores.
+#### 📝 **Additional Notes**
+Add any extra relevant information, such as reference links, designs, prototypes, or previous discussions.
 
-#### 📷 **Mockups ou Exemplos (se aplicável)**
-Inclua imagens, diagramas ou protótipos para ilustrar a ideia.
+#### 📷 **Mockups or Examples (if applicable)**
+Include images, diagrams, or prototypes to illustrate the idea.

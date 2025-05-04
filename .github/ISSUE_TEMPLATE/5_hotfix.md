@@ -1,6 +1,6 @@
 ---
 name: 🔥 Hotfix
-about: Sugira uma nova funcionalidade ou melhoria para o projeto.
+about: Suggest a new feature or improvement for the project.
 title: "[HOTFIX] "
 labels: bug
 assignees: ''
@@ -9,29 +9,29 @@ assignees: ''
 
 ### 🔥 Hotfix Request
 
-#### 🔴 Descrição do Problema
-Descreva o bug ou problema crítico que precisa ser corrigido urgentemente.
+#### 🔴 Problem Description
+Describe the bug or critical issue that needs to be fixed urgently.
 
-#### 🎯 Objetivo
-Explique o objetivo dessa correção e o problema que ela resolve. Como ela beneficia os usuários ou o sistema?
+#### 🎯 Objective
+Explain the objective of this fix and the problem it solves. How does it benefit users or the system?
 
-#### ✅ Critérios de Aceitação
-Liste os critérios que devem ser atendidos para considerar essa correção completa.
+#### ✅ Acceptance Criteria
+List the criteria that must be met to consider this fix complete.
 
-Exemplo:
-- [ ] O bug X não ocorre mais nas condições Y.
-- [ ] A correção não introduz novos problemas no sistema.
-- [ ] Os testes foram realizados e aprovados.
+Example:
+- [ ] Bug X no longer occurs under conditions Y.
+- [ ] The fix does not introduce new problems in the system.
+- [ ] Tests have been performed and approved.
 
-#### 🔄 Passos Alternativos
-Se aplicável, descreva outras soluções que você considerou ou alternativas possíveis.
+#### 🔄 Alternative Steps
+If applicable, describe other solutions you considered or possible alternatives.
 
-#### 📊 Impacto
-Explique o impacto esperado dessa correção no projeto.
+#### 📊 Impact
+Explain the expected impact of this fix on the project.
 
-#### 📝 Notas Adicionais
-Adicione qualquer informação extra relevante, como logs de erro, prints de tela ou links para discussões anteriores.
+#### 📝 Additional Notes
+Add any extra relevant information, such as error logs, screenshots, or links to previous discussions.
 
-#### 📷 Evidências (se aplicável)
-Inclua imagens, logs ou qualquer outro material que ajude a entender o problema.
+#### 📷 Evidence (if applicable)
+Include images, logs, or any other material that helps understand the problem.
 

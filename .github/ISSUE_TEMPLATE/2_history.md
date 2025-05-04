@@ -1,6 +1,6 @@
 ---
 name: 📜 Story
-about: Tire dúvidas ou peça esclarecimentos sobre o projeto.
+about: Ask questions or request clarifications about the project.
 title: "📜 [STORY] - "
 labels: story
 assignees: ''
@@ -8,32 +8,32 @@ assignees: ''
 
 ### 📜 User Story
 
-#### 🎯 Descrição
-Descreva a história do usuário de forma clara e objetiva.
+#### 🎯 Description
+Describe the user story clearly and objectively.
 
-#### 🎯 Objetivo
-Explique qual problema ou necessidade essa história busca resolver.
+#### 🎯 Objective
+Explain what problem or need this story aims to solve.
 
-#### ✅ Critérios de Aceitação
-Liste os critérios que devem ser atendidos para considerar essa história completa.
+#### ✅ Acceptance Criteria
+List the criteria that must be met to consider this story complete.
 
-Exemplo:
-- [ ] O usuário pode realizar a ação X.
-- [ ] O sistema exibe a mensagem Y após a ação.
-- [ ] A funcionalidade funciona corretamente em todos os dispositivos.
+Example:
+- [ ] The user can perform action X.
+- [ ] The system displays message Y after the action.
+- [ ] The functionality works correctly on all devices.
 
-#### 🔄 Fluxo de Uso
-Descreva o fluxo de ações que o usuário deve seguir para atingir o objetivo da história.
+#### 🔄 Usage Flow
+Describe the flow of actions the user must follow to achieve the story's objective.
 
-1. O usuário acessa...
-2. O usuário clica em...
-3. O sistema responde com...
+1. The user accesses...
+2. The user clicks on...
+3. The system responds with...
 
-#### 🔗 Dependências
-Liste quaisquer dependências externas necessárias para a conclusão desta história.
+#### 🔗 Dependencies
+List any external dependencies required for the completion of this story.
 
-#### 📝 Notas Adicionais
-Adicione qualquer informação extra relevante, como links de referência, designs ou discussões anteriores.
+#### 📝 Additional Notes
+Add any extra relevant information, such as reference links, designs, or previous discussions.
 
-#### 📷 Referências Visuais (se aplicável)
-Inclua imagens, diagramas ou protótipos para ilustrar melhor a história.
+#### 📷 Visual References (if applicable)
+Include images, diagrams, or prototypes to better illustrate the story.
