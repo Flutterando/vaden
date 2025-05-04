@@ -1,6 +1,6 @@
 ---
 name: ⚒️ Task
-about: Tire dúvidas ou peça esclarecimentos sobre o projeto.
+about: Ask questions or request clarifications about the project.
 title: "⚒️ [TASK] - "
 labels: task
 assignees: ''
@@ -8,36 +8,36 @@ assignees: ''
 
 ### ⚒️ Task
 
-#### 🎯 Descrição
-Descreva a tarefa de forma clara e objetiva.
+#### 🎯 Description
+Describe the task clearly and objectively.
 
-#### 📌 Objetivo
-Explique o propósito desta tarefa e como ela contribui para o projeto.
+#### 📌 Objective
+Explain the purpose of this task and how it contributes to the project.
 
-#### ✅ Critérios de Conclusão
-Liste os critérios que devem ser atendidos para considerar essa tarefa completa.
+#### ✅ Completion Criteria
+List the criteria that must be met to consider this task complete.
 
-Exemplo:
-- [ ] O código está implementado conforme os requisitos.
-- [ ] Os testes foram escritos e aprovados.
-- [ ] A documentação foi atualizada.
+Example:
+- [ ] The code is implemented according to requirements.
+- [ ] Tests have been written and approved.
+- [ ] Documentation has been updated.
 
-#### 🔄 Passos para Execução
-Forneça um guia passo a passo para a execução desta tarefa.
+#### 🔄 Execution Steps
+Provide a step-by-step guide for executing this task.
 
-1. Acesse...
-2. Implemente...
-3. Valide...
+1. Access...
+2. Implement...
+3. Validate...
 
-#### 🔗 Dependências
-Liste quaisquer dependências externas necessárias para a conclusão desta tarefa.
+#### 🔗 Dependencies
+List any external dependencies required for the completion of this task.
 
-#### 📊 Impacto
-Explique o impacto esperado dessa tarefa no projeto.
+#### 📊 Impact
+Explain the expected impact of this task on the project.
 
-#### 📝 Notas Adicionais
-Adicione qualquer informação extra relevante, como links de referência, designs ou discussões anteriores.
+#### 📝 Additional Notes
+Add any extra relevant information, such as reference links, designs, or previous discussions.
 
-#### 📷 Referências Visuais (se aplicável)
-Inclua imagens, diagramas ou protótipos para ilustrar melhor a tarefa.
+#### 📷 Visual References (if applicable)
+Include images, diagrams, or prototypes to better illustrate the task.
 

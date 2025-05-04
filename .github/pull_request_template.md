@@ -1,18 +1,18 @@
-### 📄 Descrição
+### 📄 Description
 
-Descreva brevemente o que este PR faz e por que ele é necessário.
+Briefly describe what this PR does and why it is necessary.
 
-### 🔄 Mudanças Realizadas
+### 🔄 Changes Made
 
-- [ ] Descreva as mudanças realizadas.
-- [ ] Liste itens adicionais se houver.
+- [ ] Describe the changes made.  
+- [ ] List any additional items if applicable.
 
 ### ✅ Checklist
 
-- [ ] Testes foram adicionados ou atualizados.
-- [ ] Documentação foi atualizada (se necessário).
-- [ ] Revisão de código completa.
+- [ ] Tests have been added or updated.  
+- [ ] Documentation has been updated (if necessary).  
+- [ ] Code review completed.
 
-### 🔗 Issue Relacionada
+### 🔗 Related Issue
 
-Resolves #<número da issue>
+Resolves #<issue number>

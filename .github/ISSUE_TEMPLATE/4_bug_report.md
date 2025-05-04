@@ -1,6 +1,6 @@
 ---
 name: 🐛 Bug Report
-about: Relate um problema encontrado no sistema.
+about: Report a problem found in the system.
 title: "[BUG] "
 labels: bug
 assignees: ''
@@ -9,42 +9,42 @@ assignees: ''
 
 ### 🐛 **Bug Report**
 
-#### 📄 **Título**
-Descreva o bug de forma breve e clara.
+#### 📄 **Title**
+Describe the bug briefly and clearly.
 
-#### 🔗 **Extern Link**
-Insira o link do bug na plataforma de gerenciamento de bugs
+#### 🔗 **External Link**
+Insert the bug link in the bug management platform
 
-#### 🖥️ **Ambiente**
-- **Sistema Operacional:** (ex.: Windows 10, macOS Monterey, Ubuntu 20.04)
-- **Navegador:** (ex.: Chrome v114.0.5735.90)
-- **Versão do Aplicativo:** (ex.: 2.3.1)
+#### 🖥️ **Environment**
+- **Operating System:** (e.g., Windows 10, macOS Monterey, Ubuntu 20.04)
+- **Browser:** (e.g., Chrome v114.0.5735.90)
+- **Application Version:** (e.g., 2.3.1)
 
-#### 📝 **Descrição Detalhada**
-Explique o problema observado e como ele difere do comportamento esperado.
+#### 📝 **Detailed Description**
+Explain the observed problem and how it differs from the expected behavior.
 
-#### 🔄 **Passos para Reproduzir**
-1. **Passo 1:** Descreva o primeiro passo.
-2. **Passo 2:** Descreva o segundo passo.
-3. **Passo 3:** Descreva o terceiro passo.
+#### 🔄 **Steps to Reproduce**
+1. **Step 1:** Describe the first step.
+2. **Step 2:** Describe the second step.
+3. **Step 3:** Describe the third step.
 4. ...
 
-#### ✅ **Resultado Esperado**
-O que deveria acontecer.
+#### ✅ **Expected Result**
+What should happen.
 
-#### ❌ **Resultado Real**
-O que aconteceu de fato.
+#### ❌ **Actual Result**
+What actually happened.
 
-#### 📷 **Evidências**
-Adicione capturas de tela, vídeos ou logs relevantes.
+#### 📷 **Evidence**
+Add relevant screenshots, videos, or logs.
 
-#### ⚠️ **Gravidade**
-- [ ] Baixa  
-- [ ] Média  
-- [ ] Alta  
-- [ ] Crítica  
+#### ⚠️ **Severity**
+- [ ] Low  
+- [ ] Medium  
+- [ ] High  
+- [ ] Critical  
 
-#### 🚨 **Prioridade**
-- [ ] P1 (Alta)  
-- [ ] P2 (Média)  
-- [ ] P3 (Baixa)  
+#### 🚨 **Priority**
+- [ ] P1 (High)  
+- [ ] P2 (Medium)  
+- [ ] P3 (Low)

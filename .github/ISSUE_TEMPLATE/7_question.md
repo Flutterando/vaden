@@ -1,6 +1,6 @@
 ---
 name: ❓ Question
-about: Tire dúvidas ou peça esclarecimentos sobre o projeto.
+about: Ask questions or request clarifications about the project.
 title: "[QUESTION] "
 labels: question
 assignees: ''
@@ -8,16 +8,16 @@ assignees: ''
 
 ### ❓ **Question**
 
-#### 📄 **Título**
-Descreva a dúvida ou questão de forma clara e objetiva.
+#### 📄 **Title**
+Describe the question or doubt clearly and objectively.
 
-#### 📝 **Descrição Detalhada**
-Explique a dúvida ou questão que você tem sobre o projeto.
+#### 📝 **Detailed Description**
+Explain the question or doubt you have about the project.
 
-#### 📷 **Evidências**
-Adicione capturas de tela, vídeos ou logs relevantes para ajudar a entender a questão.
+#### 📷 **Evidence**
+Add relevant screenshots, videos, or logs to help understand the question.
 
-#### ⚠️ **Urgência**
-- [ ] Baixa  
-- [ ] Média  
-- [ ] Alta  
+#### ⚠️ **Urgency**
+- [ ] Low  
+- [ ] Medium  
+- [ ] High  
