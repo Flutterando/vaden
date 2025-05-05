@@ -44,7 +44,7 @@ extension JsonRcpParseExtension on AsyncResult<McpResponse> {
   Future<Response> toJsonRcpResponse() async {
     return fold(
       (s) {
-        if (s.id == null) return Response.ok(null);
+        if (s.id == null) return Response.ok(null); // Notifications Response
         return Response.ok(s.toJson());
       },
       (e) {

@@ -12,6 +12,7 @@ environment:
 dependencies:
   vaden: ^0.0.12
   result_dart: ^2.0.0
+ # dart_mcp: ^0.2.0
   # path: ^1.8.0
 
 dev_dependencies:
