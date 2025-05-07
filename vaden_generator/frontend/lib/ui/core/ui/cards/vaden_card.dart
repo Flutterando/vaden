@@ -73,7 +73,7 @@ class VadenCard extends StatelessWidget {
                         child: Text(
                           title,
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: isSelected ? VadenColors.txtSecondary : VadenColors.txtSupport3,
+                            color: VadenColors.txtSecondary,
                             fontWeight: FontWeight.bold,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -104,7 +104,7 @@ class VadenCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: VadenColors.txtSupport3,
+                      color: VadenColors.txtSecondary,
                       fontWeight: FontWeight.w300,
                     ),
                     maxLines: maxLines,
