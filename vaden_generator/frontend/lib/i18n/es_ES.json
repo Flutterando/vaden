@@ -1,5 +1,6 @@
 {
   "Add": "Añadir",
+  "Apoia-se": "Apoia-se",
   "Copyright": "Derechos de autor",
   "Dependencies": "Dependencias",
   "Description": "Descripción",
@@ -15,6 +16,7 @@
   "Loading_dependencies_error": "Error al cargar dependencias",
   "No_dependencies_available": "No hay dependencias disponibles",
   "Our_channels": "Nuestros canales",
+  "open_issue": "Abrir issue",
   "Project_name": "Nombre del proyecto",
   "Try_again": "Intentar de nuevo",
   "Vaden_Backend": "Vaden Backend",

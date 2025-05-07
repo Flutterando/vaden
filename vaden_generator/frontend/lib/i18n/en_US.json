@@ -1,5 +1,6 @@
 {
   "Add": "Add",
+  "Apoia-se": "Apoia-se",
   "Copyright": "Copyright",
   "Dependencies": "Dependencies",
   "Description": "Description",
@@ -15,6 +16,7 @@
   "Loading_dependencies_error": "Loading dependencies error",
   "No_dependencies_available": "No dependencies available",
   "Our_channels": "Our channels",
+  "open_issue": "Open issue",
   "Project_name": "Project name",
   "Try_again": "Try again",
   "Vaden_Backend": "Vaden Backend",
