@@ -123,7 +123,7 @@ class _GeneratePageState extends State<GeneratePage> {
                         spacing: 14,
                         children: [
                           VadenButton(
-                            label: 'apoia.se',
+                            label: 'Apoia-se'.i18n(),
                             height: 55,
                             onPressed: () {
                               urlLauncherService.launch(
