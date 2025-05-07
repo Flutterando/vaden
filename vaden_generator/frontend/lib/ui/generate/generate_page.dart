@@ -119,8 +119,22 @@ class _GeneratePageState extends State<GeneratePage> {
                       right: 48,
                       top: 0,
                       bottom: 0,
-                      child: Center(
-                        child: InternationWidget(),
+                      child: Row(
+                        spacing: 14,
+                        children: [
+                          VadenButton(
+                            label: 'apoia.se',
+                            height: 55,
+                            onPressed: () {
+                              urlLauncherService.launch(
+                                'https://apoia.se/vaden',
+                              );
+                            },
+                          ),
+                          Center(
+                            child: InternationWidget(),
+                          ),
+                        ],
                       ),
                     ),
                   ],
