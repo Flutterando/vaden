@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:vaden/vaden.dart';
 
 @Configuration()
 class AppConfiguration {
   @Bean()
   ApplicationSettings settings() {
-    return ApplicationSettings.load('application.yaml');
+    String path = Platform.environment['APPLICATION_PATH'] ?? '';
+    return ApplicationSettings.load(
+        '$path${Platform.pathSeparator}application.yaml');
   }
 
   @Bean()

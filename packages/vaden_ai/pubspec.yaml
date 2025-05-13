@@ -11,9 +11,15 @@ environment:
 # Add regular dependencies here.
 dependencies:
   vaden: ^0.0.12
-  result_dart: ^2.0.0
- # dart_mcp: ^0.2.0
+  dart_mcp: ^0.2.0
+  stream_channel: ^2.1.4
+  async: ^2.13.0
+  analyzer: ^7.2.0
+  path: ^1.9.1
   # path: ^1.8.0
+
+dependency_overrides:
+  async: ^2.13.0
 
 dev_dependencies:
   lints: ^5.0.0

@@ -10,6 +10,7 @@ import 'package:vaden/vaden.dart';
 import 'package:vaden_class_scanner/src/setups/configuration_setup.dart';
 import 'package:vaden_class_scanner/src/setups/controller_advice_setup.dart';
 import 'package:vaden_class_scanner/src/setups/controller_setup.dart';
+import 'package:vaden_class_scanner/src/setups/mcp_setup.dart';
 
 import 'setups/dto_setup.dart';
 
@@ -32,11 +33,14 @@ class AggregatingVadenBuilder implements Builder {
   final dtoChecker = TypeChecker.fromRuntime(DTO);
   final moduleChecker = TypeChecker.fromRuntime(VadenModule);
   final parseChecker = TypeChecker.fromRuntime(Parse);
+  final mcpControllerChecker = TypeChecker.fromRuntime(McpController);
 
   @override
   Future<void> build(BuildStep buildStep) async {
     final aggregatedBuffer = StringBuffer();
     final dtoBuffer = StringBuffer();
+    final mcpDtoBuffer = StringBuffer();
+    final mpcControllerBuffer = StringBuffer();
     final importsBuffer = StringBuffer();
     final exceptionHandlerBuffer = StringBuffer();
     final moduleRegisterBuffer = StringBuffer();
@@ -97,6 +101,7 @@ class VadenApplicationImpl implements VadenApplication {
     aggregatedBuffer.writeln('final apis = <Api>[];');
     aggregatedBuffer.writeln('final asyncBeans = <Future<void> Function()>[];');
     aggregatedBuffer.writeln('_injector.addLazySingleton<DSON>(_DSON.new);');
+    aggregatedBuffer.writeln('_injector.addLazySingleton<MCP>(_MCP.new);');
 
     final body = await buildStep //
         .findAssets(Glob('lib/**/*.dart'))
@@ -128,6 +133,9 @@ class VadenApplicationImpl implements VadenApplication {
         bodyBuffer.writeln(controllerSetup(classElement));
       } else if (dtoChecker.hasAnnotationOf(classElement)) {
         dtoBuffer.writeln(dtoSetup(classElement));
+        mcpDtoBuffer.writeln(mcpDtoPropertiesSetup(classElement));
+      } else if (mcpControllerChecker.hasAnnotationOf(classElement)) {
+        mpcControllerBuffer.writeln(mcpControllerSetup(classElement));
       } else if (controllerAdviceChecker.hasAnnotationOf(classElement)) {
         final (adviceBody, imports) = controllerAdviceSetup(classElement);
 
@@ -202,6 +210,22 @@ class _DSON extends DSON {
     $dtoBuffer
 
     return (fromJsonMap, toJsonMap, toOpenApiMap);
+  }
+}
+''');
+
+    importsBuffer.writeln('''
+class _MCP extends MCP {  
+  @override
+  (Map<Type, DtoPropertiesMap>, List<McpToolMap>) getMaps() {
+    final toPropertiesMap = <Type, DtoPropertiesMap>{};
+    final toolList = <McpToolMap>[];
+
+    $mcpDtoBuffer
+
+    $mpcControllerBuffer
+
+    return (toPropertiesMap, toolList);
   }
 }
 ''');

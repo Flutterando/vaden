@@ -10,3 +10,4 @@ workspace:
   - vaden_generator/frontend
   - packages/anaki_orm
   - packages/vaden_security
+  - packages/vaden_ai

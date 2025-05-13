@@ -58,6 +58,7 @@ export 'src/middlewares/enforce_json_content_type.dart';
 // Core types and interfaces
 export 'src/types/disposable.dart';
 export 'src/types/dson.dart';
+export 'src/types/mcp.dart';
 export 'src/types/types.dart';
 
 // Utility classes and services

@@ -36,3 +36,9 @@ security:
   issuer: "vaden"
   audiences:
     - "vaden"
+
+mcp:
+  communication: stdio
+  name: name
+  version: 1.0.0
+  instructions: pode ser null

@@ -5,6 +5,7 @@
 /// defining REST API endpoints and OpenAPI documentation.
 library;
 
+part 'ai.dart';
 part 'openapi.dart';
 part 'rest.dart';
 
