@@ -62,7 +62,14 @@
           "key": "email_sendgrid",
           "tag": "EMAIL",
           "requirements":["dio"]
-      }
+        },
+        {
+        "name": "One-Time Password (OTP)",
+        "description": "Temporary code used for a single authentication session or transaction to enhance security.",
+        "key": "otp",
+        "tag": "SECURITY",
+        "requirements":["Redis"]
+        }
       ],
     "defaultDartVersion": {
           "id": "3.7.2",
