@@ -55,13 +55,24 @@
           "key": "vaden_security",
           "tag": "SECURITY",
           "requirements":[]
-        }
+        },
+        {
+          "name": "Email Sendgrid",
+          "description": "Sendgrid Email implementation",
+          "key": "email_sendgrid",
+          "tag": "EMAIL",
+          "requirements":["dio"]
+      }
       ],
     "defaultDartVersion": {
           "id": "3.7.2",
           "name": "3.7.2"
         },
     "dartVersions": [
+        {
+          "id": "3.7.3",
+          "name": "3.7.3"
+        },
         {
           "id": "3.7.2",
           "name": "3.7.2"

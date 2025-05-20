@@ -54,6 +54,13 @@
         "key": "vaden_security",
         "tag": "SECURITY",
         "requirements":[]
+    },
+    {
+        "name": "Email Sendgrid",
+        "description": "Sendgrid Email implementation",
+        "key": "email_sendgrid",
+        "tag": "EMAIL",
+        "requirements":["dio"]
     }
 ]
 
