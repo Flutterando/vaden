@@ -123,7 +123,7 @@ class _GeneratePageState extends State<GeneratePage> {
                         spacing: 14,
                         children: [
                           VadenButton(
-                            label: 'apoia.se',
+                            label: 'Apoia-se'.i18n(),
                             height: 55,
                             onPressed: () {
                               urlLauncherService.launch(
@@ -223,11 +223,9 @@ class _GeneratePageState extends State<GeneratePage> {
                                     options: viewModel.dartVersions.map((e) => e.name).toList(),
                                     title: 'Dart_version'.i18n(),
                                     selectedOption: viewModel.defaultDartVersion.name,
-                                    onOptionSelected: (name) => project.setDartVersion(viewModel
-                                        .dartVersions
-                                        .where((v) => v.name == name)
-                                        .first
-                                        .id),
+                                    onOptionSelected: (name) => project.setDartVersion(
+                                      viewModel.dartVersions.where((v) => v.name == name).first.id,
+                                    ),
                                     width: double.infinity,
                                     fontSize: 16.0,
                                   ),
@@ -312,7 +310,8 @@ class _GeneratePageState extends State<GeneratePage> {
                                       : VadenDependenciesCard(
                                           dependencies: viewModel.dependencies
                                               .where(
-                                                  (d) => project.dependenciesKeys.contains(d.key))
+                                                (d) => project.dependenciesKeys.contains(d.key),
+                                              )
                                               .toList(),
                                           onRemove: (dependency) {
                                             setState(
@@ -363,71 +362,93 @@ class _GeneratePageState extends State<GeneratePage> {
                           );
                         },
                       ),
-                      const SizedBox(height: 320),
-                      Center(
-                        child: Column(
-                          spacing: 16,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '${'Community_made'.i18n()}  ',
-                                  style: GoogleFonts.anekBangla(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300,
-                                    color: VadenColors.secondaryColor,
-                                  ),
+                      const SizedBox(height: 280),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Column(
+                        spacing: 16,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${'Community_made'.i18n()}  ',
+                                style: GoogleFonts.anekBangla(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w300,
+                                  color: VadenColors.secondaryColor,
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    urlLauncherService.launch(
-                                      'https://flutterando.com.br',
-                                    );
-                                  },
-                                  child: SvgPicture.asset(
-                                    VadenImage.flutterandoLogo,
-                                    width: 120,
-                                    height: 24,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '${'Copyright'.i18n()}  ',
-                                  style: GoogleFonts.anekBangla(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: VadenColors.txtSupport2,
-                                  ),
-                                ),
-                                SvgPicture.asset(
-                                  VadenImage.copyrightIcon,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  urlLauncherService.launch(
+                                    'https://flutterando.com.br',
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  VadenImage.flutterandoLogo,
                                   width: 120,
                                   height: 24,
                                 ),
-                                Text(
-                                  ' 2025',
-                                  style: GoogleFonts.anekBangla(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: VadenColors.txtSupport2,
-                                  ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${'Copyright'.i18n()}  ',
+                                style: GoogleFonts.anekBangla(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: VadenColors.txtSupport2,
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                              SvgPicture.asset(
+                                VadenImage.copyrightIcon,
+                                width: 120,
+                                height: 24,
+                              ),
+                              Text(
+                                ' 2025',
+                                style: GoogleFonts.anekBangla(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: VadenColors.txtSupport2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Positioned(
+                      right: 48,
+                      bottom: 0,
+                      child: VadenButton(
+                        label: 'open_issue'.i18n(),
+                        style: VadenButtonStyle.outlinedWhite,
+                        onPressed: () {
+                          urlLauncherService.launch(
+                            'https://github.com/Flutterando/vaden/issues/new?template=4_bug_report.md',
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
