@@ -247,7 +247,7 @@ String _toJson(ClassElement classElement) {
 String _toJsonField(FieldElement field) {
   final fieldKey = _getFieldName(field);
   final fieldName = field.name;
-  final fieldTypeString = field.type.getDisplayString();
+  final fieldTypeString = field.type.getDisplayString(withNullability: false);
   final isNotNull = field.type.nullabilitySuffix == NullabilitySuffix.none;
 
   if (useParseChecker.hasAnnotationOf(field)) {
