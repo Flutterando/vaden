@@ -1,6 +1,6 @@
 name: vaden_class_scanner
 description: Dart backend project create by Flutterando community. Using and action!
-version: 0.0.12
+version: 0.0.13
 repository: https://github.com/Flutterando/vaden
 
 environment:
