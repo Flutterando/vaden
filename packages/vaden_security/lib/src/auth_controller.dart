@@ -43,7 +43,7 @@ class AuthController {
 
     final claims = jwtService.verifyToken(token);
     if (claims == null) {
-      throw ResponseException(403, VadenSecurityError('Invalid token'));
+      throw ResponseException(401, VadenSecurityError('Invalid token'));
     }
     final username = claims['sub'];
     if (username == null) {

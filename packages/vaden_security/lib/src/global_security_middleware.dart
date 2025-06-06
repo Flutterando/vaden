@@ -29,9 +29,8 @@ class GlobalSecurityMiddleware extends VadenMiddleware {
         .firstWhereOrNull((e) => e.matches(path, method));
 
     if (authorize == null || authorize.isDenyAll()) {
-      return Response(500,
-          body: jsonEncode(
-              {'error': 'No authorize request found for path $path'}));
+      return Response.unauthorized(
+          jsonEncode({'error': 'No authorize request found for path $path'}));
     }
 
     if (!authorize.autheticated()) {
@@ -40,25 +39,21 @@ class GlobalSecurityMiddleware extends VadenMiddleware {
 
     final authHeader = request.headers['Authorization'];
     if (authHeader == null || !authHeader.toLowerCase().startsWith('bearer ')) {
-      return Response(401,
-          body:
-              jsonEncode({'error': 'Missing or invalid Authorization header'}));
+      return Response.unauthorized(
+          jsonEncode({'error': 'Missing or invalid Authorization header'}));
     }
 
     final token = authHeader.substring(7);
     final claims = jwtService.verifyToken(token);
     if (claims == null) {
-      return Response.forbidden(jsonEncode({'error': 'Invalid token'}));
+      return Response.unauthorized(jsonEncode({'error': 'Invalid token'}));
     }
 
-    final username = claims['sub'];
-    if (username == null) {
-      return Response.forbidden(
-          jsonEncode({'error': 'Missing username in token claims'}));
-    }
+    final username = claims['sub']!;
+
     final userDetails = await userDetailsService?.loadUserByUsername(username);
     if (userDetails == null) {
-      return Response.forbidden(jsonEncode({'error': 'User not found'}));
+      return Response.unauthorized(jsonEncode({'error': 'User not found'}));
     }
 
     if (!authorize.hasRole(userDetails.roles)) {
