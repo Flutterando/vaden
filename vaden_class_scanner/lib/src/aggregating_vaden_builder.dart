@@ -108,16 +108,16 @@ class VadenApplicationImpl implements VadenApplication {
         yield* _checkMasterAnnotations(classElement);
       }
     }).map((record) {
-      final (classElement, registerWithInterfaceOrSuperType) = record;
+      final (classElement, registerWithInterfaceOrSuperType, bindType) = record;
       final uri = classElement.librarySource.uri.toString();
       importSet.add("'$uri';");
       return record;
     }).map((record) {
-      final (classElement, registerWithInterfaceOrSuperType) = record;
+      final (classElement, registerWithInterfaceOrSuperType, bindType) = record;
 
       final bodyBuffer = StringBuffer();
 
-      final registerText = _componentRegister(classElement, registerWithInterfaceOrSuperType);
+      final registerText = _componentRegister(classElement, registerWithInterfaceOrSuperType, bindType);
       if (registerText.isNotEmpty) {
         bodyBuffer.writeln(registerText);
       }
@@ -216,7 +216,7 @@ class _DSON extends DSON {
     }
   }
 
-  String _componentRegister(ClassElement classElement, bool registerWithInterfaceOrSuperType) {
+  String _componentRegister(ClassElement classElement, bool registerWithInterfaceOrSuperType, BindType bindType) {
     if (dtoChecker.hasAnnotationOf(classElement) || configurationChecker.hasAnnotationOf(classElement)) {
       return '';
     } else if (moduleChecker.hasAnnotationOf(classElement)) {
@@ -231,22 +231,41 @@ class _DSON extends DSON {
         return '''
       _injector.addBind(Bind.withClassName(
       constructor: ${classElement.name}.new,
-      type: BindType.lazySingleton,
+      type: BindType.${bindType.name},
       className: '${interfaceType.getDisplayString()}',
     ));   
 ''';
       }
+    } else if (bindType == BindType.instance) {
+      return '_injector.addInstance(${classElement.name}.new);';
+    } else if (bindType == BindType.lazySingleton) {
+      return '_injector.addLazySingleton(${classElement.name}.new);';
+    } else if (bindType == BindType.singleton) {
+      return '_injector.addSingleton(${classElement.name}.new);';
+    } else if (bindType == BindType.factory) {
+      return '''
+        _injector.addBind(Bind.withClassName(
+        constructor: ${classElement.name}.new,
+        type: BindType.${bindType.name},
+      ));   
+    ''';
     }
 
     return '_injector.addLazySingleton(${classElement.name}.new);';
   }
 
-  Stream<(ClassElement, bool)> _checkMasterAnnotations(ClassElement classElement) async* {
+  Stream<(ClassElement, bool, BindType)> _checkMasterAnnotations(ClassElement classElement) async* {
     final component = componentChecker.firstAnnotationOf(classElement);
     if (component != null) {
       final registerWithInterfaceOrSuperType = component.getField('registerWithInterfaceOrSuperType')!.toBoolValue()!;
+      final bindType = component.getField('bindType')?.variable?.name;
 
-      yield (classElement, registerWithInterfaceOrSuperType);
+      final bindTypeEnum = BindType.values.firstWhere(
+        (type) => type.name == bindType,
+        orElse: () => BindType.lazySingleton,
+      );
+
+      yield (classElement, registerWithInterfaceOrSuperType, bindTypeEnum);
     } else if (moduleChecker.hasAnnotationOf(classElement)) {
       final module = moduleChecker.firstAnnotationOf(classElement)!;
       final vadenModules = module.getField('imports')!.toListValue() ?? [];
@@ -262,7 +281,7 @@ class _DSON extends DSON {
           continue;
         }
 
-        yield (element, false);
+        yield (element, false, BindType.lazySingleton);
 
         final types = innerModule.getField('imports')?.toListValue() ?? [];
 
