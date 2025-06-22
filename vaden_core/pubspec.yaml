@@ -1,0 +1,12 @@
+name: vaden_core
+description: A starting point for Dart libraries or applications.
+version: 0.0.1
+# repository: https://github.com/my_org/my_repo
+
+resolution: workspace
+
+dependencies:
+  auto_injector: ^2.1.0
+
+environment:
+  sdk: ^3.6.0

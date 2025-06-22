@@ -4,6 +4,9 @@ environment:
   sdk: ^3.6.0
 workspace:
   - vaden
+  - flutter_vaden
+  - flutter_vaden/example
+  - vaden_core
   - vaden/example
   - vaden_class_scanner
   - vaden_generator/backend

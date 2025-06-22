@@ -3,6 +3,8 @@ description: A server app using the shelf package and Docker.
 version: 1.0.1
 # repository: https://github.com/my_org/my_repo
 
+resolution: workspace
+
 environment:
   sdk: ^3.6.0
 
