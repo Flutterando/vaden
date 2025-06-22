@@ -22,7 +22,7 @@ class JwtService {
     this.audiences = const [],
   });
 
-  static JwtService withSettings(ApplicationSettings settings) {
+  factory JwtService.withSettings(ApplicationSettings settings) {
     return JwtService(
       secret: settings['security']['secret'],
       tokenValidity: Duration(seconds: settings['security']['tokenValidity']),
@@ -87,5 +87,9 @@ class JwtService {
     } catch (e) {
       return null;
     }
+  }
+
+  Map<String, dynamic>? verifyRefreshToken(String token) {
+    return verifyToken(token);
   }
 }

@@ -1,8 +1,8 @@
 {
   "dio": "^5.8.0+1",
-  "vaden": "^0.0.12",
-  "vaden_class_scanner": "^0.0.12",
-  "vaden_security": "^0.0.4",
+  "vaden": "^0.1.0",
+  "vaden_class_scanner": "^0.1.0",
+  "vaden_security": "^0.0.5",
   "build_runner": "^2.4.14",
   "postgres": "^3.5.4",
   "shelf_web_socket": "^3.0.0",

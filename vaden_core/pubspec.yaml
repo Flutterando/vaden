@@ -1,0 +1,12 @@
+name: vaden_core
+description: This package provides core functionality for the Vaden project. Using in vaden and flutter_vaden projects.
+version: 0.0.1
+repository: https://github.com/Flutterando/vaden
+
+resolution: workspace
+
+dependencies:
+  auto_injector: ^2.1.0
+
+environment:
+  sdk: ^3.6.0
