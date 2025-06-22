@@ -1,10 +1,14 @@
+---
+sidebar_position: 1
+---
+
 # Flutter Vaden
 
-Flutter Vaden is a powerful package that brings the Vaden framework's dependency injection and API client capabilities to Flutter applications. It simplifies the development of RESTful APIs and provides robust tools for managing dependencies and data transfer objects (DTOs).
+Flutter Vaden is a powerful package that integrates the Vaden framework's dependency injection and API client capabilities into Flutter applications. It simplifies RESTful API development and provides robust tools for managing dependencies and data transfer objects (DTOs).
 
 ## Installation
 
-To get started, add the following dependencies to your `pubspec.yaml` file:
+To install Flutter Vaden, add the following dependencies to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
@@ -15,29 +19,27 @@ dev_dependencies:
   build_runner: ^latest_version
 ```
 
-Run the following commands to install the dependencies and generate the necessary code:
+Run the following commands:
 
 ```bash
 flutter pub get
 dart run build_runner build
 ```
 
-The `build_runner` command will generate a class named `VadenApp`. You should use this class in your `runApp` method:
+The `dart run build_runner build` command generates a class named `VadenApp`. Use this class in your `runApp` method:
 
 ```dart
 void main() {
-  runApp(VadenApp(
-    child: MyApp(),
-  ));
+  runApp(VadenApp());
 }
 ```
 
 ## Features
 
 ### Dependency Injection
-Flutter Vaden provides a complete dependency injection system, including:
+Flutter Vaden provides a complete dependency injection system:
 
-- `@Configuration()`: Used to define configuration classes.
+- `@Configuration()`: Defines configuration classes.
 - `@Service()`: Marks classes as services. Prefer registering services via their interfaces.
 - `@Repository()`: Marks classes as repositories. Prefer registering repositories via their interfaces.
 
@@ -52,7 +54,7 @@ context.read<NameOfComponent>()
 The package supports `@DTO()` annotations for defining data transfer objects. These DTOs are used for serializing and deserializing data in API requests and responses.
 
 ### API Client
-The highlight of Flutter Vaden is the `@ApiClient()` annotation, which allows you to create abstractions for RESTful APIs similar to Retrofit. Internally, it uses Dio for making HTTP requests. Therefore, if you want to customize Dio, such as setting a `baseUrl` or adding interceptors, you can create a `@Configuration()` for Dio.
+The highlight of Flutter Vaden is the `@ApiClient()` annotation, which allows you to create abstractions for RESTful APIs similar to Retrofit. Internally, it uses Dio for making HTTP requests. You can customize Dio, such as setting a `baseUrl` or adding interceptors, by creating a `@Configuration()` for Dio.
 
 #### Example
 
