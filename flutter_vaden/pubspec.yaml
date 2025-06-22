@@ -1,18 +1,17 @@
 name: flutter_vaden
 description: "A new Flutter package project."
 version: 0.0.1
+repository: https://github.com/Flutterando/vaden
 
 resolution: workspace
 
 environment:
-  sdk: ^3.8.1
-  flutter: ">=1.17.0"
+  sdk: ^3.6.0
 
 dependencies:
   flutter:
     sdk: flutter
   vaden_core: ^0.0.1
-  auto_injector: ^2.1.0
   dio: ^5.8.0+1
 
 dev_dependencies:
@@ -25,6 +24,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  okay: true
 
   # To add assets to your package, add an assets section, like this:
   # assets:

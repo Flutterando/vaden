@@ -105,7 +105,7 @@ class VadenApp implements DartVadenApplication {
 ''');
 
     final body = await buildStep //
-        .findAssets(Glob('lib/**/*.dart'))
+        .findAssets(Glob('lib/**.dart'))
         .asyncExpand((assetId) async* {
       final library = await buildStep.resolver.libraryFor(assetId);
       final reader = LibraryReader(library);
@@ -146,7 +146,10 @@ class VadenApp implements DartVadenApplication {
       } else if (moduleChecker.hasAnnotationOf(classElement)) {
         final name = classElement.name;
 
-        moduleRegisterBuffer.writeln('await $name().register(this);');
+        if (classElement.allSupertypes.any(
+            (type) => type.getDisplayString().startsWith('CommonModule'))) {
+          moduleRegisterBuffer.writeln('await $name().register(this);');
+        }
       }
 
       return bodyBuffer.toString();

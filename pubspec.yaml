@@ -13,3 +13,6 @@ workspace:
   - vaden_generator/frontend
   - packages/anaki_orm
   - packages/vaden_security
+  - examples/todo/app
+  - examples/todo/domain
+  - examples/todo/backend

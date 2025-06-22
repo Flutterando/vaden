@@ -81,7 +81,7 @@ class VadenApp extends FlutterVadenApplication {
 ''');
 
     final body = await buildStep //
-        .findAssets(Glob('lib/**/*.dart'))
+        .findAssets(Glob('lib/**.dart'))
         .asyncExpand((assetId) async* {
       final library = await buildStep.resolver.libraryFor(assetId);
       final reader = LibraryReader(library);
@@ -112,8 +112,10 @@ class VadenApp extends FlutterVadenApplication {
       } else if (moduleChecker.hasAnnotationOf(classElement)) {
         final name = classElement.name;
 
-        moduleRegisterBuffer
-            .writeln('await $name().register(_router, _injector);');
+        if (classElement.allSupertypes.any(
+            (type) => type.getDisplayString().startsWith('CommonModule'))) {
+          moduleRegisterBuffer.writeln('await $name().register(this);');
+        }
       } else if (apiClientChecker.hasAnnotationOf(classElement)) {
         final basePath = apiClientChecker
                 .firstAnnotationOf(classElement)
