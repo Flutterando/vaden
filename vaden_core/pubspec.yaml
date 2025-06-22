@@ -1,7 +1,7 @@
 name: vaden_core
-description: A starting point for Dart libraries or applications.
+description: This package provides core functionality for the Vaden project. Using in vaden and flutter_vaden projects.
 version: 0.0.1
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/Flutterando/vaden
 
 resolution: workspace
 
