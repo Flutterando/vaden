@@ -1,3 +1,7 @@
+## 0.1.1 (2025/06/23)
+
+- Fix [flutter_vaden] @ApiClient() basePath;
+
 ## 0.1.0 (2025/06/22)
 
 - Added New Core

@@ -10,7 +10,8 @@ class InitialProjectGenerator extends FileGenerator {
     Directory directory, {
     Map<String, dynamic> variables = const {},
   }) async {
-    final pubspec = File('${directory.path}${Platform.pathSeparator}pubspec.yaml');
+    final pubspec =
+        File('${directory.path}${Platform.pathSeparator}pubspec.yaml');
     await pubspec.create(recursive: true);
     await pubspec.writeAsString(parseVariables(_pubspecContent, variables));
 
@@ -22,23 +23,29 @@ class InitialProjectGenerator extends FileGenerator {
     await build.create(recursive: true);
     await build.writeAsString(_buildContent);
 
-    final application = File('${directory.path}${Platform.pathSeparator}application.yaml');
+    final application =
+        File('${directory.path}${Platform.pathSeparator}application.yaml');
     await application.create(recursive: true);
-    await application.writeAsString(parseVariables(_applicationContent, variables));
+    await application
+        .writeAsString(parseVariables(_applicationContent, variables));
 
-    final dockerFile = File('${directory.path}${Platform.pathSeparator}Dockerfile');
+    final dockerFile =
+        File('${directory.path}${Platform.pathSeparator}Dockerfile');
     await dockerFile.create(recursive: true);
     await dockerFile.writeAsString(_dockerFileContent);
 
-    final analysisOptions = File('${directory.path}${Platform.pathSeparator}analysis_options.yaml');
+    final analysisOptions =
+        File('${directory.path}${Platform.pathSeparator}analysis_options.yaml');
     await analysisOptions.create(recursive: true);
     await analysisOptions.writeAsString(_analysisOptionsContent);
 
-    final gitIgnore = File('${directory.path}${Platform.pathSeparator}.gitignore');
+    final gitIgnore =
+        File('${directory.path}${Platform.pathSeparator}.gitignore');
     await gitIgnore.create(recursive: true);
     await gitIgnore.writeAsString(_gitIgnoreContent);
 
-    final dockerIgnore = File('${directory.path}${Platform.pathSeparator}.dockerignore');
+    final dockerIgnore =
+        File('${directory.path}${Platform.pathSeparator}.dockerignore');
     await dockerIgnore.create(recursive: true);
     await dockerIgnore.writeAsString(_dockerIgnoreContent);
 
@@ -46,7 +53,8 @@ class InitialProjectGenerator extends FileGenerator {
       '${directory.path}${Platform.pathSeparator}public${Platform.pathSeparator}index.html',
     );
     await publicIndex.create(recursive: true);
-    await publicIndex.writeAsString(parseVariables(_publicIndexContent, variables));
+    await publicIndex
+        .writeAsString(parseVariables(_publicIndexContent, variables));
 
     final binServer = File(
       '${directory.path}${Platform.pathSeparator}bin${Platform.pathSeparator}server.dart',
@@ -58,9 +66,11 @@ class InitialProjectGenerator extends FileGenerator {
       '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_configuration.dart',
     );
     await libConfigAppConfiguration.create(recursive: true);
-    await libConfigAppConfiguration.writeAsString(_libConfigAppConfigurationContent);
+    await libConfigAppConfiguration
+        .writeAsString(_libConfigAppConfigurationContent);
 
-    final List<String> dependenciesKeys = variables['dependenciesKeys'] as List<String>? ?? [];
+    final List<String> dependenciesKeys =
+        variables['dependenciesKeys'] as List<String>? ?? [];
     final bool hasVadenSecurity = dependenciesKeys.contains('vaden_security');
 
     if (hasVadenSecurity) {
@@ -72,7 +82,8 @@ class InitialProjectGenerator extends FileGenerator {
         position: InsertLinePosition.after,
       );
 
-      final appModulePath = '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_module.dart';
+      final appModulePath =
+          '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_module.dart';
       final libConfigAppModule = File(appModulePath);
       await libConfigAppModule.create(recursive: true);
       await libConfigAppModule.writeAsString(_libConfigAppModuleContent);
@@ -82,7 +93,8 @@ class InitialProjectGenerator extends FileGenerator {
       '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}resources${Platform.pathSeparator}resource_configuration.dart',
     );
     await libConfigResourcesResourceConfiguration.create(recursive: true);
-    await libConfigResourcesResourceConfiguration.writeAsString(_libConfigResourcesResourceConfigurationContent);
+    await libConfigResourcesResourceConfiguration
+        .writeAsString(_libConfigResourcesResourceConfigurationContent);
 
     final srcHelloController = File(
       '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}src${Platform.pathSeparator}hello_controller.dart',
@@ -94,7 +106,8 @@ class InitialProjectGenerator extends FileGenerator {
       '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_controller_advice.dart',
     );
     await libConfigAppControllerAdvice.create(recursive: true);
-    await libConfigAppControllerAdvice.writeAsString(_libConfigAppControllerAdviceContent);
+    await libConfigAppControllerAdvice
+        .writeAsString(_libConfigAppControllerAdviceContent);
   }
 }
 
@@ -232,7 +245,7 @@ const _publicIndexContent = '''<!DOCTYPE html>
 const _binServerContent = r'''import 'package:{{name}}/vaden_application.dart';
 
 Future<void> main(List<String> args) async {
-  final vaden = VadenApplicationImpl();
+  final vaden = VadenApp();
   await vaden.setup();
   final server = await vaden.run(args);
   print('Server listening on port ${server.port}');
@@ -267,7 +280,8 @@ class AppModule {}
 
 ''';
 
-const _libConfigResourcesResourceConfigurationContent = '''import 'package:vaden/vaden.dart';
+const _libConfigResourcesResourceConfigurationContent =
+    '''import 'package:vaden/vaden.dart';
 
 @Configuration()
 class ResourceConfiguration {

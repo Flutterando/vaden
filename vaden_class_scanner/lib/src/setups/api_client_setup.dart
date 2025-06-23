@@ -30,10 +30,6 @@ String apiClientSetup(ClassElement classElement, String basePath) {
 
 ''');
 
-  if (basePath.isNotEmpty) {
-    bodyBuffer.writeln('dio.options.baseUrl = "$basePath";');
-  }
-
   for (final method in classElement.methods) {
     bodyBuffer.writeln('@override');
     final methodName = method.name;
@@ -58,6 +54,10 @@ String apiClientSetup(ClassElement classElement, String basePath) {
     final methodAnnotation = methodChecker.$1.firstAnnotationOfExact(method);
 
     var methodPath = methodAnnotation?.getField('path')?.toStringValue() ?? '/';
+
+    if (basePath.isNotEmpty) {
+      methodPath = '$basePath$methodPath';
+    }
 
     final methodType = methodChecker.$2;
 
