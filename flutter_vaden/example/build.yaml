@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      vaden_class_scanner|aggregating_vaden_builder:
+        enabled: true
+        options:
+          target: flutter

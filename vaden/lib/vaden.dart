@@ -44,22 +44,14 @@ export 'package:shelf/shelf.dart';
 export 'package:shelf/shelf_io.dart';
 export 'package:shelf_multipart/shelf_multipart.dart';
 export 'package:shelf_router/shelf_router.dart';
+export 'package:vaden_core/vaden_core.dart'; // Extensions for enhancing framework functionality
 
-// Core annotations for defining application components
-export 'src/annotations/annotation.dart';
-
-// Extensions for enhancing framework functionality
 export 'src/extensions/extensions.dart';
-
 // Middleware implementations for common use cases
 export 'src/middlewares/cors.dart';
 export 'src/middlewares/enforce_json_content_type.dart';
-
 // Core types and interfaces
-export 'src/types/disposable.dart';
-export 'src/types/dson.dart';
 export 'src/types/types.dart';
-
 // Utility classes and services
 export 'src/utils/app_configuration.dart';
 export 'src/utils/openapi_config.dart';

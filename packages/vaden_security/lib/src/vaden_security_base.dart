@@ -13,9 +13,11 @@ import 'package:vaden_security/vaden_security.dart';
   VadenSecurityError,
   AuthController,
 ])
-class VadenSecurity extends CommonModule {
+class VadenSecurity extends CommonModule<DartVadenApplication> {
   @override
-  FutureOr<void> register(Router router, AutoInjector injector) {
+  FutureOr<void> register(DartVadenApplication app) {
+    final injector = app.injector;
+
     var pipeline = injector.get<Pipeline>();
     pipeline = pipeline.addVadenMiddleware(GlobalSecurityMiddleware(
       injector.get<JwtService>(),

@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:vaden/vaden.dart';
+import 'package:vaden_core/vaden_core.dart';
 
 final beanChecker = TypeChecker.fromRuntime(Bean);
 final configurationChecker = TypeChecker.fromRuntime(Configuration);

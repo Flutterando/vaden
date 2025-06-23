@@ -17,20 +17,12 @@ import 'package:vaden/vaden.dart';
 ///
 /// The [instance] field holds a static reference to the running
 /// application and must be initialized using [registerInstance].
-abstract class VadenApplication {
+abstract class DartVadenApplication implements VadenApplication {
   /// Starts the HTTP server and runs the application with the
   /// provided command-line [args].
   ///
   /// Returns the [HttpServer] instance once started.
   Future<HttpServer> run(List<String> args);
-
-  /// Sets up internal application components, dependency injection,
-  /// and middleware before the server starts.
-  Future<void> setup();
-
-  /// Provides access to the dependency [Injector] containing
-  /// all registered beans and services.
-  Injector get injector;
 
   /// Provides access to the [Router] instance used for
   /// defining HTTP routes.

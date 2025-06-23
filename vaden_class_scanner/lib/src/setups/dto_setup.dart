@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:vaden/vaden.dart';
+import 'package:vaden_core/vaden_core.dart';
 
 final _jsonKeyChecker = TypeChecker.fromRuntime(JsonKey);
 final useParseChecker = TypeChecker.fromRuntime(UseParse);
@@ -104,7 +104,8 @@ String _fromJson(ClassElement classElement) {
   for (final parameter in constructor.parameters) {
     final paramName = _getParameterName(parameter);
     final paramType = parameter.type.getDisplayString();
-    final isNotNull = parameter.type.nullabilitySuffix == NullabilitySuffix.none;
+    final isNotNull =
+        parameter.type.nullabilitySuffix == NullabilitySuffix.none;
     final hasDefault = parameter.hasDefaultValue;
     var paramValue = '';
 
@@ -129,15 +130,20 @@ String _fromJson(ClassElement classElement) {
       if (parameter.type.isDartCoreList) {
         final param = parameter.type as ParameterizedType;
         final arg = param.typeArguments.first.getDisplayString();
-        paramValue = isNotNull ? "fromJsonList<$arg>(json['$paramName'])" : "json['$paramName'] == null ? null : fromJsonList<$arg>(json['$paramName'])";
+        paramValue = isNotNull
+            ? "fromJsonList<$arg>(json['$paramName'])"
+            : "json['$paramName'] == null ? null : fromJsonList<$arg>(json['$paramName'])";
       } else {
-        paramValue = isNotNull ? "fromJson<$paramType>(json['$paramName'])" : "json['$paramName'] == null ? null : fromJson<$paramType>(json['$paramName'])";
+        paramValue = isNotNull
+            ? "fromJson<$paramType>(json['$paramName'])"
+            : "json['$paramName'] == null ? null : fromJson<$paramType>(json['$paramName'])";
       }
     }
 
     if (parameter.isNamed) {
       if (hasDefault) {
-        namedArgsBuffer.writeln("if (json.containsKey('$paramName')) #${parameter.name}: $paramValue,");
+        namedArgsBuffer.writeln(
+            "if (json.containsKey('$paramName')) #${parameter.name}: $paramValue,");
       } else {
         namedArgsBuffer.writeln("#${parameter.name}: $paramValue,");
       }
@@ -175,7 +181,7 @@ FieldElement _getFieldByParameter(ParameterElement parameter) {
     }
   }
 
-  throw ResponseException.internalServerError({'error': 'Parameter is not a field formal parameter'});
+  throw Exception({'error': 'Parameter is not a field formal parameter'});
 }
 
 String _getParseFunction(FieldElement field, {required bool isFromJson}) {
@@ -259,9 +265,13 @@ String _toJsonField(FieldElement field) {
     if (field.type.isDartCoreList) {
       final param = field.type as ParameterizedType;
       final arg = param.typeArguments.first;
-      return isNotNull ? " '$fieldKey': toJsonList<$arg>(obj.$fieldName)," : " '$fieldKey': obj.$fieldName == null ? null : toJsonList<$arg>(obj.$fieldName!),";
+      return isNotNull
+          ? " '$fieldKey': toJsonList<$arg>(obj.$fieldName),"
+          : " '$fieldKey': obj.$fieldName == null ? null : toJsonList<$arg>(obj.$fieldName!),";
     } else {
-      return isNotNull ? "'$fieldKey': toJson<$fieldTypeString>(obj.$fieldName)," : "'$fieldKey': obj.$fieldName == null ? null : toJson<$fieldTypeString>(obj.$fieldName!),";
+      return isNotNull
+          ? "'$fieldKey': toJson<$fieldTypeString>(obj.$fieldName),"
+          : "'$fieldKey': obj.$fieldName == null ? null : toJson<$fieldTypeString>(obj.$fieldName!),";
     }
   }
 }

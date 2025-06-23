@@ -4,9 +4,15 @@ environment:
   sdk: ^3.6.0
 workspace:
   - vaden
+  - flutter_vaden
+  - flutter_vaden/example
+  - vaden_core
   - vaden/example
   - vaden_class_scanner
   - vaden_generator/backend
   - vaden_generator/frontend
   - packages/anaki_orm
   - packages/vaden_security
+  - examples/todo/app
+  - examples/todo/domain
+  - examples/todo/backend

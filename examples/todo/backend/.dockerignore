@@ -1,0 +1,15 @@
+.dockerignore
+.dockerignore
+Dockerfile
+build/
+.dart_tool/
+.git/
+.github/
+.gitignore
+.idea/
+.packages
+temp/
+local/
+.env
+lib/vaden_application.dart
+pubspec_overrides.yaml
