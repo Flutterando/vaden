@@ -58,8 +58,8 @@ class InheritedAutoInjector extends InheritedWidget {
   }
 
   static Injector of(BuildContext context) {
-    final inherited = context
-        .dependOnInheritedWidgetOfExactType<InheritedAutoInjector>();
+    final inherited =
+        context.dependOnInheritedWidgetOfExactType<InheritedAutoInjector>();
     if (inherited == null) {
       throw Exception('No AutoInjector found in context');
     }

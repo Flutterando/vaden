@@ -19,8 +19,27 @@ Run the following commands to install the dependencies and generate the necessar
 
 ```bash
 flutter pub get
+```
+
+Before running the `build_runner` command, ensure you have a `build.yaml` file in your project with the following content:
+
+```yaml
+targets:
+  $default:
+    builders:
+      vaden_class_scanner|aggregating_vaden_builder:
+        enabled: true
+        options:
+          target: flutter
+```
+
+Now:
+
+```
 dart run build_runner build
 ```
+
+Place this file in the root of your project.
 
 The `build_runner` command will generate a class named `VadenApp`. You should use this class in your `runApp` method:
 
