@@ -22,12 +22,33 @@ abstract interface class BaseComponent {
   /// in the dependency injection container, allowing for dependency injection
   /// by interface rather than concrete implementation.
   bool get registerWithInterfaceOrSuperType;
+}
 
-  /// Gets the `BindType` used for the component.
-  ///
-  /// The `BindType` determines how the component instance will be managed
-  /// by the dependency injection container, such as singleton, lazySingleton, or factory.
-  BindType get bindType;
+/// Specifies the bind type for a component in the dependency injection container.
+/// This annotation is used to define how a component should be bound in the
+/// dependency injection container, such as whether it should be a singleton,
+/// lazy singleton, or instance.
+/// Example:
+/// ```dart
+/// @Service()
+/// @Scope(BindType.singleton)
+/// class MyService {
+///   // Service implementation
+/// }
+/// ```
+/// The [BindType] enum defines the available binding types:
+/// - `BindType.singleton`: A single instance is created and shared.
+/// - `BindType.lazySingleton`: A single instance is created lazily when first accessed
+/// - `BindType.instance`: A new instance is created each time it is requested.
+/// - `BindType.factory`: A new instance is created each time it is requested, but it can be configured with additional parameters.
+/// <br><br>The default bind type is `BindType.lazySingleton`, which means the component
+/// will be created lazily when it is first accessed.
+final class Scope {
+  final BindType type;
+
+  /// Creates a Scope annotation with the specified bind type.
+  /// [type] - The bind type for the component. Defaults to `BindType.lazySingleton`.
+  const Scope([this.type = BindType.lazySingleton]);
 }
 
 /// Marks a class as a general component in the application.
@@ -47,17 +68,12 @@ final class Component implements BaseComponent {
   @override
   final bool registerWithInterfaceOrSuperType;
 
-  @override
-  final BindType bindType;
-
   /// Creates a Component annotation.
   ///
   /// [registerWithInterfaceOrSuperType] - When true, the component will be registered
   /// with its interface or supertype in the dependency injection container.
   /// Defaults to false.
-  /// [bindType] - The type of binding to use for the component.
-  /// Defaults to `BindType.lazySingleton`.
-  const Component({this.registerWithInterfaceOrSuperType = true, this.bindType = BindType.lazySingleton});
+  const Component([this.registerWithInterfaceOrSuperType = true]);
 }
 
 /// Marks a class as a service in the application.
@@ -85,17 +101,12 @@ final class Component implements BaseComponent {
 /// }
 /// ```
 final class Service implements BaseComponent {
-  @override
-  final BindType bindType;
-
   /// Creates a Service annotation.
   ///
   /// [registerWithInterfaceOrSuperType] - When true, the service will be registered
   /// with its interface or supertype in the dependency injection container.
   /// Defaults to true for services to encourage programming to interfaces.
-  /// [bindType] - The type of binding to use for the service.
-  /// Defaults to `BindType.lazySingleton`.
-  const Service({this.registerWithInterfaceOrSuperType = true, this.bindType = BindType.lazySingleton});
+  const Service([this.registerWithInterfaceOrSuperType = true]);
 
   @override
   final bool registerWithInterfaceOrSuperType;
@@ -134,21 +145,15 @@ final class Service implements BaseComponent {
 /// }
 /// ```
 final class Repository implements BaseComponent {
-
   /// Creates a Repository annotation.
   ///
   /// [registerWithInterfaceOrSuperType] - When true, the repository will be registered
   /// with its interface or supertype in the dependency injection container.
   /// Defaults to true for repositories to encourage programming to interfaces.
-  /// [bindType] - The type of binding to use for the repository.
-  /// Defaults to `BindType.lazySingleton`.
-  const Repository({this.registerWithInterfaceOrSuperType = true, this.bindType = BindType.lazySingleton});
+  const Repository([this.registerWithInterfaceOrSuperType = true]);
 
   @override
   final bool registerWithInterfaceOrSuperType;
-
-  @override
-  final BindType bindType;
 }
 
 /// Marks a class as a configuration component in the application.
@@ -169,13 +174,10 @@ final class Repository implements BaseComponent {
 /// ```
 final class Configuration implements BaseComponent {
   /// Creates a Configuration annotation.
-  const Configuration({this.bindType = BindType.lazySingleton});
+  const Configuration();
 
   @override
   final bool registerWithInterfaceOrSuperType = false;
-
-  @override
-  final BindType bindType;
 }
 
 /// Marks a method in a Configuration class as a bean factory.
@@ -246,9 +248,6 @@ final class Controller implements BaseComponent {
 
   @override
   final bool registerWithInterfaceOrSuperType = false;
-
-  @override
-  final BindType bindType = BindType.lazySingleton;
 }
 
 final class ApiClient implements BaseComponent {
@@ -287,9 +286,6 @@ final class ControllerAdvice implements BaseComponent {
 
   @override
   final bool registerWithInterfaceOrSuperType = false;
-
-  @override
-  final BindType bindType = BindType.lazySingleton;
 }
 
 /// Marks a method in a ControllerAdvice class as an exception handler.
@@ -358,9 +354,6 @@ final class DTO implements BaseComponent {
 
   @override
   final bool registerWithInterfaceOrSuperType = false;
-
-  @override
-  final BindType bindType = BindType.lazySingleton;
 }
 
 /// Specifies the JSON key name for a field in a DTO.
@@ -668,9 +661,6 @@ final class Parse implements BaseComponent {
 
   @override
   final bool registerWithInterfaceOrSuperType = false;
-
-  @override
-  final BindType bindType = BindType.lazySingleton;
 }
 
 /// Specifies which custom `ParamParse` class should be used for a DTO field.
