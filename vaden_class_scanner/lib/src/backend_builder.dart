@@ -242,7 +242,7 @@ class _DSON extends DSON {
     }
 
     String? scopeType;
-    String? bindType;
+    String? bindType = 'BindType.singleton';
 
     // Check if the class is annotated with @Scope
     final scopeAnnotation = scopeChecker.firstAnnotationOf(classElement);

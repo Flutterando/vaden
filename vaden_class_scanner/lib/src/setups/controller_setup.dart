@@ -326,12 +326,12 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
   if (request.params['$pname'] == null) {
     return Response(400, body: jsonEncode({'error': 'Path Param is required ($pname)'}));
   }
-  final ${parameter.name} =  _parse<${parameter.type.getDisplayString()}>(request.params['$pname'])!;
+  final ${parameter.name} =  _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.params['$pname'])!;
 
 """);
         } else {
           paramCodeList.add(
-              "final ${parameter.name} =  _parse<${parameter.type.getDisplayString()}>(request.params['$pname']);");
+              "final ${parameter.name} =  _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.params['$pname']);");
         }
       } else if (queryChecker.hasAnnotationOf(parameter)) {
         final qname = queryChecker
@@ -358,12 +358,12 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
   if (request.url.queryParameters['$qname'] == null) {
     return Response(400, body: jsonEncode({'error': 'Query param is required ($qname)'}));
   }
-  final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.url.queryParameters['$qname'])!;
+  final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.url.queryParameters['$qname'])!;
 
 """);
         } else {
           paramCodeList.add(
-              "final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.url.queryParameters['$qname']);");
+              "final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.url.queryParameters['$qname']);");
         }
       } else if (headerChecker.hasAnnotationOf(parameter)) {
         final hname = headerChecker
@@ -378,12 +378,12 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
   if (request.headers['$hname'] == null) {
     return Response(400, body: jsonEncode({'error': 'Header is required ($hname)'}));
   }
-  final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.headers['$hname'])!;
+  final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.headers['$hname'])!;
 
 """);
         } else {
           paramCodeList.add(
-              "final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.headers['$hname']);");
+              "final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.headers['$hname']);");
         }
       } else if (contextChecker.hasAnnotationOf(parameter)) {
         final cname = contextChecker
