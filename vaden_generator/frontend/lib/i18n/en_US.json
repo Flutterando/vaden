@@ -28,5 +28,7 @@
   "notEmpty": "Cannot be empty",
   "addDependencies": "Add dependencies",
   "reservedKeyword": "The name cannot be a Dart reserved keyword or the framework name (Vaden)",
-  "search_dependencies": "Search dependency"
+  "search_dependencies": "Search dependency",
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }

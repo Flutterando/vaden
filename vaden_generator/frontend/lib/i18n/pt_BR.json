@@ -28,5 +28,7 @@
   "notEmpty": "Não pode estar vazio",
   "addDependencies": "Adicionar dependencias",
   "reservedKeyword": "O nome não pode ser uma palavra reservada do Dart ou o nome do framework (Vaden)",
-  "search_dependencies": "Buscar dependência"
+  "search_dependencies": "Buscar dependência",
+  "cancel": "Cancelar",
+  "confirm": "Confirmar"
 }

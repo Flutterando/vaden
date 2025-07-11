@@ -6,7 +6,7 @@ import '../../../domain/entities/dependency.dart';
 import '../../core/ui/ui.dart';
 
 class VadenDependenciesDialog extends StatefulWidget {
-  final Function(Dependency) onSave;
+  final Function(List<Dependency>) onSave;
   final VoidCallback onCancel;
   final List<Dependency> dependencies;
 
@@ -17,11 +17,11 @@ class VadenDependenciesDialog extends StatefulWidget {
     required this.dependencies,
   });
 
-  static Future<Dependency?> show(
+  static Future<List<Dependency>?> show(
     BuildContext context,
     List<Dependency> dependencies,
   ) async {
-    return await showDialog<Dependency>(
+    return await showDialog<List<Dependency>>(
       context: context,
       barrierDismissible: true,
       barrierColor: Colors.black.withValues(alpha: 0.5),
@@ -44,6 +44,7 @@ class VadenDependenciesDialog extends StatefulWidget {
 class _VadenDependenciesDialogState extends State<VadenDependenciesDialog> {
   var _currentCategory = 'Todos';
   String? _search;
+  final Set<Dependency> _selectedDependencies = {};
 
   List<String> _getUniqueCategories(List<Dependency> dependencies) {
     final categories = dependencies.map((dep) => dep.tag).toSet().toList();
@@ -65,6 +66,22 @@ class _VadenDependenciesDialogState extends State<VadenDependenciesDialog> {
           .toList();
     }
     return dependencies.where((dep) => dep.tag == _currentCategory).toList();
+  }
+
+  void _toggleDependency(Dependency dependency) {
+    setState(() {
+      if (_selectedDependencies.contains(dependency)) {
+        _selectedDependencies.remove(dependency);
+      } else {
+        _selectedDependencies.add(dependency);
+      }
+    });
+  }
+
+  void _submit() {
+    if (_selectedDependencies.isNotEmpty) {
+      widget.onSave(_selectedDependencies.toList());
+    }
   }
 
   @override
@@ -193,8 +210,8 @@ class _VadenDependenciesDialogState extends State<VadenDependenciesDialog> {
                                   title: dependency.name,
                                   subtitle: dependency.description,
                                   tag: dependency.tag,
-                                  isSelected: false,
-                                  onTap: () => widget.onSave(dependency),
+                                  isSelected: _selectedDependencies.contains(dependency),
+                                  onTap: () => _toggleDependency(dependency),
                                   maxLines: 3,
                                 ),
                               ))
@@ -202,24 +219,25 @@ class _VadenDependenciesDialogState extends State<VadenDependenciesDialog> {
                     ),
                   ),
                 ),
-                // child: ListView.separated(
-                //   shrinkWrap: true,
-                //   padding: const EdgeInsets.all(20),
-                //   itemCount: filteredDependencies.length,
-                //   separatorBuilder: (_, __) => const SizedBox(height: 12),
-                //   itemBuilder: (context, index) {
-                //     final dependency = filteredDependencies[index];
-
-                //     return VadenCard(
-                //       title: dependency.name,
-                //       subtitle: dependency.description,
-                //       tag: dependency.tag,
-                //       isSelected: false,
-                //       onTap: () => widget.onSave(dependency),
-                //       maxLines: 3,
-                //     );
-                //   },
-                // ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    VadenButton(
+                        onPressed: widget.onCancel,
+                        label: 'cancel'.i18n(),
+                        width: 130,
+                        style: VadenButtonStyle.outlinedWhite),
+                    const SizedBox(width: 16),
+                    VadenButton(
+                      onPressed: _selectedDependencies.isNotEmpty ? _submit : null,
+                      label: 'confirm'.i18n(),
+                      width: 130,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
