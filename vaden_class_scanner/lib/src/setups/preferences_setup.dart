@@ -63,13 +63,16 @@ String preferencesClientSetup(ClassElement classElement) {
         buffer.writeln("    await prefs.setDouble('$prefKey', $valueName);");
       } else if (valueParam.type.isDartCoreString) {
         buffer.writeln("    await prefs.setString('$prefKey', $valueName);");
-      } else if (returnType.isDartCoreList) {
+      } else if (isObject && returnType.isDartCoreList) {
         final listType = _getListType(returnType);
         buffer.writeln(
             'await prefs.setString(\'$prefKey\', json.encode(dson.toJsonList<$listType>($valueName)));');
-      } else {
+      } else if (isObject && !returnType.isDartCoreList) {
         buffer.writeln(
             'await prefs.setString(\'$prefKey\', json.encode(dson.toJson<$returnType>($valueName)));');
+      } else {
+        buffer.writeln('    // Método não suportado: $methodName');
+        buffer.writeln('    return;');
       }
 
       if (!isVoidReturn) {
@@ -85,7 +88,7 @@ String preferencesClientSetup(ClassElement classElement) {
         buffer.writeln("    return await prefs.getDouble('$prefKey');");
       } else if (returnType.isDartCoreString) {
         buffer.writeln("    return await prefs.getString('$prefKey');");
-      } else if (returnType.isDartCoreList) {
+      } else if (isObject && returnType.isDartCoreList) {
         final listType = _getListType(returnType);
         buffer.writeln('final result = await prefs.getString(\'$prefKey\');');
         buffer.writeln('   if (result == null || result.isEmpty) {');
@@ -93,13 +96,16 @@ String preferencesClientSetup(ClassElement classElement) {
         buffer.writeln('   }');
         buffer.writeln(
             'return dson.fromJsonList<$listType>(json.decode(result));');
-      } else {
+      } else if (isObject && !returnType.isDartCoreList) {
         buffer.writeln('final result = await prefs.getString(\'$prefKey\');');
         buffer.writeln('   if (result == null || result.isEmpty) {');
         buffer.writeln('     return null;');
         buffer.writeln('   }');
         buffer
             .writeln('return dson.fromJson<$returnType>(json.decode(result));');
+      } else {
+        buffer.writeln('    // Método não suportado: $methodName');
+        buffer.writeln('    return;');
       }
     } else {
       buffer.writeln('    // Método não suportado: $methodName');
