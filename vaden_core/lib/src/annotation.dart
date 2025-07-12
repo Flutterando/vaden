@@ -259,6 +259,27 @@ final class ApiClient implements BaseComponent {
   final bool registerWithInterfaceOrSuperType = false;
 }
 
+final class Preferences implements BaseComponent {
+  const Preferences();
+
+  @override
+  final bool registerWithInterfaceOrSuperType = false;
+}
+
+class PrefKey {
+  /// The name to use for this field in JSON serialization/deserialization.
+  final String name;
+
+  /// Creates a JsonKey annotation with the specified name.
+  ///
+  /// [name] - The name to use for this field in JSON.
+  const PrefKey(this.name);
+}
+
+class PrefObject {
+  const PrefObject();
+}
+
 /// Marks a class as a controller advice for global exception handling.
 ///
 /// Controller advice classes contain methods annotated with @ExceptionHandler
