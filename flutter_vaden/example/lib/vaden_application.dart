@@ -1,10 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // Aggregated Vaden application file
 // ignore_for_file: prefer_function_declarations_over_variables, implementation_imports
-import 'package:dio/dio.dart' as dioPackage;
 import 'package:flutter_example/config/dio_configuration.dart';
-import 'package:flutter_example/data/api/product_api.dart';
 import 'package:flutter_example/models/product_model.dart';
+import 'package:flutter_example/data/local/product_local.dart';
+import 'package:flutter_example/data/api/product_api.dart';
+
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart' as dioPackage;
+import 'package:shared_preferences/shared_preferences.dart'
+    as sharedPreferencesPackage;
 import 'package:flutter_vaden/flutter_vaden.dart';
 
 late final AutoInjector _injector;
@@ -25,6 +31,8 @@ class VadenApp extends FlutterVadenApplication {
     final configurationDioConfiguration = DioConfiguration();
 
     _injector.addLazySingleton(configurationDioConfiguration.dioFactory);
+
+    _injector.addLazySingleton<ProductLocal>(_ProductLocal.new);
 
     _injector.addLazySingleton<ProductApi>(_ProductApi.new);
 
@@ -142,5 +150,79 @@ class _ProductApi implements ProductApi {
       options: dioPackage.Options(method: 'GET'),
     );
     return dson.fromJsonList<ProductModel>(response.data);
+  }
+}
+
+class _ProductLocal implements ProductLocal {
+  final DSON dson;
+  _ProductLocal(this.dson);
+  @override
+  Future<List<ProductModel>> setProducts(List<ProductModel> products) async {
+    final prefs =
+        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
+        await sharedPreferencesPackage.SharedPreferences.getInstance();
+
+    await prefs.setString(
+      'products',
+      json.encode(dson.toJsonList<ProductModel>(products)),
+    );
+    return products;
+  }
+
+  @override
+  Future<List<ProductModel>?> getProducts() async {
+    final prefs =
+        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
+        await sharedPreferencesPackage.SharedPreferences.getInstance();
+
+    final result = await prefs.getString('products');
+    if (result == null || result.isEmpty) {
+      return null;
+    }
+    return dson.fromJsonList<ProductModel>(json.decode(result));
+  }
+
+  @override
+  Future<ProductModel> setProduct(ProductModel product) async {
+    final prefs =
+        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
+        await sharedPreferencesPackage.SharedPreferences.getInstance();
+
+    await prefs.setString(
+      'product',
+      json.encode(dson.toJson<ProductModel>(product)),
+    );
+    return product;
+  }
+
+  @override
+  Future<ProductModel?> getProduct() async {
+    final prefs =
+        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
+        await sharedPreferencesPackage.SharedPreferences.getInstance();
+
+    final result = await prefs.getString('product');
+    if (result == null || result.isEmpty) {
+      return null;
+    }
+    return dson.fromJson<ProductModel?>(json.decode(result));
+  }
+
+  @override
+  Future<void> setDarkMode(bool enabled) async {
+    final prefs =
+        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
+        await sharedPreferencesPackage.SharedPreferences.getInstance();
+
+    await prefs.setBool('dark_mode', enabled);
+  }
+
+  @override
+  Future<bool?> getDarkMode() async {
+    final prefs =
+        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
+        await sharedPreferencesPackage.SharedPreferences.getInstance();
+
+    return await prefs.getBool('dark_mode');
   }
 }
