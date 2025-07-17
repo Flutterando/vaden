@@ -9,8 +9,6 @@ import 'package:flutter_example/data/api/product_api.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart' as dioPackage;
-import 'package:shared_preferences/shared_preferences.dart'
-    as sharedPreferencesPackage;
 import 'package:flutter_vaden/flutter_vaden.dart';
 
 late final AutoInjector _injector;
@@ -28,9 +26,12 @@ class VadenApp extends FlutterVadenApplication {
     final asyncBeans = <Future<void> Function()>[];
     _injector.addLazySingleton<DSON>(_DSON.new);
 
-    final configurationDioConfiguration = DioConfiguration();
+    final configurationAppConfiguration = AppConfiguration();
 
-    _injector.addLazySingleton(configurationDioConfiguration.dioFactory);
+    _injector.addLazySingleton(configurationAppConfiguration.dioFactory);
+    _injector.addLazySingleton(
+      configurationAppConfiguration.preferencesFactory,
+    );
 
     _injector.addLazySingleton<ProductLocal>(_ProductLocal.new);
 
@@ -158,9 +159,11 @@ class _ProductLocal implements ProductLocal {
   _ProductLocal(this.dson);
   @override
   Future<List<ProductModel>> setProducts(List<ProductModel> products) async {
-    final prefs =
-        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
-        await sharedPreferencesPackage.SharedPreferences.getInstance();
+    final prefs = _injector.tryGet<ILocalStorage>();
+
+    if (prefs == null) {
+      throw Exception("ILocalStorage not found");
+    }
 
     await prefs.setString(
       'products',
@@ -171,9 +174,11 @@ class _ProductLocal implements ProductLocal {
 
   @override
   Future<List<ProductModel>?> getProducts() async {
-    final prefs =
-        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
-        await sharedPreferencesPackage.SharedPreferences.getInstance();
+    final prefs = _injector.tryGet<ILocalStorage>();
+
+    if (prefs == null) {
+      throw Exception("ILocalStorage not found");
+    }
 
     final result = await prefs.getString('products');
     if (result == null || result.isEmpty) {
@@ -184,9 +189,11 @@ class _ProductLocal implements ProductLocal {
 
   @override
   Future<ProductModel> setProduct(ProductModel product) async {
-    final prefs =
-        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
-        await sharedPreferencesPackage.SharedPreferences.getInstance();
+    final prefs = _injector.tryGet<ILocalStorage>();
+
+    if (prefs == null) {
+      throw Exception("ILocalStorage not found");
+    }
 
     await prefs.setString(
       'product',
@@ -197,9 +204,11 @@ class _ProductLocal implements ProductLocal {
 
   @override
   Future<ProductModel?> getProduct() async {
-    final prefs =
-        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
-        await sharedPreferencesPackage.SharedPreferences.getInstance();
+    final prefs = _injector.tryGet<ILocalStorage>();
+
+    if (prefs == null) {
+      throw Exception("ILocalStorage not found");
+    }
 
     final result = await prefs.getString('product');
     if (result == null || result.isEmpty) {
@@ -210,18 +219,22 @@ class _ProductLocal implements ProductLocal {
 
   @override
   Future<void> setDarkMode(bool enabled) async {
-    final prefs =
-        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
-        await sharedPreferencesPackage.SharedPreferences.getInstance();
+    final prefs = _injector.tryGet<ILocalStorage>();
+
+    if (prefs == null) {
+      throw Exception("ILocalStorage not found");
+    }
 
     await prefs.setBool('dark_mode', enabled);
   }
 
   @override
   Future<bool?> getDarkMode() async {
-    final prefs =
-        _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ??
-        await sharedPreferencesPackage.SharedPreferences.getInstance();
+    final prefs = _injector.tryGet<ILocalStorage>();
+
+    if (prefs == null) {
+      throw Exception("ILocalStorage not found");
+    }
 
     return await prefs.getBool('dark_mode');
   }

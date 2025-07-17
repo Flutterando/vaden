@@ -11,7 +11,7 @@ import 'package:vaden_class_scanner/src/setups/configuration_setup.dart';
 import 'package:vaden_core/vaden_core.dart';
 
 import 'setups/dto_setup.dart';
-import 'setups/preferences_setup.dart';
+import 'setups/storage_setup.dart';
 
 class FlutterVadenBuilder implements Builder {
   FlutterVadenBuilder();
@@ -36,7 +36,7 @@ class FlutterVadenBuilder implements Builder {
   final moduleChecker = TypeChecker.fromRuntime(VadenModule);
   final parseChecker = TypeChecker.fromRuntime(Parse);
   final apiClientChecker = TypeChecker.fromRuntime(ApiClient);
-  final preferencesChecker = TypeChecker.fromRuntime(Preferences);
+  final storageChecker = TypeChecker.fromRuntime(LocalStorage);
 
   @override
   Future<void> build(BuildStep buildStep) async {
@@ -44,7 +44,7 @@ class FlutterVadenBuilder implements Builder {
     final dtoBuffer = StringBuffer();
     final importsBuffer = StringBuffer();
     final apiClientBuffer = StringBuffer();
-    final preferencesBuffer = StringBuffer();
+    final storageBuffer = StringBuffer();
     final moduleRegisterBuffer = StringBuffer();
 
     final importSet = <String>{};
@@ -58,7 +58,6 @@ class FlutterVadenBuilder implements Builder {
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart' as dioPackage;
-import 'package:shared_preferences/shared_preferences.dart' as sharedPreferencesPackage;
 import 'package:flutter_vaden/flutter_vaden.dart';
 
  late final AutoInjector _injector;
@@ -127,8 +126,8 @@ class VadenApp extends FlutterVadenApplication {
                 ?.toStringValue() ??
             '';
         apiClientBuffer.writeln(apiClientSetup(classElement, basePath));
-      } else if (preferencesChecker.hasAnnotationOf(classElement)) {
-        preferencesBuffer.writeln(preferencesClientSetup(classElement));
+      } else if (storageChecker.hasAnnotationOf(classElement)) {
+        storageBuffer.writeln(storageClientSetup(classElement));
       }
       return bodyBuffer.toString();
     }).toList();
@@ -175,9 +174,9 @@ class _DSON extends DSON {
       importsBuffer.writeln(apiClientBuffer.toString());
     }
 
-    if (preferencesBuffer.isNotEmpty) {
+    if (storageBuffer.isNotEmpty) {
       importsBuffer.writeln();
-      importsBuffer.writeln(preferencesBuffer.toString());
+      importsBuffer.writeln(storageBuffer.toString());
     }
 
     final outputId = _allFileOutput(buildStep);
@@ -220,7 +219,7 @@ class _DSON extends DSON {
       return '_injector.addLazySingleton<${classElement.name}>(_${classElement.name}.new);';
     }
 
-    if (preferencesChecker.hasAnnotationOf(classElement)) {
+    if (storageChecker.hasAnnotationOf(classElement)) {
       return '_injector.addLazySingleton<${classElement.name}>(_${classElement.name}.new);';
     }
 

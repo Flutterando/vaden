@@ -1,27 +1,27 @@
 import 'package:flutter_example/models/product_model.dart';
 import 'package:flutter_vaden/flutter_vaden.dart';
 
-@Preferences()
+@LocalStorage()
 abstract class ProductLocal {
-  @PrefKey('products')
-  @PrefObject()
+  @StorageKey('products')
+  @StorageObject()
   Future<List<ProductModel>> setProducts(List<ProductModel> products);
 
-  @PrefKey('products')
-  @PrefObject()
+  @StorageKey('products')
+  @StorageObject()
   Future<List<ProductModel>?> getProducts();
 
-  @PrefKey('product')
-  @PrefObject()
+  @StorageKey('product')
+  @StorageObject()
   Future<ProductModel> setProduct(ProductModel product);
 
-  @PrefKey('product')
-  @PrefObject()
+  @StorageKey('product')
+  @StorageObject()
   Future<ProductModel?> getProduct();
 
-  @PrefKey('dark_mode')
+  @StorageKey('dark_mode')
   Future<void> setDarkMode(bool enabled);
 
-  @PrefKey('dark_mode')
+  @StorageKey('dark_mode')
   Future<bool?> getDarkMode();
 }

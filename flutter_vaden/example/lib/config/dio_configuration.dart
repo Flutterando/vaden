@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_example/config/adapter.dart';
 import 'package:flutter_vaden/flutter_vaden.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @Configuration()
-class DioConfiguration {
+class AppConfiguration {
   @Bean()
   Dio dioFactory() {
     final dio = Dio();
@@ -16,5 +18,11 @@ class DioConfiguration {
       ),
     );
     return dio;
+  }
+
+  @Bean()
+  ILocalStorage preferencesFactory() {
+    final sharedPreferences = SharedPreferences.getInstance();
+    return SharedPreferencesAdapter(sharedPreferences);
   }
 }

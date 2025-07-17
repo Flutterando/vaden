@@ -13,7 +13,6 @@ dependencies:
     sdk: flutter
   vaden_core: ^0.0.1
   dio: ^5.8.0+1
-  shared_preferences: ^2.5.3
   auto_injector: ^2.1.1
 
 dev_dependencies:

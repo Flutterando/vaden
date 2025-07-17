@@ -4,10 +4,10 @@ import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:vaden_core/vaden_core.dart';
 
-final prefKeyChecker = TypeChecker.fromRuntime(PrefKey);
-final prefObjectChecker = TypeChecker.fromRuntime(PrefObject);
+final storageKeyChecker = TypeChecker.fromRuntime(StorageKey);
+final storageObjectChecker = TypeChecker.fromRuntime(StorageObject);
 
-String preferencesClientSetup(ClassElement classElement) {
+String storageClientSetup(ClassElement classElement) {
   final buffer = StringBuffer();
 
   buffer
@@ -29,26 +29,29 @@ String preferencesClientSetup(ClassElement classElement) {
     }).join(', ');
 
     // Descobrir a chave
-    final prefKeyAnn = method.metadata.firstWhereOrNull((m) {
+    final storageKeyAnn = method.metadata.firstWhereOrNull((m) {
       final type = m.computeConstantValue()?.type;
-      return type != null && prefKeyChecker.isExactlyType(type);
+      return type != null && storageKeyChecker.isExactlyType(type);
     });
-    String? prefKey;
-    if (prefKeyAnn != null) {
-      final ann = prefKeyAnn.computeConstantValue();
-      prefKey = ann?.getField('name')?.toStringValue();
+    String? storageKey;
+    if (storageKeyAnn != null) {
+      final ann = storageKeyAnn.computeConstantValue();
+      storageKey = ann?.getField('name')?.toStringValue();
     }
-    prefKey ??= methodName;
+    storageKey ??= methodName;
 
     // Descobrir se é objeto
     final isObject = method.metadata.any((m) {
       final type = m.computeConstantValue()?.type;
-      return type != null && prefObjectChecker.isExactlyType(type);
+      return type != null && storageObjectChecker.isExactlyType(type);
     });
 
     buffer.writeln('  Future<$returnType> $methodName($parameterList) async {');
-    buffer.writeln(
-        '    final prefs = _injector.tryGet<sharedPreferencesPackage.SharedPreferences>() ?? await sharedPreferencesPackage.SharedPreferences.getInstance();\n');
+    buffer.writeln('    final prefs = _injector.tryGet<ILocalStorage>();\n');
+
+    buffer.writeln('    if (prefs == null) {\n');
+    buffer.writeln('      throw Exception("ILocalStorage not found");\n');
+    buffer.writeln('    }\n');
 
     if (methodName.startsWith('set')) {
       // Setter
@@ -56,20 +59,20 @@ String preferencesClientSetup(ClassElement classElement) {
       final valueName = valueParam.name;
 
       if (valueParam.type.isDartCoreBool) {
-        buffer.writeln("    await prefs.setBool('$prefKey', $valueName);");
+        buffer.writeln("    await prefs.setBool('$storageKey', $valueName);");
       } else if (valueParam.type.isDartCoreInt) {
-        buffer.writeln("    await prefs.setInt('$prefKey', $valueName);");
+        buffer.writeln("    await prefs.setInt('$storageKey', $valueName);");
       } else if (valueParam.type.isDartCoreDouble) {
-        buffer.writeln("    await prefs.setDouble('$prefKey', $valueName);");
+        buffer.writeln("    await prefs.setDouble('$storageKey', $valueName);");
       } else if (valueParam.type.isDartCoreString) {
-        buffer.writeln("    await prefs.setString('$prefKey', $valueName);");
+        buffer.writeln("    await prefs.setString('$storageKey', $valueName);");
       } else if (isObject && returnType.isDartCoreList) {
         final listType = _getListType(returnType);
         buffer.writeln(
-            'await prefs.setString(\'$prefKey\', json.encode(dson.toJsonList<$listType>($valueName)));');
+            'await prefs.setString(\'$storageKey\', json.encode(dson.toJsonList<$listType>($valueName)));');
       } else if (isObject && !returnType.isDartCoreList) {
         buffer.writeln(
-            'await prefs.setString(\'$prefKey\', json.encode(dson.toJson<$returnType>($valueName)));');
+            'await prefs.setString(\'$storageKey\', json.encode(dson.toJson<$returnType>($valueName)));');
       } else {
         buffer.writeln('    // Método não suportado: $methodName');
         buffer.writeln('    return;');
@@ -81,23 +84,25 @@ String preferencesClientSetup(ClassElement classElement) {
     } else if (methodName.startsWith('get')) {
       // Getter
       if (returnType.isDartCoreBool) {
-        buffer.writeln("    return await prefs.getBool('$prefKey');");
+        buffer.writeln("    return await prefs.getBool('$storageKey');");
       } else if (returnType.isDartCoreInt) {
-        buffer.writeln("    return await prefs.getInt('$prefKey');");
+        buffer.writeln("    return await prefs.getInt('$storageKey');");
       } else if (returnType.isDartCoreDouble) {
-        buffer.writeln("    return await prefs.getDouble('$prefKey');");
+        buffer.writeln("    return await prefs.getDouble('$storageKey');");
       } else if (returnType.isDartCoreString) {
-        buffer.writeln("    return await prefs.getString('$prefKey');");
+        buffer.writeln("    return await prefs.getString('$storageKey');");
       } else if (isObject && returnType.isDartCoreList) {
         final listType = _getListType(returnType);
-        buffer.writeln('final result = await prefs.getString(\'$prefKey\');');
+        buffer
+            .writeln('final result = await prefs.getString(\'$storageKey\');');
         buffer.writeln('   if (result == null || result.isEmpty) {');
         buffer.writeln('     return null;');
         buffer.writeln('   }');
         buffer.writeln(
             'return dson.fromJsonList<$listType>(json.decode(result));');
       } else if (isObject && !returnType.isDartCoreList) {
-        buffer.writeln('final result = await prefs.getString(\'$prefKey\');');
+        buffer
+            .writeln('final result = await prefs.getString(\'$storageKey\');');
         buffer.writeln('   if (result == null || result.isEmpty) {');
         buffer.writeln('     return null;');
         buffer.writeln('   }');

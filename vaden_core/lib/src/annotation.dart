@@ -259,25 +259,25 @@ final class ApiClient implements BaseComponent {
   final bool registerWithInterfaceOrSuperType = false;
 }
 
-final class Preferences implements BaseComponent {
-  const Preferences();
+final class LocalStorage implements BaseComponent {
+  const LocalStorage();
 
   @override
   final bool registerWithInterfaceOrSuperType = false;
 }
 
-class PrefKey {
-  /// The name to use for this field in JSON serialization/deserialization.
+class StorageKey {
+  /// The name to use for this field in storage.
   final String name;
 
-  /// Creates a JsonKey annotation with the specified name.
+  /// Creates a StorageKey annotation with the specified name.
   ///
-  /// [name] - The name to use for this field in JSON.
-  const PrefKey(this.name);
+  /// [name] - The name to use for this field in storage.
+  const StorageKey(this.name);
 }
 
-class PrefObject {
-  const PrefObject();
+class StorageObject {
+  const StorageObject();
 }
 
 /// Marks a class as a controller advice for global exception handling.
