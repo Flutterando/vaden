@@ -10,18 +10,23 @@ final _jsonIgnoreChecker = TypeChecker.fromRuntime(JsonIgnore);
 
 String dtoSetup(ClassElement classElement) {
   final bodyBuffer = StringBuffer();
-  final fromJsonBody = _fromJson(classElement);
-  final toJsonBody = _toJson(classElement);
-  final toOpenApiBody = _toOpenApi(classElement);
 
-  bodyBuffer.writeln('''
+  if (classElement.isSealed) {
+    final unionSetup = _setupUnionType(classElement);
+    bodyBuffer.write(unionSetup);
+  } else {
+    final fromJsonBody = _fromJson(classElement);
+    final toJsonBody = _toJson(classElement);
+    final toOpenApiBody = _toOpenApi(classElement);
+
+    bodyBuffer.writeln('''
 fromJsonMap[${classElement.name}] = (Map<String, dynamic> json) {
   return Function.apply(${classElement.name}.new,
     $fromJsonBody
 );
 };''');
 
-  bodyBuffer.writeln('''
+    bodyBuffer.writeln('''
 toJsonMap[${classElement.name}] = (object) {
   final obj = object as ${classElement.name};
   return {
@@ -29,7 +34,8 @@ toJsonMap[${classElement.name}] = (object) {
   };
 };''');
 
-  bodyBuffer.writeln('toOpenApiMap[${classElement.name}] = $toOpenApiBody;');
+    bodyBuffer.writeln('toOpenApiMap[${classElement.name}] = $toOpenApiBody;');
+  }
 
   return bodyBuffer.toString();
 }
@@ -243,6 +249,12 @@ String _getFieldName(FieldElement parameter) {
 
 String _toJson(ClassElement classElement) {
   final jsonBuffer = StringBuffer();
+
+  // Adiciona runtimeType se a classe implementa uma sealed class
+  if (_implementsSealedClass(classElement)) {
+    jsonBuffer.writeln("'runtimeType': '${classElement.name}',");
+  }
+
   for (final field in _getAllFields(classElement)) {
     jsonBuffer.writeln(_toJsonField(field));
   }
@@ -253,7 +265,7 @@ String _toJson(ClassElement classElement) {
 String _toJsonField(FieldElement field) {
   final fieldKey = _getFieldName(field);
   final fieldName = field.name;
-  final fieldTypeString = field.type.getDisplayString(withNullability: false);
+  final fieldTypeString = field.type.getDisplayString();
   final isNotNull = field.type.nullabilitySuffix == NullabilitySuffix.none;
 
   if (useParseChecker.hasAnnotationOf(field)) {
@@ -316,4 +328,110 @@ bool isPrimitiveListOrMap(DartType type) {
     return true;
   }
   return isPrimitive(type);
+}
+
+String _setupUnionType(ClassElement sealedClass) {
+  final buffer = StringBuffer();
+  final subtypes = _getUnionSubtypes(sealedClass);
+
+  buffer.writeln('''
+fromJsonMap[${sealedClass.name}] = (Map<String, dynamic> json) {
+  final runtimeType = json['runtimeType'] as String?;
+  switch (runtimeType) {''');
+
+  for (final subtype in subtypes) {
+    buffer.writeln('''
+    case '${subtype.name}':
+      return fromJson<${subtype.name}>(json);''');
+  }
+
+  buffer.writeln('''
+    default:
+      throw ArgumentError('Unknown runtimeType for ${sealedClass.name}: \$runtimeType');
+  }
+};''');
+
+  buffer.writeln('''
+toJsonMap[${sealedClass.name}] = (object) {
+  return toJson(object);
+};''');
+
+  final openApiBody = _toOpenApiUnion(sealedClass, subtypes);
+  buffer.writeln('toOpenApiMap[${sealedClass.name}] = $openApiBody;');
+
+  return buffer.toString();
+}
+
+List<ClassElement> _getUnionSubtypes(ClassElement sealedClass) {
+  final subtypes = <ClassElement>[];
+
+  for (final constructor in sealedClass.constructors) {
+    if (constructor.isFactory) {
+      final redirectedConstructor = constructor.redirectedConstructor;
+      if (redirectedConstructor != null) {
+        final targetClass = redirectedConstructor.enclosingElement3;
+        if (targetClass is ClassElement) {
+          subtypes.add(targetClass);
+        }
+      }
+    }
+  }
+
+  return subtypes;
+}
+
+String _toOpenApiUnion(ClassElement sealedClass, List<ClassElement> subtypes) {
+  final buffer = StringBuffer();
+
+  buffer.writeln('{');
+  buffer.writeln('  "oneOf": [');
+
+  bool first = true;
+  for (final subtype in subtypes) {
+    if (!first) buffer.writeln(',');
+    buffer.write('    {r"\$ref": "#/components/schemas/${subtype.name}"}');
+    first = false;
+  }
+
+  buffer.writeln();
+  buffer.writeln('  ],');
+  buffer.writeln('  "discriminator": {');
+  buffer.writeln('    "propertyName": "runtimeType",');
+  buffer.writeln('    "mapping": {');
+
+  first = true;
+  for (final subtype in subtypes) {
+    if (!first) buffer.writeln(',');
+    buffer.write(
+        '      "${subtype.name}": "#/components/schemas/${subtype.name}"');
+    first = false;
+  }
+
+  buffer.writeln();
+  buffer.writeln('    }');
+  buffer.writeln('  }');
+  buffer.writeln('}');
+
+  return buffer.toString();
+}
+
+bool _implementsSealedClass(ClassElement classElement) {
+  // Verifica se alguma das interfaces implementadas é uma sealed class
+  for (final interface in classElement.interfaces) {
+    final element = interface.element;
+    if (element is ClassElement && element.isSealed) {
+      return true;
+    }
+  }
+
+  // Verifica se a superclasse é sealed
+  final supertype = classElement.supertype;
+  if (supertype != null && !supertype.isDartCoreObject) {
+    final element = supertype.element;
+    if (element is ClassElement && element.isSealed) {
+      return true;
+    }
+  }
+
+  return false;
 }
