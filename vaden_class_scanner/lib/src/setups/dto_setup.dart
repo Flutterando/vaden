@@ -109,7 +109,7 @@ String _fromJson(ClassElement classElement) {
 
   for (final parameter in constructor.parameters) {
     final paramName = _getParameterName(parameter);
-    final paramType = parameter.type.getDisplayString();
+    final paramType = parameter.type.getDisplayString(withNullability: false);
     final isNotNull =
         parameter.type.nullabilitySuffix == NullabilitySuffix.none;
     final hasDefault = parameter.hasDefaultValue;

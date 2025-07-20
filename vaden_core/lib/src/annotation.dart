@@ -5,6 +5,8 @@
 /// defining REST API endpoints and OpenAPI documentation.
 library;
 
+import 'package:auto_injector/auto_injector.dart';
+
 part 'openapi.dart';
 part 'rest.dart';
 
@@ -20,6 +22,33 @@ abstract interface class BaseComponent {
   /// in the dependency injection container, allowing for dependency injection
   /// by interface rather than concrete implementation.
   bool get registerWithInterfaceOrSuperType;
+}
+
+/// Specifies the bind type for a component in the dependency injection container.
+/// This annotation is used to define how a component should be bound in the
+/// dependency injection container, such as whether it should be a singleton,
+/// lazy singleton, or instance.
+/// Example:
+/// ```dart
+/// @Service()
+/// @Scope(BindType.singleton)
+/// class MyService {
+///   // Service implementation
+/// }
+/// ```
+/// The [BindType] enum defines the available binding types:
+/// - `BindType.singleton`: A single instance is created and shared.
+/// - `BindType.lazySingleton`: A single instance is created lazily when first accessed
+/// - `BindType.instance`: A new instance is created each time it is requested.
+/// - `BindType.factory`: A new instance is created each time it is requested, but it can be configured with additional parameters.
+/// <br><br>The default bind type is `BindType.lazySingleton`, which means the component
+/// will be created lazily when it is first accessed.
+final class Scope {
+  final BindType type;
+
+  /// Creates a Scope annotation with the specified bind type.
+  /// [type] - The bind type for the component. Defaults to `BindType.lazySingleton`.
+  const Scope([this.type = BindType.lazySingleton]);
 }
 
 /// Marks a class as a general component in the application.

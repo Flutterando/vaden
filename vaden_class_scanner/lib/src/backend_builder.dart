@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as p;
@@ -33,6 +34,7 @@ class BackendVadenBuilder implements Builder {
 
   final componentChecker = TypeChecker.fromRuntime(BaseComponent);
   final dtoChecker = TypeChecker.fromRuntime(DTO);
+  final scopeChecker = TypeChecker.fromRuntime(Scope);
   final moduleChecker = TypeChecker.fromRuntime(VadenModule);
   final parseChecker = TypeChecker.fromRuntime(Parse);
 
@@ -239,6 +241,26 @@ class _DSON extends DSON {
       return '';
     }
 
+    String? scopeType;
+    String? bindType = 'BindType.singleton';
+
+    // Check if the class is annotated with @Scope
+    final scopeAnnotation = scopeChecker.firstAnnotationOf(classElement);
+
+    if (scopeAnnotation != null) {
+      scopeType = scopeAnnotation.getField('type')?.variable?.name.toLowerCase();
+
+      if (scopeType == 'instance') {
+        bindType = 'BindType.instance';
+      } else if (scopeType == 'singleton') {
+        bindType = 'BindType.singleton';
+      } else if (scopeType == 'lazySingleton') {
+        bindType = 'BindType.lazySingleton';
+      } else if (scopeType == 'factory') {
+        bindType = 'BindType.factory';
+      }
+    }
+
     if (registerWithInterfaceOrSuperType) {
       final interfaceType =
           classElement.interfaces.firstOrNull ?? classElement.supertype;
@@ -247,11 +269,29 @@ class _DSON extends DSON {
         return '''
       _injector.addBind(Bind.withClassName(
       constructor: ${classElement.name}.new,
-      type: BindType.lazySingleton,
+      type: $bindType,
       className: '${interfaceType.getDisplayString()}',
     ));   
 ''';
       }
+    } else if (scopeType == 'instance') {
+      return '_injector.add(${classElement.name}.new);';
+    } else if (scopeType == 'lazySingleton') {
+      return '_injector.addLazySingleton(${classElement.name}.new);';
+    } else if (scopeType == 'singleton') {
+      return '_injector.addSingleton(${classElement.name}.new);';
+    } else if (scopeType == 'factory') {
+      return '''
+        _injector.addBind(Bind.withClassName(
+        constructor: ${classElement.name}.new,
+        type: BindType.$scopeType,
+      ));   
+    ''';
+    }
+
+    /// If the class is annotated with @Controller, we register it as a instance.
+    if (controllerChecker.hasAnnotationOf(classElement)) {
+      return '_injector.add(${classElement.name}.new);';
     }
 
     return '_injector.addLazySingleton(${classElement.name}.new);';

@@ -55,7 +55,11 @@ class _GeneratePageState extends State<GeneratePage> {
 
     if (result != null) {
       setState(() {
-        project.dependenciesKeys.add(result.key);
+        for (final dep in result) {
+          if (!project.dependenciesKeys.contains(dep.key)) {
+            project.dependenciesKeys.add(dep.key);
+          }
+        }
       });
     }
   }
