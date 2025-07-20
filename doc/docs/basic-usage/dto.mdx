@@ -19,18 +19,7 @@ class Credentials with Validator<Credentials> {
   final String username;
   final String password;
 
-  Credentials(this.username, this.password);
-
-  static Credentials fromJson(Map<String, dynamic> json) {
-    return Credentials(json['username'], json['password']);
-  }
-
-  @override
-  LucidValidator<Credentials> validate(ValidatorBuilder<Credentials> builder) {
-    return builder
-      .ruleFor((c) => c.username, key: 'username').notEmpty()
-      .ruleFor((c) => c.password, key: 'password').minLength(6);
-  }
+  const Credentials(this.username, this.password);
 }
 ```
 
@@ -60,6 +49,28 @@ class Credentials with Validator<Credentials> {
 }
 ```
 
+## Validation
+
+DTOs can implement the `Validator` mixin to perform validation on the data. This is useful for ensuring that the data meets certain criteria before it is processed. If validation fails, Vaden
+will return a 400 Bad Request response with the validation errors.
+
+```dart
+@DTO()
+class Credentials with Validator<Credentials> {
+  final String username;
+  final String password;
+
+  const Credentials(this.username, this.password);
+
+  @override
+  LucidValidator<Credentials> validate(ValidatorBuilder<Credentials> builder) {
+    return builder
+      .ruleFor((c) => c.username, key: 'username').notEmpty()
+      .ruleFor((c) => c.password, key: 'password').minLength(6);
+  }
+}
+```
+
 ## Complex Objects parse
 
 DTOs can also contain other DTOs. Vaden will automatically handle the serialization and deserialization of nested objects,
@@ -68,59 +79,66 @@ types or when you want to control the serialization format:
 
 ```dart
 @DTO()
-class BaseDto {
-  final String id;
-
-  @UseParse(DateTimeParse)
-  final DateTime createdAt;
-
-  @UseParse(DateTimeParse)
-  final DateTime? updatedAt;
-
-  BaseDto({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+class UserDocument {
+  final String title;
+  final String description;
+  
+  // Custom parser for File - converts to base64 string
+  @UseParse(FileParse)
+  final File? attachment;
+  
+  const UserDocument(this.title, this.description, this.attachment);
 }
 
-class DateTimeParse extends ParamParse<DateTime?, String> {
-  const DateTimeParse();
+// Custom parser for File type
+class FileParse extends ParamParse<File?, String?> {
+  const FileParse();
 
   @override
-  String toJson(DateTime? param) {
-    return param?.toIso8601String() ?? '';
+  String? toJson(File? param) {
+    if (param == null) return null;
+    // Convert file to base64 string for JSON transport
+    final bytes = param.readAsBytesSync();
+    return base64Encode(bytes);
   }
 
   @override
-  DateTime? fromJson(String? json) {
-    return DateTime.tryParse(json ?? '');
+  File? fromJson(String? json) {
+    if (json == null) return null;
+    // Create temporary file from base64 string
+    final bytes = base64Decode(json);
+    final tempFile = File('temp_${DateTime.now().millisecondsSinceEpoch}');
+    tempFile.writeAsBytesSync(bytes);
+    return tempFile;
   }
 }
 ```
 
-### `@Parse` Annotation
+### Built-in Complex Types
 
-The `@Parse` annotation allows `ParamParse` classes (such as `DateTimeParse`) to be defined in separate files and reused across multiple DTOs.
+Vaden automatically handles serialization and deserialization for several complex types without requiring `@UseParse()`:
 
-When a `ParamParse` class is annotated with `@Parse`, it becomes globally discoverable, enabling it to be imported and used across different DTOs without needing to duplicate parsing logic.
+- **DateTime**: Automatically converted to/from ISO 8601 strings
+- **Enums**: Automatically serialized using enum name (e.g., `UserType.admin` → `"admin"`)
+- **Duration**: Converted to/from milliseconds
+- **Uri**: Converted to/from string representation
 
-**Parse Class (in its own file):**
 ```dart
-@Parse()
-class DateTimeParse extends ParamParse<DateTime?, String> {
-  const DateTimeParse();
+@DTO()
+class Event {
+  final String name;
+  final DateTime startTime;     // Automatic DateTime handling
+  final Duration duration;      // Automatic Duration handling  
+  final EventType type;         // Automatic enum handling
+  final Uri? website;           // Automatic Uri handling
 
-  @override
-  String toJson(DateTime? param) {
-    return param?.toIso8601String() ?? '';
-  }
-
-  @override
-  DateTime? fromJson(String? json) {
-    return DateTime.tryParse(json ?? '');
-  }
+  const Event(this.name, this.startTime, this.duration, this.type, this.website);
 }
+
+enum EventType { conference, workshop, meetup }
+```
+
+You can still use `@UseParse()` to override the default behavior if you need custom serialization for these types.
 
 ## Deserialization with `@Body()`
 
