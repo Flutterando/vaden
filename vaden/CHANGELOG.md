@@ -1,3 +1,9 @@
+## 0.1.1 (2025/07/20)
+
+- Added Scope to Dependency Injection.
+- Support unionType.
+
+
 ## 0.1.0 (2025/06/22)
 
 - New Core

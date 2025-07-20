@@ -3,6 +3,7 @@ FROM ghcr.io/cirruslabs/flutter:3.29.2 AS build
 WORKDIR /app
 
 COPY . .
+RUN echo "resolution:" > pubspec_overrides.yaml
 RUN flutter pub get
 RUN flutter build web --release --dart-define-from-file .env 
 

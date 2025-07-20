@@ -10,18 +10,23 @@ final _jsonIgnoreChecker = TypeChecker.fromRuntime(JsonIgnore);
 
 String dtoSetup(ClassElement classElement) {
   final bodyBuffer = StringBuffer();
-  final fromJsonBody = _fromJson(classElement);
-  final toJsonBody = _toJson(classElement);
-  final toOpenApiBody = _toOpenApi(classElement);
 
-  bodyBuffer.writeln('''
+  if (classElement.isSealed) {
+    final unionSetup = _setupUnionType(classElement);
+    bodyBuffer.write(unionSetup);
+  } else {
+    final fromJsonBody = _fromJson(classElement);
+    final toJsonBody = _toJson(classElement);
+    final toOpenApiBody = _toOpenApi(classElement);
+
+    bodyBuffer.writeln('''
 fromJsonMap[${classElement.name}] = (Map<String, dynamic> json) {
   return Function.apply(${classElement.name}.new,
     $fromJsonBody
 );
 };''');
 
-  bodyBuffer.writeln('''
+    bodyBuffer.writeln('''
 toJsonMap[${classElement.name}] = (object) {
   final obj = object as ${classElement.name};
   return {
@@ -29,7 +34,8 @@ toJsonMap[${classElement.name}] = (object) {
   };
 };''');
 
-  bodyBuffer.writeln('toOpenApiMap[${classElement.name}] = $toOpenApiBody;');
+    bodyBuffer.writeln('toOpenApiMap[${classElement.name}] = $toOpenApiBody;');
+  }
 
   return bodyBuffer.toString();
 }
@@ -72,6 +78,11 @@ String _toOpenApi(ClassElement classElement) {
 }
 
 String _fieldToSchema(DartType type) {
+  // Se é tipo built-in suportado
+  if (isBuiltInSupported(type)) {
+    return _getBuiltInOpenApiSchema(type);
+  }
+
   if (type.isDartCoreInt) {
     return '{"type": "integer"}';
   } else if (type.isDartCoreDouble) {
@@ -111,10 +122,18 @@ String _fromJson(ClassElement classElement) {
 
     final field = _getFieldByParameter(parameter);
 
+    // Se tem @UseParse(), usa o parser customizado
     if (useParseChecker.hasAnnotationOf(field)) {
       final parser = _getParseFunction(field, isFromJson: true);
       paramValue = "$parser(json['$paramName'])";
-    } else if (isPrimitiveListOrMap(parameter.type)) {
+    }
+    // Se é tipo built-in suportado
+    else if (isBuiltInSupported(parameter.type)) {
+      paramValue = _getBuiltInDeserializer(
+          parameter.type, "json['$paramName']", isNotNull);
+    }
+    // Se é primitivo ou List/Map de primitivos
+    else if (isPrimitiveListOrMap(parameter.type)) {
       if (paramType == 'double') {
         paramValue = "json['$paramName']?.toDouble()";
       } else if (parameter.type.isDartCoreList) {
@@ -243,6 +262,12 @@ String _getFieldName(FieldElement parameter) {
 
 String _toJson(ClassElement classElement) {
   final jsonBuffer = StringBuffer();
+
+  // Adiciona runtimeType se a classe implementa uma sealed class
+  if (_implementsSealedClass(classElement)) {
+    jsonBuffer.writeln("'runtimeType': '${classElement.name}',");
+  }
+
   for (final field in _getAllFields(classElement)) {
     jsonBuffer.writeln(_toJsonField(field));
   }
@@ -253,13 +278,24 @@ String _toJson(ClassElement classElement) {
 String _toJsonField(FieldElement field) {
   final fieldKey = _getFieldName(field);
   final fieldName = field.name;
-  final fieldTypeString = field.type.getDisplayString(withNullability: false);
+  final fieldTypeString = field.type.getDisplayString();
   final isNotNull = field.type.nullabilitySuffix == NullabilitySuffix.none;
 
+  // Se tem @UseParse(), usa o parser customizado (override)
   if (useParseChecker.hasAnnotationOf(field)) {
     final parser = _getParseFunction(field, isFromJson: false);
     return "'$fieldKey': $parser(obj.$fieldName),";
-  } else if (isPrimitiveListOrMap(field.type)) {
+  }
+
+  // Se é tipo built-in suportado, usa serialização automática
+  if (isBuiltInSupported(field.type)) {
+    final serializer =
+        _getBuiltInSerializer(field.type, 'obj.$fieldName', isNotNull);
+    return "'$fieldKey': $serializer,";
+  }
+
+  // Se é primitivo ou List/Map de primitivos
+  else if (isPrimitiveListOrMap(field.type)) {
     return "'$fieldKey': obj.$fieldName,";
   } else {
     if (field.type.isDartCoreList) {
@@ -316,4 +352,231 @@ bool isPrimitiveListOrMap(DartType type) {
     return true;
   }
   return isPrimitive(type);
+}
+
+String _setupUnionType(ClassElement sealedClass) {
+  final buffer = StringBuffer();
+  final subtypes = _getUnionSubtypes(sealedClass);
+
+  // FromJson para union type
+  buffer.writeln('''
+fromJsonMap[${sealedClass.name}] = (Map<String, dynamic> json) {
+  final runtimeType = json['runtimeType'] as String?;
+  switch (runtimeType) {''');
+
+  for (final subtype in subtypes) {
+    buffer.writeln('''
+    case '${subtype.name}':
+      return fromJson<${subtype.name}>(json);''');
+  }
+
+  buffer.writeln('''
+    default:
+      throw ArgumentError('Unknown runtimeType for ${sealedClass.name}: \$runtimeType');
+  }
+};''');
+
+  // ToJson para union type - delega baseado no runtimeType do objeto
+  buffer.writeln('''
+toJsonMap[${sealedClass.name}] = (object) {
+  // Obtém o tipo real do objeto em runtime
+  final objectType = object.runtimeType;
+  switch (objectType) {''');
+
+  for (final subtype in subtypes) {
+    buffer.writeln('''
+    case ${subtype.name}:
+      return toJson<${subtype.name}>(object as ${subtype.name});''');
+  }
+
+  buffer.writeln('''
+    default:
+      throw ArgumentError('Unknown subtype for ${sealedClass.name}: \$objectType');
+  }
+};''');
+
+  final openApiBody = _toOpenApiUnion(sealedClass, subtypes);
+  buffer.writeln('toOpenApiMap[${sealedClass.name}] = $openApiBody;');
+
+  return buffer.toString();
+}
+
+List<ClassElement> _getUnionSubtypes(ClassElement sealedClass) {
+  final subtypes = <ClassElement>[];
+
+  for (final constructor in sealedClass.constructors) {
+    if (constructor.isFactory) {
+      final redirectedConstructor = constructor.redirectedConstructor;
+      if (redirectedConstructor != null) {
+        final targetClass = redirectedConstructor.enclosingElement3;
+        if (targetClass is ClassElement) {
+          subtypes.add(targetClass);
+        }
+      }
+    }
+  }
+
+  return subtypes;
+}
+
+String _toOpenApiUnion(ClassElement sealedClass, List<ClassElement> subtypes) {
+  final buffer = StringBuffer();
+
+  buffer.writeln('{');
+  buffer.writeln('  "oneOf": [');
+
+  bool first = true;
+  for (final subtype in subtypes) {
+    if (!first) buffer.writeln(',');
+    buffer.write('    {r"\$ref": "#/components/schemas/${subtype.name}"}');
+    first = false;
+  }
+
+  buffer.writeln();
+  buffer.writeln('  ],');
+  buffer.writeln('  "discriminator": {');
+  buffer.writeln('    "propertyName": "runtimeType",');
+  buffer.writeln('    "mapping": {');
+
+  first = true;
+  for (final subtype in subtypes) {
+    if (!first) buffer.writeln(',');
+    buffer.write(
+        '      "${subtype.name}": "#/components/schemas/${subtype.name}"');
+    first = false;
+  }
+
+  buffer.writeln();
+  buffer.writeln('    }');
+  buffer.writeln('  }');
+  buffer.writeln('}');
+
+  return buffer.toString();
+}
+
+bool _implementsSealedClass(ClassElement classElement) {
+  // Verifica se alguma das interfaces implementadas é uma sealed class
+  for (final interface in classElement.interfaces) {
+    final element = interface.element;
+    if (element is ClassElement && element.isSealed) {
+      return true;
+    }
+  }
+
+  // Verifica se a superclasse é sealed
+  final supertype = classElement.supertype;
+  if (supertype != null && !supertype.isDartCoreObject) {
+    final element = supertype.element;
+    if (element is ClassElement && element.isSealed) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool isBuiltInSupported(DartType type) {
+  // DateTime
+  if (_isDateTime(type)) return true;
+
+  // Enums
+  if (type.element is EnumElement) return true;
+
+  // Duration, Uri, etc.
+  if (_isDuration(type)) return true;
+  if (_isUri(type)) return true;
+
+  return false;
+}
+
+bool _isDateTime(DartType type) {
+  return type.getDisplayString(withNullability: false) == 'DateTime';
+}
+
+bool _isDuration(DartType type) {
+  return type.getDisplayString(withNullability: false) == 'Duration';
+}
+
+bool _isUri(DartType type) {
+  return type.getDisplayString(withNullability: false) == 'Uri';
+}
+
+String _getBuiltInSerializer(
+    DartType type, String fieldAccess, bool isNotNull) {
+  if (_isDateTime(type)) {
+    return isNotNull
+        ? '$fieldAccess.toIso8601String()'
+        : '$fieldAccess?.toIso8601String()';
+  }
+
+  if (type.element is EnumElement) {
+    return isNotNull ? '$fieldAccess.name' : '$fieldAccess?.name';
+  }
+
+  if (_isDuration(type)) {
+    return isNotNull
+        ? '$fieldAccess.inMilliseconds'
+        : '$fieldAccess?.inMilliseconds';
+  }
+
+  if (_isUri(type)) {
+    return isNotNull ? '$fieldAccess.toString()' : '$fieldAccess?.toString()';
+  }
+
+  return fieldAccess;
+}
+
+String _getBuiltInDeserializer(
+    DartType type, String jsonAccess, bool isNotNull) {
+  if (_isDateTime(type)) {
+    return isNotNull
+        ? 'DateTime.parse($jsonAccess as String)'
+        : '$jsonAccess != null ? DateTime.parse($jsonAccess as String) : null';
+  }
+
+  if (type.element is EnumElement) {
+    final enumName = type.getDisplayString(withNullability: false);
+    return isNotNull
+        ? '$enumName.values.byName($jsonAccess as String)'
+        : '$jsonAccess != null ? $enumName.values.byName($jsonAccess as String) : null';
+  }
+
+  if (_isDuration(type)) {
+    return isNotNull
+        ? 'Duration(milliseconds: $jsonAccess as int)'
+        : '$jsonAccess != null ? Duration(milliseconds: $jsonAccess as int) : null';
+  }
+
+  if (_isUri(type)) {
+    return isNotNull
+        ? 'Uri.parse($jsonAccess as String)'
+        : '$jsonAccess != null ? Uri.parse($jsonAccess as String) : null';
+  }
+
+  return jsonAccess;
+}
+
+String _getBuiltInOpenApiSchema(DartType type) {
+  if (_isDateTime(type)) {
+    return '{"type": "string", "format": "date-time"}';
+  }
+
+  if (type.element is EnumElement) {
+    final enumElement = type.element as EnumElement;
+    final enumValues = enumElement.fields
+        .where((field) => field.isEnumConstant)
+        .map((field) => '"${field.name}"')
+        .join(', ');
+    return '{"type": "string", "enum": [$enumValues]}';
+  }
+
+  if (_isDuration(type)) {
+    return '{"type": "integer", "description": "Duration in milliseconds"}';
+  }
+
+  if (_isUri(type)) {
+    return '{"type": "string", "format": "uri"}';
+  }
+
+  return '{"type": "string"}';
 }

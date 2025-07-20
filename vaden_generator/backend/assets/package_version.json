@@ -1,7 +1,7 @@
 {
   "dio": "^5.8.0+1",
-  "vaden": "^0.1.0",
-  "vaden_class_scanner": "^0.1.1",
+  "vaden": "^0.1.1",
+  "vaden_class_scanner": "^0.1.2",
   "vaden_security": "^0.0.6",
   "build_runner": "^2.4.14",
   "postgres": "^3.5.4",
