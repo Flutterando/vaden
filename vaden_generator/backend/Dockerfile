@@ -2,6 +2,7 @@ FROM dart:3.6.0 AS build
 
 WORKDIR /app
 COPY pubspec.* ./
+RUN echo "resolution:" > pubspec_overrides.yaml
 RUN dart pub get
 
 COPY . .
@@ -16,3 +17,4 @@ COPY --from=build /app/assets/ /app/assets/
 COPY --from=build /app/bin/server /app/
 EXPOSE 8080
 CMD ["./server"]
+
