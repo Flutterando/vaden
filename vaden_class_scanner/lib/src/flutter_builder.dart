@@ -11,6 +11,7 @@ import 'package:vaden_class_scanner/src/setups/configuration_setup.dart';
 import 'package:vaden_core/vaden_core.dart';
 
 import 'setups/dto_setup.dart';
+import 'setups/storage_setup.dart';
 
 class FlutterVadenBuilder implements Builder {
   FlutterVadenBuilder();
@@ -35,6 +36,7 @@ class FlutterVadenBuilder implements Builder {
   final moduleChecker = TypeChecker.fromRuntime(VadenModule);
   final parseChecker = TypeChecker.fromRuntime(Parse);
   final apiClientChecker = TypeChecker.fromRuntime(ApiClient);
+  final storageChecker = TypeChecker.fromRuntime(LocalStorage);
 
   @override
   Future<void> build(BuildStep buildStep) async {
@@ -42,6 +44,7 @@ class FlutterVadenBuilder implements Builder {
     final dtoBuffer = StringBuffer();
     final importsBuffer = StringBuffer();
     final apiClientBuffer = StringBuffer();
+    final storageBuffer = StringBuffer();
     final moduleRegisterBuffer = StringBuffer();
 
     final importSet = <String>{};
@@ -123,6 +126,8 @@ class VadenApp extends FlutterVadenApplication {
                 ?.toStringValue() ??
             '';
         apiClientBuffer.writeln(apiClientSetup(classElement, basePath));
+      } else if (storageChecker.hasAnnotationOf(classElement)) {
+        storageBuffer.writeln(storageClientSetup(classElement));
       }
       return bodyBuffer.toString();
     }).toList();
@@ -169,6 +174,11 @@ class _DSON extends DSON {
       importsBuffer.writeln(apiClientBuffer.toString());
     }
 
+    if (storageBuffer.isNotEmpty) {
+      importsBuffer.writeln();
+      importsBuffer.writeln(storageBuffer.toString());
+    }
+
     final outputId = _allFileOutput(buildStep);
 
     try {
@@ -206,6 +216,10 @@ class _DSON extends DSON {
     }
 
     if (apiClientChecker.hasAnnotationOf(classElement)) {
+      return '_injector.addLazySingleton<${classElement.name}>(_${classElement.name}.new);';
+    }
+
+    if (storageChecker.hasAnnotationOf(classElement)) {
       return '_injector.addLazySingleton<${classElement.name}>(_${classElement.name}.new);';
     }
 

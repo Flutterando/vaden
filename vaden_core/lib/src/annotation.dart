@@ -259,6 +259,27 @@ final class ApiClient implements BaseComponent {
   final bool registerWithInterfaceOrSuperType = false;
 }
 
+final class LocalStorage implements BaseComponent {
+  const LocalStorage();
+
+  @override
+  final bool registerWithInterfaceOrSuperType = false;
+}
+
+class StorageKey {
+  /// The name to use for this field in storage.
+  final String name;
+
+  /// Creates a StorageKey annotation with the specified name.
+  ///
+  /// [name] - The name to use for this field in storage.
+  const StorageKey(this.name);
+}
+
+class StorageObject {
+  const StorageObject();
+}
+
 /// Marks a class as a controller advice for global exception handling.
 ///
 /// Controller advice classes contain methods annotated with @ExceptionHandler
