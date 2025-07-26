@@ -25,12 +25,10 @@ String configurationSetup(ClassElement classElement) {
       }).join(', ');
 
       bodyBuffer.writeln('''
-asyncBeans.add(() async {
  _injector.commit();
 final result = await $instanceName.${method.name}($parametersCode);
  _injector.uncommit();
 _injector.addInstance(result);
-});
 
 ''');
     } else {

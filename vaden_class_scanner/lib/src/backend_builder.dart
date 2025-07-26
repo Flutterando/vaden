@@ -102,7 +102,6 @@ class VadenApp implements DartVadenApplication {
   Future<void> setup() async {
     final paths = <String, dynamic>{};
     final apis = <Api>[];
-    final asyncBeans = <Future<void> Function()>[];
     _injector.addLazySingleton<DSON>(_DSON.new);
 ''');
 
@@ -161,13 +160,7 @@ class VadenApp implements DartVadenApplication {
 
     aggregatedBuffer.writeln(
         '    _injector.addLazySingleton(OpenApiConfig.create(paths, apis).call);');
-    aggregatedBuffer.writeln('''
-
-    for (final asyncBean in asyncBeans) {
-      await asyncBean();
-    }
-
-''');
+        
     aggregatedBuffer.writeln('    _injector.commit();');
 
     aggregatedBuffer.writeln('$moduleRegisterBuffer');
