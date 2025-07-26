@@ -161,7 +161,6 @@ class VadenApp implements DartVadenApplication {
 
     aggregatedBuffer.writeln(
         '    _injector.addLazySingleton(OpenApiConfig.create(paths, apis).call);');
-    aggregatedBuffer.writeln('    _injector.commit();');
     aggregatedBuffer.writeln('''
 
     for (final asyncBean in asyncBeans) {
@@ -169,6 +168,7 @@ class VadenApp implements DartVadenApplication {
     }
 
 ''');
+    aggregatedBuffer.writeln('    _injector.commit();');
 
     aggregatedBuffer.writeln('$moduleRegisterBuffer');
     aggregatedBuffer.writeln('  }');
