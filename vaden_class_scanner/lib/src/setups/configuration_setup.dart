@@ -26,9 +26,9 @@ String configurationSetup(ClassElement classElement) {
 
       bodyBuffer.writeln('''
  _injector.commit();
-final result = await $instanceName.${method.name}($parametersCode);
+final ${method.name} = await $instanceName.${method.name}($parametersCode);
  _injector.uncommit();
-_injector.addInstance(result);
+_injector.addInstance(${method.name});
 
 ''');
     } else {
