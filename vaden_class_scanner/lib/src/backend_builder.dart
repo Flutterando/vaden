@@ -242,7 +242,7 @@ class _DSON extends DSON {
     }
 
     String? scopeType;
-    String? bindType = 'BindType.singleton';
+    String? bindType = 'BindType.lazySingleton';
 
     // Check if the class is annotated with @Scope
     final scopeAnnotation = scopeChecker.firstAnnotationOf(classElement);
