@@ -254,7 +254,7 @@ class _DSON extends DSON {
         bindType = 'BindType.instance';
       } else if (scopeType == 'singleton') {
         bindType = 'BindType.singleton';
-      } else if (scopeType == 'lazySingleton') {
+      } else if (scopeType == 'lazysingleton') {
         bindType = 'BindType.lazySingleton';
       } else if (scopeType == 'factory') {
         bindType = 'BindType.factory';
@@ -276,7 +276,7 @@ class _DSON extends DSON {
       }
     } else if (scopeType == 'instance') {
       return '_injector.add(${classElement.name}.new);';
-    } else if (scopeType == 'lazySingleton') {
+    } else if (scopeType == 'lazysingleton') {
       return '_injector.addLazySingleton(${classElement.name}.new);';
     } else if (scopeType == 'singleton') {
       return '_injector.addSingleton(${classElement.name}.new);';
