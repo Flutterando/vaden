@@ -114,7 +114,7 @@ String _fromJson(ClassElement classElement) {
 
   for (final parameter in constructor.parameters) {
     final paramName = _getParameterName(parameter);
-    final paramType = parameter.type.getDisplayString();
+    final paramType = parameter.type.getDisplayString().replaceAll('?', '');
     final isNotNull =
         parameter.type.nullabilitySuffix == NullabilitySuffix.none;
     final hasDefault = parameter.hasDefaultValue;
@@ -278,7 +278,7 @@ String _toJson(ClassElement classElement) {
 String _toJsonField(FieldElement field) {
   final fieldKey = _getFieldName(field);
   final fieldName = field.name;
-  final fieldTypeString = field.type.getDisplayString();
+  final fieldTypeString = field.type.getDisplayString().replaceAll('?', '');
   final isNotNull = field.type.nullabilitySuffix == NullabilitySuffix.none;
 
   // Se tem @UseParse(), usa o parser customizado (override)
@@ -490,15 +490,15 @@ bool isBuiltInSupported(DartType type) {
 }
 
 bool _isDateTime(DartType type) {
-  return type.getDisplayString(withNullability: false) == 'DateTime';
+  return type.getDisplayString().replaceAll('?', '') == 'DateTime';
 }
 
 bool _isDuration(DartType type) {
-  return type.getDisplayString(withNullability: false) == 'Duration';
+  return type.getDisplayString().replaceAll('?', '') == 'Duration';
 }
 
 bool _isUri(DartType type) {
-  return type.getDisplayString(withNullability: false) == 'Uri';
+  return type.getDisplayString().replaceAll('?', '') == 'Uri';
 }
 
 String _getBuiltInSerializer(
@@ -535,7 +535,7 @@ String _getBuiltInDeserializer(
   }
 
   if (type.element is EnumElement) {
-    final enumName = type.getDisplayString(withNullability: false);
+    final enumName = type.getDisplayString().replaceAll('?', '');
     return isNotNull
         ? '$enumName.values.byName($jsonAccess as String)'
         : '$jsonAccess != null ? $enumName.values.byName($jsonAccess as String) : null';
