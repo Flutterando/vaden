@@ -7,8 +7,8 @@ abstract class TodoRepository {
   Future<List<Todo>> getAll();
   Future<Todo> getById(int id);
   Future<void> add(TodoCreate todo);
-  Future<void> update(int id, Todo todo);
-  Future<void> delete(String id);
+  Future<void> update(TodoUpdate todo);
+  Future<void> delete(int id);
 }
 
 @Repository()
@@ -49,11 +49,11 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
-  Future<void> update(int id, Todo todo) async {
+  Future<void> update(TodoUpdate todo) async {
     await _appDatabase
         .managers //
         .todoTable
-        .filter((t) => t.id.equals(id))
+        .filter((t) => t.id.equals(todo.id))
         .update(
       (o) {
         return o(
@@ -65,9 +65,9 @@ class TodoRepositoryImpl implements TodoRepository {
   }
 
   @override
-  Future<void> delete(String id) async {
+  Future<void> delete(int id) async {
     await _appDatabase.managers.todoTable
-        .filter((t) => t.id.equals(int.parse(id)))
+        .filter((t) => t.id.equals(id))
         .delete();
   }
 

@@ -26,13 +26,13 @@ class TodoController {
   }
 
   @Put('/<id>')
-  Future<DefaultMessage> update(@Param() int id, @Body() Todo todo) async {
-    await _todoRepository.update(id, todo);
+  Future<DefaultMessage> update(@Body() TodoUpdate todo) async {
+    await _todoRepository.update(todo);
     return DefaultMessage(message: 'Todo updated successfully');
   }
 
   @Delete('/<id>')
-  Future<DefaultMessage> delete(@Param() String id) async {
+  Future<DefaultMessage> delete(@Param() int id) async {
     await _todoRepository.delete(id);
     return DefaultMessage(message: 'Todo deleted successfully');
   }

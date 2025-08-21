@@ -1,10 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // Aggregated Vaden application file
 // ignore_for_file: prefer_function_declarations_over_variables, implementation_imports
-import 'package:dio/dio.dart' as dioPackage;
 import 'package:flutter_example/config/dio_configuration.dart';
 import 'package:flutter_example/data/api/product_api.dart';
 import 'package:flutter_example/models/product_model.dart';
+
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart' as dioPackage;
 import 'package:flutter_vaden/flutter_vaden.dart';
 
 late final AutoInjector _injector;
@@ -21,6 +24,7 @@ class VadenApp extends FlutterVadenApplication {
   Future<void> setup() async {
     final asyncBeans = <Future<void> Function()>[];
     _injector.addLazySingleton<DSON>(_DSON.new);
+    _injector.addInstance<Injector>(_injector);
 
     final configurationDioConfiguration = DioConfiguration();
 

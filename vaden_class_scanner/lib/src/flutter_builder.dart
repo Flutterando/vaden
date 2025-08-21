@@ -49,7 +49,7 @@ class FlutterVadenBuilder implements Builder {
     importsBuffer.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
     importsBuffer.writeln('// Aggregated Vaden application file');
     importsBuffer.writeln(
-        '// ignore_for_file: prefer_function_declarations_over_variables, implementation_imports');
+        '// ignore_for_file: prefer_func  tion_declarations_over_variables, implementation_imports');
 
     aggregatedBuffer.writeln('''
 import 'dart:convert';
@@ -78,6 +78,7 @@ class VadenApp extends FlutterVadenApplication {
   Future<void> setup() async {
     final asyncBeans = <Future<void> Function()>[];
     _injector.addLazySingleton<DSON>(_DSON.new);
+    _injector.addInstance<Injector>(_injector);
 ''');
 
     final body = await buildStep //
