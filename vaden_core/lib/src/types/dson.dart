@@ -172,6 +172,14 @@ abstract class DSON {
     return toJsonFunction(object);
   }
 
+  Map<String, dynamic> toJsonByType(dynamic object, Type type) {
+    final ToJsonFunction? toJsonFunction = _mapToJson[type];
+    if (toJsonFunction == null) {
+      throw Exception({'error': '$type is not a DTO'});
+    }
+    return toJsonFunction(object);
+  }
+
   /// Converts a list of objects of type T to a list of JSON maps.
   ///
   /// This method applies the [toJson] method to each element in the list.

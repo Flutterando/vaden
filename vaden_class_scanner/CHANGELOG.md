@@ -1,3 +1,7 @@
+## 0.1.3 (2025/08/21)
+
+- Fix DTO serialization
+
 ## 0.1.2 (2025/07/20)
 
 - Added Scope to Dependency Injection.

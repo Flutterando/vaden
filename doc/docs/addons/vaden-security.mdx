@@ -77,7 +77,7 @@ import 'package:vaden_security/vaden_security.dart';
 @Service()
 class UserDetailsServiceImpl implements UserDetailsService {
   @override
-  Future<UserDetails> loadUserByUsername(String username) async {
+  Future<UserDetails?> loadUserByUsername(String username) async {
     ...
   }
 }
@@ -93,6 +93,12 @@ List<Product> getProductsByUser(@Context() UserDetails user) {
   return productService.getProductsByUser(user);
 }
 ```
+
+:::tip
+
+You can customize the `UserDetails` object by creating a new class and extending the `UserDetails` class.
+
+:::
 
 ## HttpSecurity
 

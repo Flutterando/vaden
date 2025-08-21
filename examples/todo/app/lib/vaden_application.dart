@@ -1,7 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // Aggregated Vaden application file
-// ignore_for_file: prefer_function_declarations_over_variables, implementation_imports
+// ignore_for_file: prefer_func  tion_declarations_over_variables, implementation_imports
 import 'package:domain/domain.dart';
+import 'package:domain/models/default_message.dart';
+import 'package:domain/models/todo.dart';
+
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart' as dioPackage;
 import 'package:flutter_vaden/flutter_vaden.dart';
 
 late final AutoInjector _injector;
@@ -10,7 +16,7 @@ class VadenApp extends FlutterVadenApplication {
   @override
   AutoInjector get injector => _injector;
 
-  VadenApp({super.key, required super.child, AutoInjector? injector}) {
+  VadenApp({required super.child, AutoInjector? injector}) {
     _injector = injector ?? AutoInjector();
   }
 
@@ -18,6 +24,7 @@ class VadenApp extends FlutterVadenApplication {
   Future<void> setup() async {
     final asyncBeans = <Future<void> Function()>[];
     _injector.addLazySingleton<DSON>(_DSON.new);
+    _injector.addInstance<Injector>(_injector);
 
     _injector.commit();
 
@@ -57,24 +64,46 @@ class _DSON extends DSON {
     };
 
     fromJsonMap[Todo] = (Map<String, dynamic> json) {
-      return Function.apply(Todo.new, [], {
-        #id: json['id'],
-        #title: json['title'],
-        #check: json['check'],
-      });
+      final runtimeType = json['runtimeType'] as String?;
+      switch (runtimeType) {
+        case 'TodoBase':
+          return fromJson<TodoBase>(json);
+        case 'TodoCreate':
+          return fromJson<TodoCreate>(json);
+        case 'TodoUpdate':
+          return fromJson<TodoUpdate>(json);
+        default:
+          throw ArgumentError('Unknown runtimeType for Todo: $runtimeType');
+      }
     };
     toJsonMap[Todo] = (object) {
-      final obj = object as Todo;
-      return {'id': obj.id, 'title': obj.title, 'check': obj.check};
+      // Obtém o tipo real do objeto em runtime
+      final objectType = object.runtimeType;
+      switch (objectType) {
+        case TodoBase:
+          return toJson<TodoBase>(object as TodoBase);
+        case TodoCreate:
+          return toJson<TodoCreate>(object as TodoCreate);
+        case TodoUpdate:
+          return toJson<TodoUpdate>(object as TodoUpdate);
+        default:
+          throw ArgumentError('Unknown subtype for Todo: $objectType');
+      }
     };
     toOpenApiMap[Todo] = {
-      "type": "object",
-      "properties": <String, dynamic>{
-        "id": {"type": "integer"},
-        "title": {"type": "string"},
-        "check": {"type": "boolean"},
+      "oneOf": [
+        {r"$ref": "#/components/schemas/TodoBase"},
+        {r"$ref": "#/components/schemas/TodoCreate"},
+        {r"$ref": "#/components/schemas/TodoUpdate"},
+      ],
+      "discriminator": {
+        "propertyName": "runtimeType",
+        "mapping": {
+          "TodoBase": "#/components/schemas/TodoBase",
+          "TodoCreate": "#/components/schemas/TodoCreate",
+          "TodoUpdate": "#/components/schemas/TodoUpdate",
+        },
       },
-      "required": ["id", "title", "check"],
     };
 
     fromJsonMap[TodoCreate] = (Map<String, dynamic> json) {
@@ -85,7 +114,11 @@ class _DSON extends DSON {
     };
     toJsonMap[TodoCreate] = (object) {
       final obj = object as TodoCreate;
-      return {'title': obj.title, 'check': obj.check};
+      return {
+        'runtimeType': 'TodoCreate',
+        'title': obj.title,
+        'check': obj.check,
+      };
     };
     toOpenApiMap[TodoCreate] = {
       "type": "object",
