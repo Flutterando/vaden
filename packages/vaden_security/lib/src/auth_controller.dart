@@ -9,11 +9,13 @@ class AuthController {
   final JwtService jwtService;
   final UserDetailsService userDetailsService;
   final PasswordEncoder passwordEncoder;
+  final DSON dson;
 
   AuthController(
     this.jwtService,
     this.userDetailsService,
     this.passwordEncoder,
+    this.dson,
   );
 
   @ApiSecurity(['bearer'])
@@ -34,7 +36,8 @@ class AuthController {
       description: 'Unauthorized',
       content: ApiContent(type: 'application/json', schema: VadenSecurityError))
   @Get('/me')
-  Future<UserDetails> me(@Header('Authorization') String? header) async {
+  Future<Map<String, dynamic>> me(
+      @Header('Authorization') String? header) async {
     if (header == null || !header.toLowerCase().startsWith('bearer ')) {
       throw ResponseException(
           400, VadenSecurityError('Missing or invalid Authorization header'));
@@ -54,7 +57,7 @@ class AuthController {
       throw ResponseException(403, VadenSecurityError('Invalid credentials'));
     }
 
-    return userDetails;
+    return dson.toJsonByType(userDetails, userDetails.runtimeType);
   }
 
   @ApiSecurity(['basic'])
@@ -126,7 +129,7 @@ class AuthController {
       description: 'Unauthorized',
       content: ApiContent(type: 'application/json', schema: VadenSecurityError))
   @Get('/refresh')
-  Future<Tokenization> register(@Header('Authorization') String? header) async {
+  Future<Tokenization> refresh(@Header('Authorization') String? header) async {
     if (header == null || !header.toLowerCase().startsWith('bearer ')) {
       throw ResponseException(
           400, VadenSecurityError('Missing or invalid Authorization header'));
