@@ -99,7 +99,7 @@ String _fieldToSchema(DartType type) {
 
     return '{"type": "array", "items": $elementSchema}';
   } else {
-    final typeName = type.getDisplayString();
+    final typeName = type.getDisplayString().replaceAll('?', '');
     return '{r"\$ref": "#/components/schemas/$typeName"}';
   }
 }
@@ -138,7 +138,8 @@ String _fromJson(ClassElement classElement) {
         paramValue = "json['$paramName']?.toDouble()";
       } else if (parameter.type.isDartCoreList) {
         final param = parameter.type as ParameterizedType;
-        final arg = param.typeArguments.first.getDisplayString();
+        final arg =
+            param.typeArguments.first.getDisplayString().replaceAll('?', '');
         paramValue = isNotNull
             ? "json['$paramName'].cast<$arg>()"
             : "json['$paramName'] == null ? null : json['$paramName'].cast<$arg>()";
@@ -148,7 +149,8 @@ String _fromJson(ClassElement classElement) {
     } else {
       if (parameter.type.isDartCoreList) {
         final param = parameter.type as ParameterizedType;
-        final arg = param.typeArguments.first.getDisplayString();
+        final arg =
+            param.typeArguments.first.getDisplayString().replaceAll('?', '');
         paramValue = isNotNull
             ? "fromJsonList<$arg>(json['$paramName'])"
             : "json['$paramName'] == null ? null : fromJsonList<$arg>(json['$paramName'])";
@@ -300,7 +302,8 @@ String _toJsonField(FieldElement field) {
   } else {
     if (field.type.isDartCoreList) {
       final param = field.type as ParameterizedType;
-      final arg = param.typeArguments.first;
+      final arg =
+          param.typeArguments.first.getDisplayString().replaceAll('?', '');
       return isNotNull
           ? " '$fieldKey': toJsonList<$arg>(obj.$fieldName),"
           : " '$fieldKey': obj.$fieldName == null ? null : toJsonList<$arg>(obj.$fieldName!),";

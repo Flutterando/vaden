@@ -190,7 +190,8 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
           if (schema != null) {
             if (schema.isDartCoreList) {
               final schemaName = _extractListElementType(schema, classElement)
-                  .getDisplayString();
+                  .getDisplayString()
+                  .replaceAll('?', '');
               bodyBuffer.writeln("""
 paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content']['$type']['schema'] = {
     'type': 'array',
@@ -200,7 +201,7 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
 };
 """);
             } else {
-              final schemaName = schema.getDisplayString();
+              final schemaName = schema.getDisplayString().replaceAll('?', '');
               bodyBuffer.writeln("""
 paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content']['$type']['schema'] = {
   '\\\$ref': '#/components/schemas/$schemaName',
@@ -262,11 +263,34 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
     final paramCodeList = <String>[];
     for (final parameter in method.parameters) {
       if (bodyChecker.hasAnnotationOf(parameter)) {
-        final typeName = _resolveTypeFromGeneric(parameter.type, classElement)
-            .getDisplayString();
+        final resolvedType =
+            _resolveTypeFromGeneric(parameter.type, classElement);
+        final typeName = resolvedType.getDisplayString().replaceAll('?', '');
+        final isListType = resolvedType.isDartCoreList;
 
         if (api != null) {
-          bodyBuffer.writeln("""
+          if (isListType) {
+            final elementType =
+                _extractListElementType(resolvedType, classElement);
+            final elementTypeName =
+                elementType.getDisplayString().replaceAll('?', '');
+            bodyBuffer.writeln("""
+paths['$apiPathResolver']['$routerMethod']['requestBody'] = {
+  'content': {
+    'application/json': {
+      'schema': {
+        'type': 'array',
+        'items': {
+          '\\\$ref': '#/components/schemas/$elementTypeName',
+        },
+      },
+    },
+  },
+  'required': true,
+};
+""");
+          } else {
+            bodyBuffer.writeln("""
 paths['$apiPathResolver']['$routerMethod']['requestBody'] = {
   'content': {
     'application/json': {
@@ -278,9 +302,27 @@ paths['$apiPathResolver']['$routerMethod']['requestBody'] = {
   'required': true,
 };
 """);
+          }
         }
 
-        paramCodeList.add("""
+        if (isListType) {
+          final elementType =
+              _extractListElementType(resolvedType, classElement);
+          final elementTypeName = elementType.getDisplayString();
+          paramCodeList.add("""
+final bodyString = await request.readAsString();
+final bodyJson = jsonDecode(bodyString) as List;
+final ${parameter.name} =  _injector.get<DSON>().fromJsonList<$elementTypeName>(bodyJson) as dynamic;
+
+if (${parameter.name} == null) {
+        return Response(
+          400,
+          body: jsonEncode({'error': 'Invalid body: ($typeName)'}),
+        );
+}
+""");
+        } else {
+          paramCodeList.add("""
 final bodyString = await request.readAsString();
 final bodyJson = jsonDecode(bodyString) as Map<String, dynamic>;
 final ${parameter.name} =  _injector.get<DSON>().fromJson<$typeName>(bodyJson) as dynamic;
@@ -300,6 +342,7 @@ if (${parameter.name} is Validator<$typeName>) {
   }
 }
 """);
+        }
       } else if (paramChecker.hasAnnotationOf(parameter)) {
         final pname = paramChecker
                 .firstAnnotationOf(parameter)
