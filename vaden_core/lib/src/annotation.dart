@@ -377,10 +377,17 @@ class JsonKey {
   /// The name to use for this field in JSON serialization/deserialization.
   final String name;
 
-  /// Creates a JsonKey annotation with the specified name.
+  /// Whether the field is required in the JSON schema.
+  ///
+  /// When set to false, the field will not be included in the OpenAPI required array
+  /// even if the field type is non-nullable.
+  final bool required;
+
+  /// Creates a JsonKey annotation with the specified name and required flag.
   ///
   /// [name] - The name to use for this field in JSON.
-  const JsonKey(this.name);
+  /// [required] - Whether the field is required (defaults to true).
+  const JsonKey(this.name, {this.required = true});
 }
 
 /// Excludes a field from JSON serialization and deserialization.
