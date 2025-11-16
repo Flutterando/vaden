@@ -9,6 +9,7 @@ Vaden uses the concept of DTOs (Data Transfer Objects) to safely transport data 
 ## `@DTO()` Annotation
 
 To define a DTO in Vaden, annotate the class with @DTO(). This marks the class for code generation so that Vaden can handle:
+
 - Automatic fromJson and toJson conversion.
 - Input validation (via Validator mixin).
 - Schema generation for OpenAPI.
@@ -32,7 +33,7 @@ UserProfile getProfile() => UserProfile('Alice');
 
 This makes the controller cleaner while still returning a proper application/json response.
 
-## Json Key 
+## Json Key
 
 If you want to use a different key in the JSON than the field name, you can use the `@JsonKey()` annotation:
 
@@ -48,6 +49,53 @@ class Credentials with Validator<Credentials> {
 
 }
 ```
+
+### Optional Required Behavior
+
+By default, every non-nullable field (no `?`) is marked as required in the generated OpenAPI schema. Sometimes you want a field to be non-nullable in your Dart code (because your code always sets it), but optional for clients sending data to your API.
+
+Use the `required: false` flag in `@JsonKey` to express this:
+
+```dart
+@DTO()
+class UserProfile {
+  final String id; // required in OpenAPI (non-nullable and default behavior)
+
+  // Non-nullable in Dart, but optional for incoming JSON payloads
+  @JsonKey('display_name', required: false)
+  final String displayName;
+
+  // Nullable field: also optional (will not be in required list)
+  final String? bio;
+
+  UserProfile({
+    required this.id,
+    required this.displayName,
+    this.bio,
+  });
+}
+```
+
+OpenAPI result (simplified):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "display_name": { "type": "string" },
+    "bio": { "type": "string" }
+  },
+  "required": ["id"]
+}
+```
+
+Key points:
+
+- Non-nullable + `@JsonKey(required: false)` → optional in OpenAPI
+- Non-nullable without annotation → required
+- Nullable (`Type?`) → optional automatically
+- This lets you keep strong invariants in your domain model while relaxing client payload requirements.
 
 ## Validation
 
@@ -74,7 +122,7 @@ class Credentials with Validator<Credentials> {
 ## Complex Objects parse
 
 DTOs can also contain other DTOs. Vaden will automatically handle the serialization and deserialization of nested objects,
-but you can also use `@UseParse()` to specify a custom parser for a field. This is useful for complex 
+but you can also use `@UseParse()` to specify a custom parser for a field. This is useful for complex
 types or when you want to control the serialization format:
 
 ```dart
@@ -82,11 +130,11 @@ types or when you want to control the serialization format:
 class UserDocument {
   final String title;
   final String description;
-  
+
   // Custom parser for File - converts to base64 string
   @UseParse(FileParse)
   final File? attachment;
-  
+
   const UserDocument(this.title, this.description, this.attachment);
 }
 
@@ -128,7 +176,7 @@ Vaden automatically handles serialization and deserialization for several comple
 class Event {
   final String name;
   final DateTime startTime;     // Automatic DateTime handling
-  final Duration duration;      // Automatic Duration handling  
+  final Duration duration;      // Automatic Duration handling
   final EventType type;         // Automatic enum handling
   final Uri? website;           // Automatic Uri handling
 
@@ -155,11 +203,13 @@ String login(@Body() Credentials credentials) {
   return Response.ok(credentials.username);
 }
 ```
+
 Only `@DTO()` classes are allowed in `@Body()` parameters.
 
 ## DSON
 
 DSON is Vaden’s automatic serializer. It is responsible for:
+
 - Converting DTOs from JSON (`fromJson<T>()`).
 - Converting objects to JSON (`toJson<T>()`).
 - Generating OpenAPI schemas.
