@@ -4,36 +4,60 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:vaden_core/vaden_core.dart';
 
-final controllerChecker = TypeChecker.fromRuntime(Controller);
+final controllerChecker = TypeChecker.typeNamed(Controller);
 
 // documentation
-final apiChecker = TypeChecker.fromRuntime(Api);
-final apiOperationChecker = TypeChecker.fromRuntime(ApiOperation);
-final apiResponseChecker = TypeChecker.fromRuntime(ApiResponse);
-final apiContentChecker = TypeChecker.fromRuntime(ApiContent);
-final apiParamChecker = TypeChecker.fromRuntime(ApiParam);
-final apiQueryChecker = TypeChecker.fromRuntime(ApiQuery);
-final apiSecurityChecker = TypeChecker.fromRuntime(ApiSecurity);
+final apiChecker = TypeChecker.typeNamed(Api, inPackage: 'vaden_core');
+final apiOperationChecker = TypeChecker.typeNamed(
+  ApiOperation,
+  inPackage: 'vaden_core',
+);
+final apiResponseChecker = TypeChecker.typeNamed(
+  ApiResponse,
+  inPackage: 'vaden_core',
+);
+final apiContentChecker = TypeChecker.typeNamed(
+  ApiContent,
+  inPackage: 'vaden_core',
+);
+final apiParamChecker = TypeChecker.typeNamed(
+  ApiParam,
+  inPackage: 'vaden_core',
+);
+final apiQueryChecker = TypeChecker.typeNamed(
+  ApiQuery,
+  inPackage: 'vaden_core',
+);
+final apiSecurityChecker = TypeChecker.typeNamed(
+  ApiSecurity,
+  inPackage: 'vaden_core',
+);
 
 final methodCheckers = <(TypeChecker, String)>[
-  (TypeChecker.fromRuntime(Get), 'get'),
-  (TypeChecker.fromRuntime(Post), 'post'),
-  (TypeChecker.fromRuntime(Put), 'put'),
-  (TypeChecker.fromRuntime(Patch), 'patch'),
-  (TypeChecker.fromRuntime(Delete), 'delete'),
-  (TypeChecker.fromRuntime(Head), 'head'),
-  (TypeChecker.fromRuntime(Options), 'options'),
-  (TypeChecker.fromRuntime(Mount), 'mount'),
+  (TypeChecker.typeNamed(Get, inPackage: 'vaden_core'), 'get'),
+  (TypeChecker.typeNamed(Post, inPackage: 'vaden_core'), 'post'),
+  (TypeChecker.typeNamed(Put, inPackage: 'vaden_core'), 'put'),
+  (TypeChecker.typeNamed(Patch, inPackage: 'vaden_core'), 'patch'),
+  (TypeChecker.typeNamed(Delete, inPackage: 'vaden_core'), 'delete'),
+  (TypeChecker.typeNamed(Head, inPackage: 'vaden_core'), 'head'),
+  (TypeChecker.typeNamed(Options, inPackage: 'vaden_core'), 'options'),
+  (TypeChecker.typeNamed(Mount, inPackage: 'vaden_core'), 'mount'),
 ];
 
-final useGuardsChecker = TypeChecker.fromRuntime(UseGuards);
-final useMiddlewareChecker = TypeChecker.fromRuntime(UseMiddleware);
+final useGuardsChecker = TypeChecker.typeNamed(
+  UseGuards,
+  inPackage: 'vaden_core',
+);
+final useMiddlewareChecker = TypeChecker.typeNamed(
+  UseMiddleware,
+  inPackage: 'vaden_core',
+);
 
-final paramChecker = TypeChecker.fromRuntime(Param);
-final queryChecker = TypeChecker.fromRuntime(Query);
-final headerChecker = TypeChecker.fromRuntime(Header);
-final contextChecker = TypeChecker.fromRuntime(Context);
-final bodyChecker = TypeChecker.fromRuntime(Body);
+final paramChecker = TypeChecker.typeNamed(Param, inPackage: 'vaden_core');
+final queryChecker = TypeChecker.typeNamed(Query, inPackage: 'vaden_core');
+final headerChecker = TypeChecker.typeNamed(Header, inPackage: 'vaden_core');
+final contextChecker = TypeChecker.typeNamed(Context, inPackage: 'vaden_core');
+final bodyChecker = TypeChecker.typeNamed(Body, inPackage: 'vaden_core');
 
 String controllerSetup(ClassElement classElement) {
   final bodyBuffer = StringBuffer();
@@ -53,7 +77,7 @@ String controllerSetup(ClassElement classElement) {
 
   final controllerPath = controllerAnn.getField('path')?.toStringValue() ?? '';
 
-  final controllerName = classElement.name;
+  final controllerName = classElement.name ?? '';
 
   final controllerApi = apiChecker.firstAnnotationOf(classElement);
   Api? api;
@@ -63,19 +87,22 @@ String controllerSetup(ClassElement classElement) {
         controllerApi.getField('description')?.toStringValue() ?? '';
     api = Api(tag: tag, description: description);
     bodyBuffer.writeln(
-        "apis.add(const Api(tag: '${api.tag}', description: '${api.description}'));");
+      "apis.add(const Api(tag: '${api.tag}', description: '${api.description}'));",
+    );
   }
 
-  final controllerApiSecurityAnnotation =
-      apiSecurityChecker.firstAnnotationOf(classElement);
+  final controllerApiSecurityAnnotation = apiSecurityChecker.firstAnnotationOf(
+    classElement,
+  );
   ApiSecurity? globalApiSecurity;
 
   if (controllerApiSecurityAnnotation != null) {
     final securitySchemes =
         controllerApiSecurityAnnotation.getField('schemes')?.toListValue() ??
-            [];
-    final securityList =
-        securitySchemes.map((e) => e.toStringValue()!).toList();
+        [];
+    final securityList = securitySchemes
+        .map((e) => e.toStringValue()!)
+        .toList();
     globalApiSecurity = ApiSecurity(securityList);
   }
 
@@ -86,7 +113,7 @@ String controllerSetup(ClassElement classElement) {
   bodyBuffer.writeln("final $routerVar = Router();");
 
   for (final method in _getAllMethods(classElement)) {
-    if (method.enclosingElement3.name == 'Object') continue;
+    if (method.enclosingElement?.name == 'Object') continue;
     if (method.isStatic) continue;
     if (method.isPrivate) continue;
     if (method.name == 'noSuchMethod') continue;
@@ -114,8 +141,9 @@ String controllerSetup(ClassElement classElement) {
         .replaceAll('//', '/');
 
     if (api != null && routerMethod != 'mount') {
-      final convertSecurity =
-          globalApiSecurity?.schemes.map((e) => "{'$e': []}").toList();
+      final convertSecurity = globalApiSecurity?.schemes
+          .map((e) => "{'$e': []}")
+          .toList();
       final security = convertSecurity != null
           ? '[$convertSecurity]'
           : '<Map<String, dynamic>>[]';
@@ -136,30 +164,36 @@ paths['$apiPathResolver'] = <String, dynamic>{
 
 """);
 
-      final apiSecurityAnnotation =
-          apiSecurityChecker.firstAnnotationOf(method);
+      final apiSecurityAnnotation = apiSecurityChecker.firstAnnotationOf(
+        method,
+      );
       if (apiSecurityAnnotation != null) {
         final securitySchemes =
             apiSecurityAnnotation.getField('schemes')?.toListValue() ?? [];
-        final securityList =
-            securitySchemes.map((e) => "{'${e.toStringValue()}': []}").toList();
+        final securityList = securitySchemes
+            .map((e) => "{'${e.toStringValue()}': []}")
+            .toList();
         bodyBuffer.writeln(
-            "paths['$apiPathResolver']['$routerMethod']['security'] = $securityList;");
+          "paths['$apiPathResolver']['$routerMethod']['security'] = $securityList;",
+        );
       }
 
-      final apiOperationAnnotation =
-          apiOperationChecker.firstAnnotationOf(method);
+      final apiOperationAnnotation = apiOperationChecker.firstAnnotationOf(
+        method,
+      );
 
       if (apiOperationAnnotation != null) {
         final summary =
             apiOperationAnnotation.getField('summary')?.toStringValue() ?? '';
         final description =
             apiOperationAnnotation.getField('description')?.toStringValue() ??
-                '';
+            '';
         bodyBuffer.writeln(
-            "paths['$apiPathResolver']['$routerMethod']['summary'] = '$summary';");
+          "paths['$apiPathResolver']['$routerMethod']['summary'] = '$summary';",
+        );
         bodyBuffer.writeln(
-            "paths['$apiPathResolver']['$routerMethod']['description'] = '$description';");
+          "paths['$apiPathResolver']['$routerMethod']['description'] = '$description';",
+        );
       }
 
       final apiResponseAnnotations = apiResponseChecker.annotationsOf(method);
@@ -169,7 +203,7 @@ paths['$apiPathResolver'] = <String, dynamic>{
             apiResponseAnnotation.getField('statusCode')?.toIntValue() ?? 200;
         final description =
             apiResponseAnnotation.getField('description')?.toStringValue() ??
-                '';
+            '';
 
         bodyBuffer.writeln("""
 paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode'] = {
@@ -189,9 +223,10 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
 
           if (schema != null) {
             if (schema.isDartCoreList) {
-              final schemaName = _extractListElementType(schema, classElement)
-                  .getDisplayString()
-                  .replaceAll('?', '');
+              final schemaName = _extractListElementType(
+                schema,
+                classElement,
+              ).getDisplayString().replaceAll('?', '');
               bodyBuffer.writeln("""
 paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content']['$type']['schema'] = {
     'type': 'array',
@@ -222,7 +257,8 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
         final guardTypeName = g.toTypeValue()?.getDisplayString();
         if (guardTypeName != null) {
           bodyBuffer.writeln(
-              "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(guardTypeName)});");
+            "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(guardTypeName)});",
+          );
         }
       }
     }
@@ -232,7 +268,8 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
         final middTypeName = m.toTypeValue()?.getDisplayString();
         if (middTypeName != null) {
           bodyBuffer.writeln(
-              "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(middTypeName)});");
+            "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(middTypeName)});",
+          );
         }
       }
     }
@@ -245,7 +282,8 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
         final guardTypeName = g.toTypeValue()?.getDisplayString();
         if (guardTypeName != null) {
           bodyBuffer.writeln(
-              "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(guardTypeName)});");
+            "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(guardTypeName)});",
+          );
         }
       }
     }
@@ -255,25 +293,32 @@ paths['$apiPathResolver']['$routerMethod']['responses']['$statusCode']['content'
         final middTypeName = m.toTypeValue()?.getDisplayString();
         if (middTypeName != null) {
           bodyBuffer.writeln(
-              "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(middTypeName)});");
+            "$pipelineVar = $pipelineVar.addMiddleware(${wrapMiddleware(middTypeName)});",
+          );
         }
       }
     }
 
     final paramCodeList = <String>[];
-    for (final parameter in method.parameters) {
+    for (final parameter in method.formalParameters) {
       if (bodyChecker.hasAnnotationOf(parameter)) {
-        final resolvedType =
-            _resolveTypeFromGeneric(parameter.type, classElement);
+        final resolvedType = _resolveTypeFromGeneric(
+          parameter.type,
+          classElement,
+        );
         final typeName = resolvedType.getDisplayString().replaceAll('?', '');
         final isListType = resolvedType.isDartCoreList;
 
         if (api != null) {
           if (isListType) {
-            final elementType =
-                _extractListElementType(resolvedType, classElement);
-            final elementTypeName =
-                elementType.getDisplayString().replaceAll('?', '');
+            final elementType = _extractListElementType(
+              resolvedType,
+              classElement,
+            );
+            final elementTypeName = elementType.getDisplayString().replaceAll(
+              '?',
+              '',
+            );
             bodyBuffer.writeln("""
 paths['$apiPathResolver']['$routerMethod']['requestBody'] = {
   'content': {
@@ -306,8 +351,10 @@ paths['$apiPathResolver']['$routerMethod']['requestBody'] = {
         }
 
         if (isListType) {
-          final elementType =
-              _extractListElementType(resolvedType, classElement);
+          final elementType = _extractListElementType(
+            resolvedType,
+            classElement,
+          );
           final elementTypeName = elementType.getDisplayString();
           paramCodeList.add("""
 final bodyString = await request.readAsString();
@@ -344,7 +391,8 @@ if (${parameter.name} is Validator<$typeName>) {
 """);
         }
       } else if (paramChecker.hasAnnotationOf(parameter)) {
-        final pname = paramChecker
+        final pname =
+            paramChecker
                 .firstAnnotationOf(parameter)
                 ?.getField('name')
                 ?.toStringValue() ??
@@ -369,15 +417,17 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
   if (request.params['$pname'] == null) {
     return Response(400, body: jsonEncode({'error': 'Path Param is required ($pname)'}));
   }
-  final ${parameter.name} =  _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.params['$pname'])!;
+  final ${parameter.name} =  _parse<${parameter.type.getDisplayString()}>(request.params['$pname'])!;
 
 """);
         } else {
           paramCodeList.add(
-              "final ${parameter.name} =  _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.params['$pname']);");
+            "final ${parameter.name} =  _parse<${parameter.type.getDisplayString()}>(request.params['$pname']);",
+          );
         }
       } else if (queryChecker.hasAnnotationOf(parameter)) {
-        final qname = queryChecker
+        final qname =
+            queryChecker
                 .firstAnnotationOf(parameter)
                 ?.getField('name')
                 ?.toStringValue() ??
@@ -401,15 +451,17 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
   if (request.url.queryParameters['$qname'] == null) {
     return Response(400, body: jsonEncode({'error': 'Query param is required ($qname)'}));
   }
-  final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.url.queryParameters['$qname'])!;
+  final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.url.queryParameters['$qname'])!;
 
 """);
         } else {
           paramCodeList.add(
-              "final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.url.queryParameters['$qname']);");
+            "final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.url.queryParameters['$qname']);",
+          );
         }
       } else if (headerChecker.hasAnnotationOf(parameter)) {
-        final hname = headerChecker
+        final hname =
+            headerChecker
                 .firstAnnotationOf(parameter)
                 ?.getField('name')
                 ?.toStringValue() ??
@@ -421,15 +473,17 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
   if (request.headers['$hname'] == null) {
     return Response(400, body: jsonEncode({'error': 'Header is required ($hname)'}));
   }
-  final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.headers['$hname'])!;
+  final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.headers['$hname'])!;
 
 """);
         } else {
           paramCodeList.add(
-              "final ${parameter.name} = _parse<${parameter.type.getDisplayString(withNullability: false)}>(request.headers['$hname']);");
+            "final ${parameter.name} = _parse<${parameter.type.getDisplayString()}>(request.headers['$hname']);",
+          );
         }
       } else if (contextChecker.hasAnnotationOf(parameter)) {
-        final cname = contextChecker
+        final cname =
+            contextChecker
                 .firstAnnotationOf(parameter)
                 ?.getField('name')
                 ?.toStringValue() ??
@@ -444,7 +498,8 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
 """);
         }
         paramCodeList.add(
-            "final ${parameter.name} = request.context['$cname'] as dynamic;");
+          "final ${parameter.name} = request.context['$cname'] as dynamic;",
+        );
       } else {
         final paramType = parameter.type.getDisplayString();
         if (paramType == 'Request' || paramType == 'Request?') {
@@ -460,8 +515,9 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
     for (final code in paramCodeList) {
       bodyBuffer.writeln("  $code");
     }
-    final callParams = method.parameters.map((p) => p.name).join(', ');
-    final isFuture = method.returnType.isDartAsyncFuture ||
+    final callParams = method.formalParameters.map((p) => p.name).join(', ');
+    final isFuture =
+        method.returnType.isDartAsyncFuture ||
         method.returnType.isDartAsyncFutureOr;
     final returnType = _getUnderlyingType(method.returnType, classElement);
 
@@ -503,12 +559,14 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
       } else {
         if (returnType.isDartCoreList) {
           final elementType = _extractListElementType(returnType, classElement);
-          toJsonResponse = """
+          toJsonResponse =
+              """
           final jsoResponse = _injector.get<DSON>().toJsonList<${elementType.getDisplayString()}>(result);
           return Response.ok(jsonEncode(jsoResponse), headers: {'Content-Type': 'application/json'});
           """;
         } else {
-          toJsonResponse = """
+          toJsonResponse =
+              """
           final jsoResponse = _injector.get<DSON>().toJson<$display>(result);
           return Response.ok(jsonEncode(jsoResponse), headers: {'Content-Type': 'application/json'});
           """;
@@ -526,7 +584,8 @@ paths['$apiPathResolver']['$routerMethod']['parameters']?.add({
     bodyBuffer.writeln("};");
 
     bodyBuffer.writeln(
-        "$routerVar.$routerMethod('$routePath', $pipelineVar.addHandler($handlerVar));");
+      "$routerVar.$routerMethod('$routePath', $pipelineVar.addHandler($handlerVar));",
+    );
 
     // documetation
   }
@@ -574,10 +633,13 @@ DartType _resolveTypeFromGeneric(DartType type, ClassElement currentClass) {
   final typeArguments = superclass.typeArguments;
   final typeParams = superclass.element.typeParameters;
 
-  final typeMap = <String, DartType>{
-    for (int i = 0; i < typeParams.length; i++)
-      typeParams[i].name: typeArguments[i],
-  };
+  final typeMap = <String, DartType>{};
+  for (int i = 0; i < typeParams.length; i++) {
+    final paramName = typeParams[i].name;
+    if (paramName != null) {
+      typeMap[paramName] = typeArguments[i];
+    }
+  }
 
   if (type is TypeParameterType && typeMap.containsKey(type.element.name)) {
     return typeMap[type.element.name]!;
@@ -590,14 +652,23 @@ List<MethodElement> _getAllMethods(ClassElement classElement) {
   final allMethods = <String, MethodElement>{};
 
   for (final m in classElement.methods) {
-    allMethods[m.name] = m;
+    final name = m.name;
+    if (name != null) {
+      allMethods[name] = m.firstFragment as MethodElement;
+    }
   }
 
   for (final supertype in classElement.allSupertypes) {
     if (supertype.element.name == 'Object') continue;
 
     for (final method in supertype.element.methods) {
-      allMethods.putIfAbsent(method.name, () => method);
+      final name = method.name;
+      if (name != null) {
+        allMethods.putIfAbsent(
+          name,
+          () => method.firstFragment as MethodElement,
+        );
+      }
     }
   }
 

@@ -25,6 +25,8 @@
 ///   serve(handler, 'localhost', 8080);
 /// }
 /// ```
+library;
+
 import 'package:vaden/vaden.dart';
 
 part 'pipeline_extension.dart';

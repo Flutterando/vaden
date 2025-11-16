@@ -1,7 +1,7 @@
 name: vaden_workspace
 publish_to: none
 environment:
-  sdk: ^3.6.0
+  sdk: ^3.9.2
 workspace:
   - vaden
   - flutter_vaden
@@ -11,7 +11,6 @@ workspace:
   - vaden_class_scanner
   - vaden_generator/backend
   - vaden_generator/frontend
-  - packages/anaki_orm
   - packages/vaden_security
   - examples/todo/app
   - examples/todo/domain

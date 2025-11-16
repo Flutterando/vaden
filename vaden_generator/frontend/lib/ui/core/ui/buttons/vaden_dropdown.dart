@@ -139,20 +139,14 @@ class _VadenDropdownState extends State<VadenDropdown> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  VadenColors.gradientStart,
-                  VadenColors.gradientEnd,
-                ],
+                colors: [VadenColors.gradientStart, VadenColors.gradientEnd],
               ),
             ),
           ),
           Container(
             width: 18,
             height: 18,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.black,
-            ),
+            decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
           ),
           Container(
             width: 12,
@@ -162,10 +156,7 @@ class _VadenDropdownState extends State<VadenDropdown> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  VadenColors.gradientStart,
-                  VadenColors.gradientEnd,
-                ],
+                colors: [VadenColors.gradientStart, VadenColors.gradientEnd],
               ),
             ),
           ),
@@ -181,16 +172,14 @@ class _VadenDropdownState extends State<VadenDropdown> {
     // Calcular a largura máxima necessária para as opções
     double maxTextWidth = 0;
     if (widget.dynamicWidth) {
-      final TextStyle textStyle = widget.optionsStyle ??
+      final TextStyle textStyle =
+          widget.optionsStyle ??
           widget.textStyle ??
-          TextStyle(
-            color: VadenColors.whiteColor,
-            fontSize: widget.fontSize,
-          );
+          TextStyle(color: VadenColors.whiteColor, fontSize: widget.fontSize);
 
       final TextPainter textPainter = TextPainter(
         textDirection: TextDirection.ltr,
-        textScaleFactor: MediaQuery.of(_dropdownKey.currentContext!).textScaleFactor,
+        textScaler: MediaQuery.of(_dropdownKey.currentContext!).textScaler,
       );
 
       for (final option in widget.options) {
@@ -219,11 +208,7 @@ class _VadenDropdownState extends State<VadenDropdown> {
         },
         child: Stack(
           children: [
-            Positioned.fill(
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
+            Positioned.fill(child: Container(color: Colors.transparent)),
             Positioned(
               width: dropdownWidth,
               child: CompositedTransformFollower(
@@ -244,10 +229,7 @@ class _VadenDropdownState extends State<VadenDropdown> {
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: VadenColors.txtSupport2,
-                          width: 1,
-                        ),
+                        border: Border.all(color: VadenColors.txtSupport2, width: 1),
                       ),
                       child: ListView.builder(
                         padding: EdgeInsets.zero,
@@ -261,19 +243,18 @@ class _VadenDropdownState extends State<VadenDropdown> {
                           return InkWell(
                             onTap: () => _selectOption(option),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               child: Row(
-                                mainAxisSize:
-                                    widget.dynamicWidth ? MainAxisSize.min : MainAxisSize.max,
+                                mainAxisSize: widget.dynamicWidth
+                                    ? MainAxisSize.min
+                                    : MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     child: Text(
                                       option,
-                                      style: widget.optionsStyle ??
+                                      style:
+                                          widget.optionsStyle ??
                                           widget.textStyle ??
                                           TextStyle(
                                             color: VadenColors.whiteColor,
@@ -330,7 +311,8 @@ class _VadenDropdownState extends State<VadenDropdown> {
             padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
             child: Text(
               widget.title!,
-              style: widget.titleStyle ??
+              style:
+                  widget.titleStyle ??
                   widget.textStyle ??
                   defaultTextStyle.copyWith(color: Colors.white70),
             ),
@@ -342,17 +324,11 @@ class _VadenDropdownState extends State<VadenDropdown> {
             onTap: _toggleDropdown,
             child: Container(
               height: widget.height ?? 56,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: VadenColors.txtSupport2,
-                  width: 1,
-                ),
+                border: Border.all(color: VadenColors.txtSupport2, width: 1),
               ),
               child: Row(
                 mainAxisSize: widget.dynamicWidth ? MainAxisSize.min : MainAxisSize.max,
@@ -372,18 +348,18 @@ class _VadenDropdownState extends State<VadenDropdown> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: VadenColors.backgroundColor2,
-                      border: Border.all(
-                        color: VadenColors.stkSupport2,
-                        width: 1,
-                      ),
+                      border: Border.all(color: VadenColors.stkSupport2, width: 1),
                     ),
                     child: Center(
                       child: Icon(
                         _isDropdownOpen
                             ? Icons.keyboard_arrow_up_rounded
                             : Icons.keyboard_arrow_down_rounded,
-                        color: widget.isEnabled //
-                            ? VadenColors.whiteColor //
+                        color:
+                            widget
+                                .isEnabled //
+                            ? VadenColors
+                                  .whiteColor //
                             : VadenColors.txtSupport2,
                         size: 16,
                       ),
@@ -403,9 +379,6 @@ class _VadenDropdownState extends State<VadenDropdown> {
     }
 
     // Caso contrário, use um SizedBox com largura fixa (comportamento original)
-    return SizedBox(
-      width: widget.width,
-      child: dropdownContent,
-    );
+    return SizedBox(width: widget.width, child: dropdownContent);
   }
 }

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:vaden/vaden.dart';
 
-/// Represents a Future that resolves to a ResponseEntity<T>.
+/// Represents a Future that resolves to a ResponseEntity.
 ///
 /// This type alias is useful for asynchronous controller methods that need to
 /// return a ResponseEntity after performing asynchronous operations.
@@ -39,12 +39,12 @@ class ResponseEntity<T> {
   ///
   /// This can be of various types, including:
   /// - String: For plain text responses
-  /// - List<int>: For binary data
-  /// - Map<String, dynamic>: For JSON objects
+  /// - List\<int>: For binary data
+  /// - Map\<String, dynamic>: For JSON objects
   /// - Custom DTO classes: Will be serialized to JSON using the DSON system
   /// - Lists of the above types
   final T body;
-  
+
   /// The HTTP status code for the response.
   ///
   /// Common status codes include:
@@ -54,25 +54,21 @@ class ResponseEntity<T> {
   /// - 302: Found (redirect)
   /// - 304: Not Modified
   final int statusCode;
-  
+
   /// Additional HTTP headers to include in the response.
   ///
   /// These headers will be merged with the default headers set by the framework.
   /// If a Content-Type header is not provided, it will be automatically set based
   /// on the type of the body content.
   final Map<String, String> headers;
-  
+
   /// Creates a new ResponseEntity with the specified body, status code, and headers.
   ///
   /// Parameters:
   /// - [body]: The body content of the response.
   /// - [statusCode]: The HTTP status code for the response (default: 200).
   /// - [headers]: Additional HTTP headers to include in the response (default: empty map).
-  ResponseEntity(
-    this.body, {
-    this.statusCode = 200,
-    this.headers = const {},
-  });
+  ResponseEntity(this.body, {this.statusCode = 200, this.headers = const {}});
 
   /// Generates a shelf Response object from this ResponseEntity.
   ///
@@ -80,8 +76,8 @@ class ResponseEntity<T> {
   /// returned from a controller method or middleware. The conversion process depends
   /// on the type of the body content:
   /// - String: Returned as plain text
-  /// - List<int>: Returned as binary data
-  /// - Map<String, dynamic> and similar map types: Encoded as JSON
+  /// - List\<int>: Returned as binary data
+  /// - Map\<String, dynamic> and similar map types: Encoded as JSON
   /// - Custom DTO classes: Serialized to JSON using the provided DSON instance
   /// - Lists of the above types: Processed accordingly
   ///
@@ -89,49 +85,70 @@ class ResponseEntity<T> {
   /// - [dson]: The DSON instance to use for serializing custom DTO classes.
   ///
   /// Returns:
-  /// - A shelf Response object with the appropriate status code, body, and headers.
+  /// - A shelf` Response object with the appropriate status code, body, and headers.
   Response generateResponse(DSON dson) {
     if (body is String) {
-      return Response(statusCode,
-          body: body, headers: _enforceContentType(headers, 'text/plain'));
+      return Response(
+        statusCode,
+        body: body,
+        headers: _enforceContentType(headers, 'text/plain'),
+      );
     } else if (body is List<int>) {
-      return Response(statusCode,
-          body: body,
-          headers: _enforceContentType(headers, 'application/octet-stream'));
+      return Response(
+        statusCode,
+        body: body,
+        headers: _enforceContentType(headers, 'application/octet-stream'),
+      );
     } else if (body is Map<String, dynamic>) {
-      return Response(statusCode,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        statusCode,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is Map<String, Object>) {
-      return Response(statusCode,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        statusCode,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is Map<String, String>) {
-      return Response(statusCode,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        statusCode,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is List<Map<String, dynamic>>) {
-      return Response(statusCode,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        statusCode,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is List<Map<String, String>>) {
-      return Response(statusCode,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        statusCode,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else if (body is List<Map<String, Object>>) {
-      return Response(statusCode,
-          body: jsonEncode(body),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        statusCode,
+        body: jsonEncode(body),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     } else {
       if (body is List) {
         final json = (body as List).map((e) => dson.toJson(e)).toList();
-        return Response(statusCode,
-            body: jsonEncode(json),
-            headers: _enforceContentType(headers, 'application/json'));
+        return Response(
+          statusCode,
+          body: jsonEncode(json),
+          headers: _enforceContentType(headers, 'application/json'),
+        );
       }
-      return Response(statusCode,
-          body: jsonEncode(dson.toJson(body)),
-          headers: _enforceContentType(headers, 'application/json'));
+      return Response(
+        statusCode,
+        body: jsonEncode(dson.toJson(body)),
+        headers: _enforceContentType(headers, 'application/json'),
+      );
     }
   }
 
@@ -151,9 +168,12 @@ class ResponseEntity<T> {
   /// - A new headers map with the Content-Type header added if necessary,
   ///   preserving all other original header values.
   Map<String, String> _enforceContentType(
-      Map<String, String> headers, String contentType) {
-    final Map<String, String> enforcedHeaders =
-    Map<String, String>.from(headers);
+    Map<String, String> headers,
+    String contentType,
+  ) {
+    final Map<String, String> enforcedHeaders = Map<String, String>.from(
+      headers,
+    );
 
     if (enforcedHeaders['content-type'] == null &&
         enforcedHeaders['Content-Type'] == null) {

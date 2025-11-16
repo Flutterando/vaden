@@ -4,6 +4,7 @@ import 'package:archive/archive_io.dart';
 import 'package:backend/src/core/files/file_generate.dart';
 import 'package:backend/src/core/files/generators/cron.dart';
 import 'package:backend/src/core/files/generators/dio.dart';
+import 'package:backend/src/core/files/generators/drift_postgres.dart';
 import 'package:backend/src/core/files/generators/initial_project.dart';
 import 'package:backend/src/core/files/generators/openapi.dart';
 import 'package:backend/src/core/files/generators/postgres.dart';
@@ -20,6 +21,7 @@ class FileManager {
   final _generators = <String, FileGenerator>{
     'initial_project': InitialProjectGenerator(),
     'openapi': OpenAPIGenerator(),
+    'drift_postgres': DriftPostgresGenerator(),
     'websocket': WebsocketGenerator(),
     'dio': DioGenerator(),
     'redis': RedisGenerator(),
@@ -74,9 +76,9 @@ class FileManager {
     final archive = Archive();
 
     final files = Directory(folderPath) //
-    .listSync(recursive: true) //
-    .whereType<File>() //
-    .toList();
+        .listSync(recursive: true) //
+        .whereType<File>() //
+        .toList();
 
     for (var file in files) {
       final fileBytes = await file.readAsBytes();

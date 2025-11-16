@@ -48,10 +48,7 @@ class _GeneratePageState extends State<GeneratePage> {
       return !project.dependenciesKeys.contains(e.key);
     }).toList();
 
-    final result = await VadenDependenciesDialog.show(
-      context,
-      notSelectedDependencies,
-    );
+    final result = await VadenDependenciesDialog.show(context, notSelectedDependencies);
 
     if (result != null) {
       setState(() {
@@ -72,10 +69,7 @@ class _GeneratePageState extends State<GeneratePage> {
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [
-            VadenColors.blackGradientStart,
-            VadenColors.blackGradientEnd,
-          ],
+          colors: [VadenColors.blackGradientStart, VadenColors.blackGradientEnd],
         ),
       ),
       child: Scaffold(
@@ -102,11 +96,7 @@ class _GeneratePageState extends State<GeneratePage> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SvgPicture.asset(
-                            VadenImage.vadenLogo,
-                            width: 48,
-                            height: 48,
-                          ),
+                          SvgPicture.asset(VadenImage.vadenLogo, width: 48, height: 48),
                           const SizedBox(width: 10),
                           Text(
                             'VADEN Generator',
@@ -130,14 +120,10 @@ class _GeneratePageState extends State<GeneratePage> {
                             label: 'Apoia-se'.i18n(),
                             height: 55,
                             onPressed: () {
-                              urlLauncherService.launch(
-                                'https://apoia.se/vaden',
-                              );
+                              urlLauncherService.launch('https://apoia.se/vaden');
                             },
                           ),
-                          Center(
-                            child: InternationWidget(),
-                          ),
+                          Center(child: InternationWidget()),
                         ],
                       ),
                     ),
@@ -183,10 +169,7 @@ class _GeneratePageState extends State<GeneratePage> {
                                 gradient: LinearGradient(
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
-                                  colors: [
-                                    VadenColors.gradientStart,
-                                    VadenColors.gradientEnd,
-                                  ],
+                                  colors: [VadenColors.gradientStart, VadenColors.gradientEnd],
                                 ),
                               ),
                             );
@@ -217,7 +200,7 @@ class _GeneratePageState extends State<GeneratePage> {
                             ListenableBuilder(
                               listenable: viewModel.fetchMedatadaCommand,
                               builder: (context, _) {
-                                if (!viewModel.fetchMedatadaCommand.isSuccess) {
+                                if (!viewModel.fetchMedatadaCommand.value.isSuccess) {
                                   return SizedBox.shrink();
                                 }
 
@@ -235,7 +218,7 @@ class _GeneratePageState extends State<GeneratePage> {
                                   ),
                                 );
                               },
-                            )
+                            ),
                           ],
                         ),
                       ],
@@ -280,10 +263,7 @@ class _GeneratePageState extends State<GeneratePage> {
                               gradient: LinearGradient(
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
-                                colors: [
-                                  VadenColors.gradientStart,
-                                  VadenColors.gradientEnd,
-                                ],
+                                colors: [VadenColors.gradientStart, VadenColors.gradientEnd],
                               ),
                             ),
                           );
@@ -306,7 +286,10 @@ class _GeneratePageState extends State<GeneratePage> {
                                       ? VadenTextInput(
                                           label: 'addDependencies'.i18n(),
                                           hint: '',
-                                          verticalPadding: project.dependenciesKeys.isEmpty //
+                                          verticalPadding:
+                                              project
+                                                  .dependenciesKeys
+                                                  .isEmpty //
                                               ? 20
                                               : 12,
                                           isEnabled: false,
@@ -318,11 +301,9 @@ class _GeneratePageState extends State<GeneratePage> {
                                               )
                                               .toList(),
                                           onRemove: (dependency) {
-                                            setState(
-                                              () {
-                                                project.dependenciesKeys.remove(dependency.key);
-                                              },
-                                            );
+                                            setState(() {
+                                              project.dependenciesKeys.remove(dependency.key);
+                                            });
                                           },
                                         ),
                                 ),
@@ -343,10 +324,7 @@ class _GeneratePageState extends State<GeneratePage> {
                       ),
                       const SizedBox(height: 80),
                       ListenableBuilder(
-                        listenable: Listenable.merge([
-                          viewModel.createProjectCommand,
-                          project,
-                        ]),
+                        listenable: Listenable.merge([viewModel.createProjectCommand, project]),
                         builder: (context, child) {
                           final bool isValid = projectValidator.validate(project).isValid;
                           return Center(
@@ -361,7 +339,7 @@ class _GeneratePageState extends State<GeneratePage> {
                                       viewModel.formKey.currentState?.validate();
                                     },
                               width: 320,
-                              isLoading: viewModel.createProjectCommand.isRunning,
+                              isLoading: viewModel.createProjectCommand.value.isRunning,
                             ),
                           );
                         },
@@ -396,9 +374,7 @@ class _GeneratePageState extends State<GeneratePage> {
                               ),
                               InkWell(
                                 onTap: () {
-                                  urlLauncherService.launch(
-                                    'https://flutterando.com.br',
-                                  );
+                                  urlLauncherService.launch('https://flutterando.com.br');
                                 },
                                 child: SvgPicture.asset(
                                   VadenImage.flutterandoLogo,
@@ -421,11 +397,7 @@ class _GeneratePageState extends State<GeneratePage> {
                                   color: VadenColors.txtSupport2,
                                 ),
                               ),
-                              SvgPicture.asset(
-                                VadenImage.copyrightIcon,
-                                width: 120,
-                                height: 24,
-                              ),
+                              SvgPicture.asset(VadenImage.copyrightIcon, width: 120, height: 24),
                               Text(
                                 ' 2025',
                                 style: GoogleFonts.anekBangla(

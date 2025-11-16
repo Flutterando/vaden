@@ -1,10 +1,10 @@
 name: vaden
 description: Dart backend project create by Flutterando community. Using and action!
-version: 0.1.3
+version: 1.0.0
 repository: https://github.com/Flutterando/vaden
 
 environment:
-  sdk: ^3.6.0
+  sdk: ^3.10.0
 resolution: workspace
 
 # Add regular dependencies here.
@@ -15,14 +15,14 @@ dependencies:
   shelf_router: ^1.1.4
   uuid: ^4.5.1
   yaml: ^3.1.3
-  openapi_spec: ^0.9.0
+  openapi_spec: ^0.15.0
   shelf_swagger_ui: ^2.0.0
   shelf_static: ^1.1.3
   mime: ^1.0.6
   shelf_multipart: ^2.0.1
-  vaden_core: ^0.0.3
+  vaden_core: ^1.0.0
   # path: ^1.8.0
 
 dev_dependencies:
-  lints: ^5.0.0
+  lints: ^6.0.0
   test: ^1.24.0

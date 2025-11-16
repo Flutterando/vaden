@@ -1,3 +1,8 @@
+## 1.0.0
+- Release!
+- Remove build_runner mirrors.
+
+
 ## 0.1.4 (2025/10/05)
 - Fix @Body list and Swagger nullsafety
 

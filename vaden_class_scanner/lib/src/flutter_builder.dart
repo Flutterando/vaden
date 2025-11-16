@@ -17,7 +17,7 @@ class FlutterVadenBuilder implements Builder {
 
   @override
   final Map<String, List<String>> buildExtensions = const {
-    r'$package$': ['lib/vaden_application.dart']
+    r'$package$': ['lib/vaden_application.dart'],
   };
 
   AssetId _allFileOutput(BuildStep buildStep) {
@@ -27,14 +27,24 @@ class FlutterVadenBuilder implements Builder {
     );
   }
 
-  final formatter =
-      DartFormatter(languageVersion: DartFormatter.latestLanguageVersion);
+  final formatter = DartFormatter(
+    languageVersion: DartFormatter.latestLanguageVersion,
+  );
 
-  final componentChecker = TypeChecker.fromRuntime(BaseComponent);
-  final dtoChecker = TypeChecker.fromRuntime(DTO);
-  final moduleChecker = TypeChecker.fromRuntime(VadenModule);
-  final parseChecker = TypeChecker.fromRuntime(Parse);
-  final apiClientChecker = TypeChecker.fromRuntime(ApiClient);
+  final componentChecker = TypeChecker.typeNamed(
+    BaseComponent,
+    inPackage: 'vaden_core',
+  );
+  final dtoChecker = TypeChecker.typeNamed(DTO, inPackage: 'vaden_core');
+  final moduleChecker = TypeChecker.typeNamed(
+    VadenModule,
+    inPackage: 'vaden_core',
+  );
+  final parseChecker = TypeChecker.typeNamed(Parse, inPackage: 'vaden_core');
+  final apiClientChecker = TypeChecker.typeNamed(
+    ApiClient,
+    inPackage: 'vaden_core',
+  );
 
   @override
   Future<void> build(BuildStep buildStep) async {
@@ -49,7 +59,8 @@ class FlutterVadenBuilder implements Builder {
     importsBuffer.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
     importsBuffer.writeln('// Aggregated Vaden application file');
     importsBuffer.writeln(
-        '// ignore_for_file: prefer_func  tion_declarations_over_variables, implementation_imports');
+      '// ignore_for_file: prefer_func  tion_declarations_over_variables, implementation_imports',
+    );
 
     aggregatedBuffer.writeln('''
 import 'dart:convert';
@@ -81,52 +92,66 @@ class VadenApp extends FlutterVadenApplication {
     _injector.addInstance<Injector>(_injector);
 ''');
 
-    final body = await buildStep //
-        .findAssets(Glob('lib/**.dart'))
-        .asyncExpand((assetId) async* {
-      final library = await buildStep.resolver.libraryFor(assetId);
-      final reader = LibraryReader(library);
+    final body =
+        await buildStep //
+            .findAssets(Glob('lib/**.dart'))
+            .asyncExpand((assetId) async* {
+              final library = await buildStep.resolver.libraryFor(assetId);
+              final reader = LibraryReader(library);
 
-      for (var classElement in reader.classes) {
-        yield* _checkMasterAnnotations(classElement);
-      }
-    }).map((record) {
-      final (classElement, registerWithInterfaceOrSuperType) = record;
-      final uri = classElement.librarySource.uri.toString();
-      importSet.add("'$uri';");
-      return record;
-    }).map((record) {
-      final (classElement, registerWithInterfaceOrSuperType) = record;
+              var assetPath = assetId.path;
+              if (assetPath.startsWith('lib/')) {
+                assetPath = assetPath.substring(4);
+              }
+              final importUri = 'package:${assetId.package}/$assetPath';
 
-      final bodyBuffer = StringBuffer();
+              for (var classElement in reader.classes) {
+                await for (final record in _checkMasterAnnotations(
+                  classElement,
+                )) {
+                  final (ce, registerWithInterfaceOrSuperType) = record;
+                  importSet.add("'$importUri';");
+                  yield (ce, registerWithInterfaceOrSuperType);
+                }
+              }
+            })
+            .map((record) {
+              final (classElement, registerWithInterfaceOrSuperType) = record;
 
-      final registerText =
-          _componentRegister(classElement, registerWithInterfaceOrSuperType);
-      if (registerText.isNotEmpty) {
-        bodyBuffer.writeln(registerText);
-      }
+              final bodyBuffer = StringBuffer();
 
-      if (configurationChecker.hasAnnotationOf(classElement)) {
-        bodyBuffer.writeln(configurationSetup(classElement));
-      } else if (dtoChecker.hasAnnotationOf(classElement)) {
-        dtoBuffer.writeln(dtoSetup(classElement));
-      } else if (moduleChecker.hasAnnotationOf(classElement)) {
-        final name = classElement.name;
+              final registerText = _componentRegister(
+                classElement,
+                registerWithInterfaceOrSuperType,
+              );
+              if (registerText.isNotEmpty) {
+                bodyBuffer.writeln(registerText);
+              }
 
-        if (classElement.allSupertypes.any(
-            (type) => type.getDisplayString().startsWith('CommonModule'))) {
-          moduleRegisterBuffer.writeln('await $name().register(this);');
-        }
-      } else if (apiClientChecker.hasAnnotationOf(classElement)) {
-        final basePath = apiClientChecker
-                .firstAnnotationOf(classElement)
-                ?.getField('basePath')
-                ?.toStringValue() ??
-            '';
-        apiClientBuffer.writeln(apiClientSetup(classElement, basePath));
-      }
-      return bodyBuffer.toString();
-    }).toList();
+              if (configurationChecker.hasAnnotationOf(classElement)) {
+                bodyBuffer.writeln(configurationSetup(classElement));
+              } else if (dtoChecker.hasAnnotationOf(classElement)) {
+                dtoBuffer.writeln(dtoSetup(classElement));
+              } else if (moduleChecker.hasAnnotationOf(classElement)) {
+                final name = classElement.name;
+
+                if (classElement.allSupertypes.any(
+                  (type) => type.getDisplayString().startsWith('CommonModule'),
+                )) {
+                  moduleRegisterBuffer.writeln('await $name().register(this);');
+                }
+              } else if (apiClientChecker.hasAnnotationOf(classElement)) {
+                final basePath =
+                    apiClientChecker
+                        .firstAnnotationOf(classElement)
+                        ?.getField('basePath')
+                        ?.toStringValue() ??
+                    '';
+                apiClientBuffer.writeln(apiClientSetup(classElement, basePath));
+              }
+              return bodyBuffer.toString();
+            })
+            .toList();
 
     aggregatedBuffer.writeln(body.join('\n'));
 
@@ -181,7 +206,9 @@ class _DSON extends DSON {
   }
 
   String _componentRegister(
-      ClassElement classElement, bool registerWithInterfaceOrSuperType) {
+    ClassElement classElement,
+    bool registerWithInterfaceOrSuperType,
+  ) {
     if (dtoChecker.hasAnnotationOf(classElement) ||
         configurationChecker.hasAnnotationOf(classElement)) {
       return '';
@@ -214,7 +241,8 @@ class _DSON extends DSON {
   }
 
   Stream<(ClassElement, bool)> _checkMasterAnnotations(
-      ClassElement classElement) async* {
+    ClassElement classElement,
+  ) async* {
     final component = componentChecker.firstAnnotationOf(classElement);
     if (component != null) {
       final registerWithInterfaceOrSuperType = component
