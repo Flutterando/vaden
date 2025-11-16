@@ -75,7 +75,7 @@ class _GeneratePageState extends State<GeneratePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: VadenAppBar(
-          title: 'IN_DEVELOPMENT'.i18n(),
+          title: 'IN_PRODUCTION'.i18n(),
           mode: VadenAppBarMode.development,
           fontSize: fontSize,
           letterSpacing: letterSpacing,

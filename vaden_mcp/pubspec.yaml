@@ -1,0 +1,20 @@
+name: vaden_mcp
+description: MCP server for analyzing, understanding, and manipulating Vaden projects
+version: 1.0.0
+repository: https://github.com/Flutterando/vaden
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  path: ^1.9.0
+  yaml: ^3.1.3
+  analyzer: ^6.0.0
+  args: ^2.4.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
+
+executables:
+  vaden_mcp: vaden_mcp
