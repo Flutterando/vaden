@@ -12,7 +12,7 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - build/**
-    - lib/vaden_application.dart
+    # - lib/vaden_application.dart
 
 linter:
   # The lint rules applied to this project can be customized in the

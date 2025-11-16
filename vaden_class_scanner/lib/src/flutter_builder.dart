@@ -1,16 +1,8 @@
 import 'dart:async';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' as p;
-import 'package:source_gen/source_gen.dart';
-import 'package:vaden_class_scanner/src/setups/api_client_setup.dart';
-import 'package:vaden_class_scanner/src/setups/configuration_setup.dart';
-import 'package:vaden_core/vaden_core.dart';
-
-import 'setups/dto_setup.dart';
+import 'package:vaden_class_scanner/src/setups/initial.dart';
 
 class FlutterVadenBuilder implements Builder {
   FlutterVadenBuilder();
@@ -20,32 +12,6 @@ class FlutterVadenBuilder implements Builder {
     r'$package$': ['lib/vaden_application.dart'],
   };
 
-  AssetId _allFileOutput(BuildStep buildStep) {
-    return AssetId(
-      buildStep.inputId.package,
-      p.join('lib', 'vaden_application.dart'),
-    );
-  }
-
-  final formatter = DartFormatter(
-    languageVersion: DartFormatter.latestLanguageVersion,
-  );
-
-  final componentChecker = TypeChecker.typeNamed(
-    BaseComponent,
-    inPackage: 'vaden_core',
-  );
-  final dtoChecker = TypeChecker.typeNamed(DTO, inPackage: 'vaden_core');
-  final moduleChecker = TypeChecker.typeNamed(
-    VadenModule,
-    inPackage: 'vaden_core',
-  );
-  final parseChecker = TypeChecker.typeNamed(Parse, inPackage: 'vaden_core');
-  final apiClientChecker = TypeChecker.typeNamed(
-    ApiClient,
-    inPackage: 'vaden_core',
-  );
-
   @override
   Future<void> build(BuildStep buildStep) async {
     final aggregatedBuffer = StringBuffer();
@@ -53,6 +19,7 @@ class FlutterVadenBuilder implements Builder {
     final importsBuffer = StringBuffer();
     final apiClientBuffer = StringBuffer();
     final moduleRegisterBuffer = StringBuffer();
+    final exceptionHandlerBuffer = StringBuffer();
 
     final importSet = <String>{};
 
@@ -95,62 +62,15 @@ class VadenApp extends FlutterVadenApplication {
     final body =
         await buildStep //
             .findAssets(Glob('lib/**.dart'))
-            .asyncExpand((assetId) async* {
-              final library = await buildStep.resolver.libraryFor(assetId);
-              final reader = LibraryReader(library);
-
-              var assetPath = assetId.path;
-              if (assetPath.startsWith('lib/')) {
-                assetPath = assetPath.substring(4);
-              }
-              final importUri = 'package:${assetId.package}/$assetPath';
-
-              for (var classElement in reader.classes) {
-                await for (final record in _checkMasterAnnotations(
-                  classElement,
-                )) {
-                  final (ce, registerWithInterfaceOrSuperType) = record;
-                  importSet.add("'$importUri';");
-                  yield (ce, registerWithInterfaceOrSuperType);
-                }
-              }
-            })
-            .map((record) {
-              final (classElement, registerWithInterfaceOrSuperType) = record;
-
-              final bodyBuffer = StringBuffer();
-
-              final registerText = _componentRegister(
-                classElement,
-                registerWithInterfaceOrSuperType,
-              );
-              if (registerText.isNotEmpty) {
-                bodyBuffer.writeln(registerText);
-              }
-
-              if (configurationChecker.hasAnnotationOf(classElement)) {
-                bodyBuffer.writeln(configurationSetup(classElement));
-              } else if (dtoChecker.hasAnnotationOf(classElement)) {
-                dtoBuffer.writeln(dtoSetup(classElement));
-              } else if (moduleChecker.hasAnnotationOf(classElement)) {
-                final name = classElement.name;
-
-                if (classElement.allSupertypes.any(
-                  (type) => type.getDisplayString().startsWith('CommonModule'),
-                )) {
-                  moduleRegisterBuffer.writeln('await $name().register(this);');
-                }
-              } else if (apiClientChecker.hasAnnotationOf(classElement)) {
-                final basePath =
-                    apiClientChecker
-                        .firstAnnotationOf(classElement)
-                        ?.getField('basePath')
-                        ?.toStringValue() ??
-                    '';
-                apiClientBuffer.writeln(apiClientSetup(classElement, basePath));
-              }
-              return bodyBuffer.toString();
-            })
+            .asyncExpand(checkImports(buildStep, importSet))
+            .map(
+              selectComponent(
+                dtoBuffer: dtoBuffer,
+                exceptionHandlerBuffer: exceptionHandlerBuffer,
+                moduleRegisterBuffer: moduleRegisterBuffer,
+                importSet: importSet,
+              ),
+            )
             .toList();
 
     aggregatedBuffer.writeln(body.join('\n'));
@@ -175,107 +95,13 @@ class VadenApp extends FlutterVadenApplication {
     importsBuffer.writeln(aggregatedBuffer.toString());
 
     importsBuffer.writeln();
-    importsBuffer.writeln('''
-class _DSON extends DSON {
-  @override
-  (Map<Type, FromJsonFunction>, Map<Type, ToJsonFunction>, Map<Type, ToOpenApiNormalMap>) getMaps() {
-    final fromJsonMap = <Type, FromJsonFunction>{};
-    final toJsonMap = <Type, ToJsonFunction>{};
-    final toOpenApiMap = <Type, ToOpenApiNormalMap>{};
-
-    $dtoBuffer
-
-    return (fromJsonMap, toJsonMap, toOpenApiMap);
-  }
-}
-''');
+    importsBuffer.writeln(dsonGenerate(dtoBuffer.toString()));
 
     if (apiClientBuffer.isNotEmpty) {
       importsBuffer.writeln();
       importsBuffer.writeln(apiClientBuffer.toString());
     }
 
-    final outputId = _allFileOutput(buildStep);
-
-    try {
-      final formattedCode = formatter.format(importsBuffer.toString());
-      await buildStep.writeAsString(outputId, formattedCode);
-    } catch (e) {
-      await buildStep.writeAsString(outputId, importsBuffer.toString());
-    }
-  }
-
-  String _componentRegister(
-    ClassElement classElement,
-    bool registerWithInterfaceOrSuperType,
-  ) {
-    if (dtoChecker.hasAnnotationOf(classElement) ||
-        configurationChecker.hasAnnotationOf(classElement)) {
-      return '';
-    } else if (moduleChecker.hasAnnotationOf(classElement)) {
-      return '';
-    } else if (parseChecker.hasAnnotationOf(classElement)) {
-      return '';
-    }
-
-    if (registerWithInterfaceOrSuperType) {
-      final interfaceType =
-          classElement.interfaces.firstOrNull ?? classElement.supertype;
-      if (interfaceType != null &&
-          interfaceType.getDisplayString() != 'Object') {
-        return '''
-      _injector.addBind(Bind.withClassName(
-      constructor: ${classElement.name}.new,
-      type: BindType.lazySingleton,
-      className: '${interfaceType.getDisplayString()}',
-    ));   
-''';
-      }
-    }
-
-    if (apiClientChecker.hasAnnotationOf(classElement)) {
-      return '_injector.addLazySingleton<${classElement.name}>(_${classElement.name}.new);';
-    }
-
-    return '_injector.addLazySingleton(${classElement.name}.new);';
-  }
-
-  Stream<(ClassElement, bool)> _checkMasterAnnotations(
-    ClassElement classElement,
-  ) async* {
-    final component = componentChecker.firstAnnotationOf(classElement);
-    if (component != null) {
-      final registerWithInterfaceOrSuperType = component
-          .getField('registerWithInterfaceOrSuperType')!
-          .toBoolValue()!;
-
-      yield (classElement, registerWithInterfaceOrSuperType);
-    } else if (moduleChecker.hasAnnotationOf(classElement)) {
-      final module = moduleChecker.firstAnnotationOf(classElement)!;
-      final vadenModules = module.getField('imports')!.toListValue() ?? [];
-      for (var module in vadenModules) {
-        final element = module.toTypeValue()?.element;
-
-        if (element is! ClassElement) {
-          continue;
-        }
-
-        final innerModule = moduleChecker.firstAnnotationOf(element);
-        if (innerModule == null) {
-          continue;
-        }
-
-        yield (element, false);
-
-        final types = innerModule.getField('imports')?.toListValue() ?? [];
-
-        for (var type in types) {
-          final typeElement = type.toTypeValue()?.element;
-          if (typeElement is ClassElement) {
-            yield* _checkMasterAnnotations(typeElement);
-          }
-        }
-      }
-    }
+    writeAndFormatApplication(importsBuffer.toString(), buildStep);
   }
 }
