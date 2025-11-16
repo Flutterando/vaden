@@ -1,3 +1,15 @@
+## 1.0.0 (2025/11/16)
+- Release!
+- Class Scanner 4x mais rápido.
+- Atualizado builder para 4.0.0.
+- Correções de bugs.
+- Refatorações no class_scanner.
+- Remove build_runner mirrors.
+
+
+## 0.1.4 (2025/10/05)
+- Fix @Body list and Swagger nullsafety
+
 ## 0.1.3 (2025/08/21)
 
 - Fix DTO serialization

@@ -45,7 +45,7 @@ void main() {
 
     await viewmodel.fetchMedatadaCommand.execute();
 
-    expect(viewmodel.fetchMedatadaCommand.isSuccess, true);
+    expect(viewmodel.fetchMedatadaCommand.value.isSuccess, true);
     expect(viewmodel.dartVersions.isNotEmpty, true);
     expect(viewmodel.defaultDartVersion, isA<DartVersionFake>());
     expect(viewmodel.dependencies.isNotEmpty, true);
@@ -56,6 +56,6 @@ void main() {
 
     await viewmodel.createProjectCommand.execute(ProjectFake());
 
-    expect(viewmodel.createProjectCommand.isSuccess, true);
+    expect(viewmodel.createProjectCommand.value.isSuccess, true);
   });
 }

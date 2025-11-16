@@ -4,19 +4,19 @@ import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:vaden_core/vaden_core.dart';
 
-final bodyChecker = TypeChecker.fromRuntime(Body);
-final paramChecker = TypeChecker.fromRuntime(Param);
-final queryChecker = TypeChecker.fromRuntime(Query);
-final headerChecker = TypeChecker.fromRuntime(Header);
+final bodyChecker = TypeChecker.typeNamed(Body, inPackage: 'vaden_core');
+final paramChecker = TypeChecker.typeNamed(Param, inPackage: 'vaden_core');
+final queryChecker = TypeChecker.typeNamed(Query, inPackage: 'vaden_core');
+final headerChecker = TypeChecker.typeNamed(Header, inPackage: 'vaden_core');
 
 final methodCheckers = <(TypeChecker, String)>[
-  (TypeChecker.fromRuntime(Get), 'GET'),
-  (TypeChecker.fromRuntime(Post), 'POST'),
-  (TypeChecker.fromRuntime(Put), 'PUT'),
-  (TypeChecker.fromRuntime(Patch), 'PATCH'),
-  (TypeChecker.fromRuntime(Delete), 'DELETE'),
-  (TypeChecker.fromRuntime(Head), 'HEAD'),
-  (TypeChecker.fromRuntime(Options), 'OPTIONS'),
+  (TypeChecker.typeNamed(Get, inPackage: 'vaden_core'), 'GET'),
+  (TypeChecker.typeNamed(Post, inPackage: 'vaden_core'), 'POST'),
+  (TypeChecker.typeNamed(Put, inPackage: 'vaden_core'), 'PUT'),
+  (TypeChecker.typeNamed(Patch, inPackage: 'vaden_core'), 'PATCH'),
+  (TypeChecker.typeNamed(Delete, inPackage: 'vaden_core'), 'DELETE'),
+  (TypeChecker.typeNamed(Head, inPackage: 'vaden_core'), 'HEAD'),
+  (TypeChecker.typeNamed(Options, inPackage: 'vaden_core'), 'OPTIONS'),
 ];
 
 String apiClientSetup(ClassElement classElement, String basePath) {
@@ -35,12 +35,14 @@ String apiClientSetup(ClassElement classElement, String basePath) {
     final methodName = method.name;
     final returnType = _getFutureType(method.returnType);
     final isVoidReturn = returnType.getDisplayString() == 'void';
-    final parameters = method.parameters;
+    final parameters = method.formalParameters;
 
-    final parameterList = parameters.map((param) {
-      final type = param.type.getDisplayString();
-      return '${param.isNamed ? '' : type} ${param.name}';
-    }).join(', ');
+    final parameterList = parameters
+        .map((param) {
+          final type = param.type.getDisplayString();
+          return '${param.isNamed ? '' : type} ${param.name}';
+        })
+        .join(', ');
 
     bodyBuffer.write('''
     Future<$returnType> $methodName($parameterList) async {
@@ -64,15 +66,17 @@ String apiClientSetup(ClassElement classElement, String basePath) {
     final paramReplacements = parameters
         .where((param) => paramChecker.hasAnnotationOfExact(param))
         .map((param) {
-      final paramAnnotation = paramChecker.firstAnnotationOfExact(param);
-      final paramName =
-          paramAnnotation?.getField('name')?.toStringValue() ?? param.name;
-      return MapEntry('<$paramName>', param.name);
-    });
+          final paramAnnotation = paramChecker.firstAnnotationOfExact(param);
+          final paramName =
+              paramAnnotation?.getField('name')?.toStringValue() ?? param.name;
+          return MapEntry('<$paramName>', param.name);
+        });
 
     for (final replacement in paramReplacements) {
-      methodPath =
-          methodPath.replaceAll(replacement.key, '\$${replacement.value}');
+      methodPath = methodPath.replaceAll(
+        replacement.key,
+        '\$${replacement.value}',
+      );
     }
 
     final bodyParam = parameters.firstWhereOrNull(
@@ -81,18 +85,18 @@ String apiClientSetup(ClassElement classElement, String basePath) {
 
     final bodyCode = bodyParam != null
         ? bodyParam.type.isDartCoreList
-            ? 'data: dson.toJsonList<${_getListType(bodyParam.type).getDisplayString()}>(${bodyParam.name})'
-            : 'data: dson.toJson<${bodyParam.type.getDisplayString()}>(${bodyParam.name})'
+              ? 'data: dson.toJsonList<${_getListType(bodyParam.type).getDisplayString()}>(${bodyParam.name})'
+              : 'data: dson.toJson<${bodyParam.type.getDisplayString()}>(${bodyParam.name})'
         : '';
 
     final headerParams = parameters
         .where((param) => headerChecker.hasAnnotationOfExact(param))
         .map((param) {
-      final headerAnnotation = headerChecker.firstAnnotationOfExact(param);
-      final headerName =
-          headerAnnotation?.getField('name')?.toStringValue() ?? param.name;
-      return MapEntry(headerName, param.name);
-    });
+          final headerAnnotation = headerChecker.firstAnnotationOfExact(param);
+          final headerName =
+              headerAnnotation?.getField('name')?.toStringValue() ?? param.name;
+          return MapEntry(headerName, param.name);
+        });
 
     final headersCode = headerParams.isNotEmpty
         ? 'headers: {${headerParams.map((entry) => "'${entry.key}': ${entry.value}").join(', ')}}'
@@ -101,11 +105,11 @@ String apiClientSetup(ClassElement classElement, String basePath) {
     final queryParams = parameters
         .where((param) => queryChecker.hasAnnotationOfExact(param))
         .map((param) {
-      final queryAnnotation = queryChecker.firstAnnotationOfExact(param);
-      final queryName =
-          queryAnnotation?.getField('name')?.toStringValue() ?? param.name;
-      return MapEntry(queryName, param.name);
-    });
+          final queryAnnotation = queryChecker.firstAnnotationOfExact(param);
+          final queryName =
+              queryAnnotation?.getField('name')?.toStringValue() ?? param.name;
+          return MapEntry(queryName, param.name);
+        });
 
     final queryCode = queryParams.isNotEmpty
         ? 'queryParameters: {${queryParams.map((entry) => "'${entry.key}': ${entry.value}").join(', ')}}'
@@ -132,11 +136,13 @@ String apiClientSetup(ClassElement classElement, String basePath) {
     if (!isVoidReturn) {
       if (returnType.isDartCoreList) {
         final listType = _getListType(returnType);
-        bodyBuffer
-            .writeln('return dson.fromJsonList<$listType>(response.data);');
+        bodyBuffer.writeln(
+          'return dson.fromJsonList<$listType>(response.data);',
+        );
       } else if (returnType.isDartCoreMap) {
         bodyBuffer.writeln(
-            'return response.data as ${returnType.getDisplayString()};');
+          'return response.data as ${returnType.getDisplayString()};',
+        );
       } else {
         bodyBuffer.writeln('return dson.fromJson<$returnType>(response.data);');
       }

@@ -16,7 +16,7 @@ class BackerController {
     content: ApiContent(type: 'application/json', schema: Backer),
   )
   @Get('/check/<email>')
-  Future<Backer> getDependencies(@Param() email) async {
+  Future<Backer> getDependencies(@Param() String email) async {
     return await _backerRepository.check(email).getOrThrow();
   }
 }

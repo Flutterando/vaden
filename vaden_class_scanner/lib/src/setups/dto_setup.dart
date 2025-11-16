@@ -4,9 +4,19 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:vaden_core/vaden_core.dart';
 
-final _jsonKeyChecker = TypeChecker.fromRuntime(JsonKey);
-final useParseChecker = TypeChecker.fromRuntime(UseParse);
-final _jsonIgnoreChecker = TypeChecker.fromRuntime(JsonIgnore);
+final _jsonKeyChecker = TypeChecker.typeNamed(JsonKey, inPackage: 'vaden_core');
+final useParseChecker = TypeChecker.typeNamed(
+  UseParse,
+  inPackage: 'vaden_core',
+);
+final _jsonIgnoreChecker = TypeChecker.typeNamed(
+  JsonIgnore,
+  inPackage: 'vaden_core',
+);
+final paramParseChecker = TypeChecker.typeNamed(
+  ParamParse,
+  inPackage: 'vaden_core',
+);
 
 String dtoSetup(ClassElement classElement) {
   final bodyBuffer = StringBuffer();
@@ -99,7 +109,7 @@ String _fieldToSchema(DartType type) {
 
     return '{"type": "array", "items": $elementSchema}';
   } else {
-    final typeName = type.getDisplayString();
+    final typeName = type.getDisplayString().replaceAll('?', '');
     return '{r"\$ref": "#/components/schemas/$typeName"}';
   }
 }
@@ -112,7 +122,7 @@ String _fromJson(ClassElement classElement) {
     (ctor) => !ctor.isFactory && ctor.isPublic,
   );
 
-  for (final parameter in constructor.parameters) {
+  for (final parameter in constructor.formalParameters) {
     final paramName = _getParameterName(parameter);
     final paramType = parameter.type.getDisplayString().replaceAll('?', '');
     final isNotNull =
@@ -130,7 +140,10 @@ String _fromJson(ClassElement classElement) {
     // Se é tipo built-in suportado
     else if (isBuiltInSupported(parameter.type)) {
       paramValue = _getBuiltInDeserializer(
-          parameter.type, "json['$paramName']", isNotNull);
+        parameter.type,
+        "json['$paramName']",
+        isNotNull,
+      );
     }
     // Se é primitivo ou List/Map de primitivos
     else if (isPrimitiveListOrMap(parameter.type)) {
@@ -138,7 +151,10 @@ String _fromJson(ClassElement classElement) {
         paramValue = "json['$paramName']?.toDouble()";
       } else if (parameter.type.isDartCoreList) {
         final param = parameter.type as ParameterizedType;
-        final arg = param.typeArguments.first.getDisplayString();
+        final arg = param.typeArguments.first.getDisplayString().replaceAll(
+          '?',
+          '',
+        );
         paramValue = isNotNull
             ? "json['$paramName'].cast<$arg>()"
             : "json['$paramName'] == null ? null : json['$paramName'].cast<$arg>()";
@@ -148,7 +164,10 @@ String _fromJson(ClassElement classElement) {
     } else {
       if (parameter.type.isDartCoreList) {
         final param = parameter.type as ParameterizedType;
-        final arg = param.typeArguments.first.getDisplayString();
+        final arg = param.typeArguments.first.getDisplayString().replaceAll(
+          '?',
+          '',
+        );
         paramValue = isNotNull
             ? "fromJsonList<$arg>(json['$paramName'])"
             : "json['$paramName'] == null ? null : fromJsonList<$arg>(json['$paramName'])";
@@ -162,7 +181,8 @@ String _fromJson(ClassElement classElement) {
     if (parameter.isNamed) {
       if (hasDefault) {
         namedArgsBuffer.writeln(
-            "if (json.containsKey('$paramName')) #${parameter.name}: $paramValue,");
+          "if (json.containsKey('$paramName')) #${parameter.name}: $paramValue,",
+        );
       } else {
         namedArgsBuffer.writeln("#${parameter.name}: $paramValue,");
       }
@@ -182,7 +202,7 @@ String _fromJson(ClassElement classElement) {
   return buffer.toString();
 }
 
-FieldElement _getFieldByParameter(ParameterElement parameter) {
+FieldElement _getFieldByParameter(FormalParameterElement parameter) {
   if (parameter.isInitializingFormal) {
     final ctorParam = parameter as FieldFormalParameterElement;
     return ctorParam.field!;
@@ -223,8 +243,6 @@ DartType _getParseConverteType(FieldElement field) {
 }
 
 DartType? getParseReturnType(InterfaceType parserType) {
-  final paramParseChecker = TypeChecker.fromRuntime(ParamParse);
-
   for (var type in parserType.allSupertypes) {
     if (!paramParseChecker.isExactlyType(type)) {
       continue;
@@ -238,14 +256,14 @@ DartType? getParseReturnType(InterfaceType parserType) {
   return null;
 }
 
-String _getParameterName(ParameterElement parameter) {
+String _getParameterName(FormalParameterElement parameter) {
   if (parameter.isInitializingFormal) {
     final ctorParam = parameter as FieldFormalParameterElement;
     final fieldElement = ctorParam.field!;
     return _getFieldName(fieldElement);
   }
 
-  return parameter.name;
+  return parameter.name!;
 }
 
 String _getFieldName(FieldElement parameter) {
@@ -257,7 +275,7 @@ String _getFieldName(FieldElement parameter) {
     }
   }
 
-  return parameter.name;
+  return parameter.name!;
 }
 
 String _toJson(ClassElement classElement) {
@@ -289,18 +307,23 @@ String _toJsonField(FieldElement field) {
 
   // Se é tipo built-in suportado, usa serialização automática
   if (isBuiltInSupported(field.type)) {
-    final serializer =
-        _getBuiltInSerializer(field.type, 'obj.$fieldName', isNotNull);
+    final serializer = _getBuiltInSerializer(
+      field.type,
+      'obj.$fieldName',
+      isNotNull,
+    );
     return "'$fieldKey': $serializer,";
   }
-
   // Se é primitivo ou List/Map de primitivos
   else if (isPrimitiveListOrMap(field.type)) {
     return "'$fieldKey': obj.$fieldName,";
   } else {
     if (field.type.isDartCoreList) {
       final param = field.type as ParameterizedType;
-      final arg = param.typeArguments.first;
+      final arg = param.typeArguments.first.getDisplayString().replaceAll(
+        '?',
+        '',
+      );
       return isNotNull
           ? " '$fieldKey': toJsonList<$arg>(obj.$fieldName),"
           : " '$fieldKey': obj.$fieldName == null ? null : toJsonList<$arg>(obj.$fieldName!),";
@@ -408,7 +431,7 @@ List<ClassElement> _getUnionSubtypes(ClassElement sealedClass) {
     if (constructor.isFactory) {
       final redirectedConstructor = constructor.redirectedConstructor;
       if (redirectedConstructor != null) {
-        final targetClass = redirectedConstructor.enclosingElement3;
+        final targetClass = redirectedConstructor.enclosingElement;
         if (targetClass is ClassElement) {
           subtypes.add(targetClass);
         }
@@ -442,7 +465,8 @@ String _toOpenApiUnion(ClassElement sealedClass, List<ClassElement> subtypes) {
   for (final subtype in subtypes) {
     if (!first) buffer.writeln(',');
     buffer.write(
-        '      "${subtype.name}": "#/components/schemas/${subtype.name}"');
+      '      "${subtype.name}": "#/components/schemas/${subtype.name}"',
+    );
     first = false;
   }
 
@@ -502,7 +526,10 @@ bool _isUri(DartType type) {
 }
 
 String _getBuiltInSerializer(
-    DartType type, String fieldAccess, bool isNotNull) {
+  DartType type,
+  String fieldAccess,
+  bool isNotNull,
+) {
   if (_isDateTime(type)) {
     return isNotNull
         ? '$fieldAccess.toIso8601String()'
@@ -527,7 +554,10 @@ String _getBuiltInSerializer(
 }
 
 String _getBuiltInDeserializer(
-    DartType type, String jsonAccess, bool isNotNull) {
+  DartType type,
+  String jsonAccess,
+  bool isNotNull,
+) {
   if (_isDateTime(type)) {
     return isNotNull
         ? 'DateTime.parse($jsonAccess as String)'

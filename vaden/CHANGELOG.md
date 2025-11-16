@@ -1,3 +1,10 @@
+## 1.0.0 (2025/11/16)
+- Release!
+- Class Scanner 4x mais rápido.
+- Atualizado builder para 4.0.0.
+- Correções de bugs.
+- Refatorações no class_scanner.
+
 ## 0.1.2 (2025/08/21)
 
 - Fix DTO nullable serialization.

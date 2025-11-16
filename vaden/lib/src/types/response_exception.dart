@@ -35,8 +35,8 @@ class ResponseException<W> implements Exception {
   ///
   /// This can be of various types, including:
   /// - String: For plain text responses
-  /// - List<int>: For binary data
-  /// - Map<String, dynamic>: For JSON objects
+  /// - List\<int>: For binary data
+  /// - Map\<String, dynamic>: For JSON objects
   /// - Custom DTO classes: Will be serialized to JSON using the DSON system
   /// - Lists of the above types
   final W body;
@@ -307,8 +307,8 @@ class ResponseException<W> implements Exception {
   /// returned from a controller method or middleware. The conversion process depends
   /// on the type of the body content:
   /// - String: Returned as plain text
-  /// - List<int>: Returned as binary data
-  /// - Map<String, dynamic> and similar map types: Encoded as JSON
+  /// - List\<int>: Returned as binary data
+  /// - Map\<String, dynamic> and similar map types: Encoded as JSON
   /// - Custom DTO classes: Serialized to JSON using the provided DSON instance
   /// - Lists of the above types: Processed accordingly
   ///
@@ -399,8 +399,9 @@ class ResponseException<W> implements Exception {
     Map<String, String> headers,
     String contentType,
   ) {
-    final Map<String, String> enforcedHeaders =
-        Map<String, String>.from(headers);
+    final Map<String, String> enforcedHeaders = Map<String, String>.from(
+      headers,
+    );
 
     if (enforcedHeaders['content-type'] == null &&
         enforcedHeaders['Content-Type'] == null) {

@@ -1,6 +1,6 @@
-import 'package:backend/src/domain/entities/metadata.dart';
 import 'package:backend/src/domain/dtos/project_link_dto.dart';
 import 'package:backend/src/domain/entities/dependency.dart';
+import 'package:backend/src/domain/entities/metadata.dart';
 import 'package:backend/src/domain/entities/project.dart';
 import 'package:backend/src/domain/entities/project_depreciated.dart';
 import 'package:backend/src/domain/usecases/create_project.dart';
@@ -66,7 +66,9 @@ class GenerateController {
     content: ApiContent(type: 'application/json', schema: ProjectLinkDTO),
   )
   @Post('/create')
-  Future<ProjectLinkDTO> createDeprecated(@Body() ProjectDepreciated dto) async {
+  Future<ProjectLinkDTO> createDeprecated(
+    @Body() ProjectDepreciated dto,
+  ) async {
     final newDto = Project(
       dependenciesKeys: dto.dependencies.map((d) => d.key).toList(),
       projectName: dto.projectName,
