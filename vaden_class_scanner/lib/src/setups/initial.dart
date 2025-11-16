@@ -209,15 +209,26 @@ String _componentRegister(
     final interfaceType =
         classElement.interfaces.firstOrNull ?? classElement.supertype;
     if (interfaceType != null && interfaceType.getDisplayString() != 'Object') {
-      return '''
+      // Don't register VadenMiddleware or VadenGuard by their supertype
+      // as multiple implementations would conflict
+      final supertypeDisplay = interfaceType.getDisplayString();
+      final isMiddlewareOrGuard =
+          supertypeDisplay == 'VadenMiddleware' ||
+          supertypeDisplay == 'VadenGuard';
+
+      if (!isMiddlewareOrGuard) {
+        return '''
       _injector.addBind(Bind.withClassName(
       constructor: ${classElement.name}.new,
       type: $bindType,
       className: '${interfaceType.getDisplayString()}',
     ));   
 ''';
+      }
     }
-  } else if (scopeType == 'instance') {
+  }
+
+  if (scopeType == 'instance') {
     return '_injector.add(${classElement.name}.new);';
   } else if (scopeType == 'lazysingleton') {
     return '_injector.addLazySingleton(${classElement.name}.new);';
