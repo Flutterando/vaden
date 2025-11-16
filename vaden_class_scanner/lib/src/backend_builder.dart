@@ -102,7 +102,9 @@ class VadenApp implements DartVadenApplication {
 
     // Sort components by priority to ensure correct registration order
     // Configurations first, then regular components, then controllers
-    components.sort((a, b) => a.priority.priority.compareTo(b.priority.priority));
+    components.sort(
+      (a, b) => a.priority.priority.compareTo(b.priority.priority),
+    );
 
     final body = components.map((c) => c.code).toList();
 

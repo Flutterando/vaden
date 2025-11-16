@@ -99,6 +99,27 @@ String _toOpenApi(ClassElement classElement) {
   return buffer.toString();
 }
 
+/// Public helper for tests: returns the list of required field names for a DTO.
+/// This mirrors the internal logic used by `_toOpenApi`.
+List<String> computeRequiredFieldsForTest(ClassElement classElement) {
+  final fields = _getAllFields(classElement);
+  final requiredFields = <String>[];
+  for (final field in fields) {
+    bool isRequired = field.type.nullabilitySuffix == NullabilitySuffix.none;
+    if (_jsonKeyChecker.hasAnnotationOfExact(field)) {
+      final annotation = _jsonKeyChecker.firstAnnotationOfExact(field);
+      final requiredValue = annotation?.getField('required')?.toBoolValue();
+      if (requiredValue != null) {
+        isRequired = requiredValue;
+      }
+    }
+    if (isRequired) {
+      requiredFields.add(_getFieldName(field));
+    }
+  }
+  return requiredFields;
+}
+
 String _fieldToSchema(DartType type) {
   // Se é tipo built-in suportado
   if (isBuiltInSupported(type)) {

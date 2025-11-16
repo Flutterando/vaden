@@ -26,7 +26,8 @@ void main() {
       await expectLater(
         app.setup(),
         completes,
-        reason: 'Application setup should complete successfully with async beans',
+        reason:
+            'Application setup should complete successfully with async beans',
       );
     });
 
@@ -39,7 +40,9 @@ void main() {
       expect(connection.isConnected, isTrue);
     });
 
-    test('should register AsyncTestRepository with DatabaseConnection dependency', () async {
+    test(
+        'should register AsyncTestRepository with DatabaseConnection dependency',
+        () async {
       await app.setup();
 
       // Verify that the repository was registered and can be resolved
@@ -49,7 +52,8 @@ void main() {
       expect(repository.connection.isConnected, isTrue);
     });
 
-    test('should register AsyncTestService with AsyncTestRepository dependency', () async {
+    test('should register AsyncTestService with AsyncTestRepository dependency',
+        () async {
       await app.setup();
 
       // Verify that the service was registered and can be resolved
@@ -59,7 +63,8 @@ void main() {
       expect(service.repository.connection, isNotNull);
     });
 
-    test('should register AsyncTestController with AsyncTestService dependency', () async {
+    test('should register AsyncTestController with AsyncTestService dependency',
+        () async {
       await app.setup();
 
       // Verify that the controller was registered and can be resolved
@@ -74,7 +79,7 @@ void main() {
 
       final repository = app.injector.get<AsyncTestRepository>();
       final items = await repository.findAll();
-      
+
       expect(items, isNotEmpty);
       expect(items, contains('item1'));
     });
@@ -84,7 +89,7 @@ void main() {
 
       final service = app.injector.get<AsyncTestService>();
       final items = await service.getAllItems();
-      
+
       expect(items, isNotEmpty);
       expect(items, contains('item1'));
     });
@@ -103,13 +108,15 @@ void main() {
       expect(
         app.injector.get<AsyncTestRepository>,
         isA<AsyncTestRepository>(),
-        reason: 'AsyncTestRepository should be registered after DatabaseConnection',
+        reason:
+            'AsyncTestRepository should be registered after DatabaseConnection',
       );
 
       expect(
         app.injector.get<AsyncTestService>,
         isA<AsyncTestService>(),
-        reason: 'AsyncTestService should be registered after AsyncTestRepository',
+        reason:
+            'AsyncTestService should be registered after AsyncTestRepository',
       );
     });
   });
@@ -132,7 +139,7 @@ void main() {
       // Controllers should be able to access repositories through services
       final service = app.injector.get<AsyncTestService>();
       final items = await service.getAllItems();
-      
+
       expect(items, isNotEmpty);
     });
   });

@@ -36,4 +36,4 @@ security:
   refreshTokenValidity: 604800
   issuer: "vaden"
   audiences:
-    - "vaden"
+  - "vaden"
