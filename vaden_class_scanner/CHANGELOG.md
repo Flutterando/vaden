@@ -1,3 +1,7 @@
+## 1.0.1 (2025/11/16)
+
+- Fix duplicate injection in vaden middlewares.
+
 ## 1.0.0 (2025/11/16)
 - Release!
 - Class Scanner 4x mais rápido.
