@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 RUN echo "resolution:" > pubspec_overrides.yaml
 RUN flutter pub get
-RUN flutter build web --release --dart-define-from-file .env 
+RUN flutter build web --release --dart-define-from-file .env_prod 
 
 FROM nginx:stable-alpine
 

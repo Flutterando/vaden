@@ -38,7 +38,7 @@
       "program": "lib/main.dart",
       "toolArgs": [
         "--dart-define-from-file",
-        ".env"
+        ".env_dev"
       ]
     }
   ]
