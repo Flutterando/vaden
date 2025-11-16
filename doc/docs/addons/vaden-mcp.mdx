@@ -1,0 +1,116 @@
+---
+sidebar_position: 1
+---
+
+# Vaden MCP
+
+**Vaden MCP** is a Model Context Protocol (MCP) server that enables AI assistants and Large Language Models (LLMs) to interact with Vaden backend projects. It provides a powerful set of tools for analyzing, understanding, and manipulating Vaden projects through a standardized protocol.
+
+## What is MCP?
+
+The Model Context Protocol (MCP) is an open standard that enables AI assistants to connect with external tools and data sources. Vaden MCP implements this protocol to give AI assistants deep integration capabilities with Vaden projects.
+
+## Features
+
+Vaden MCP provides the following capabilities:
+
+- **Project Introspection**: Scan and analyze Vaden project structure
+- **Code Generation**: Create controllers, services, and configurations
+- **Code Mutation**: Add routes and modify existing components
+- **Context Building**: Prepare detailed context for AI-powered code generation
+
+## Installation
+
+### Prerequisites
+
+- Dart SDK 3.10.0 or higher
+- A Vaden project to work with
+
+### Global Installation
+
+Install Vaden MCP globally using Dart's package manager:
+
+```bash
+dart pub global activate vaden_mcp
+```
+
+## Usage
+
+### Running the MCP Server
+
+The MCP server communicates via JSON-RPC over stdin/stdout. It's designed to be used by MCP-compatible clients rather than directly by developers.
+
+### Connecting with AI Assistants
+
+#### Claude Desktop
+
+To use Vaden MCP with Claude Desktop, add the following configuration to your Claude Desktop config file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "vaden": {
+      "command": "vaden_mcp",
+      "args": []
+    }
+  }
+}
+```
+
+After configuring, restart Claude Desktop. You'll be able to ask Claude to analyze, modify, or generate code for your Vaden projects.
+
+#### Other MCP Clients
+
+Any MCP-compatible client can connect to Vaden MCP using the stdio transport. Refer to your client's documentation for specific configuration instructions.
+
+## Available Tools
+
+When connected to an MCP client, Vaden MCP exposes several tools for working with Vaden projects:
+
+- **analyze_project**: Scan and understand project structure
+- **generate_controller**: Create new controllers with routes
+- **generate_service**: Create new service classes
+- **add_route**: Add endpoints to existing controllers
+- **generate_dto**: Create Data Transfer Objects
+- **build_context**: Generate comprehensive context for AI code generation
+
+:::tip
+
+The exact tool names and parameters are automatically discovered by the MCP client. You can simply ask your AI assistant to perform tasks, and it will use the appropriate tools.
+
+:::
+
+## Example Interactions
+
+Once configured, you can interact with your Vaden projects through natural language:
+
+- "Analyze my Vaden project structure"
+- "Create a new controller for user management"
+- "Add a GET route to fetch products by ID"
+- "Generate a DTO for product information"
+
+The AI assistant will use Vaden MCP's tools to perform these operations automatically.
+
+## Benefits
+
+Using Vaden MCP with AI assistants provides several advantages:
+
+- **Faster Development**: Generate boilerplate code instantly
+- **Consistent Patterns**: AI follows Vaden's conventions automatically
+- **Code Understanding**: AI can analyze and understand your existing codebase
+- **Intelligent Suggestions**: Get context-aware recommendations for your project
+
+## Resources
+
+- [Vaden Documentation](https://doc.vaden.dev)
+- [Model Context Protocol Specification](https://modelcontextprotocol.io)
+- [Vaden GitHub Repository](https://github.com/Flutterando/vaden)
+
+## Support
+
+If you encounter issues or have questions:
+
+- [Flutterando Discord](https://discord.flutterando.com.br)
+- [GitHub Issues](https://github.com/Flutterando/vaden/issues)
