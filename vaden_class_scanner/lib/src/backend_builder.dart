@@ -137,7 +137,6 @@ class VadenApp implements DartVadenApplication {
                   String elementImportUri;
                   if (ce == classElement) {
                     elementImportUri = importUri;
-                    print('Classe local: ${ce.name} -> $elementImportUri');
                   } else {
                     final elementLibrary = ce.library;
                     if (elementLibrary.uri.toString().isNotEmpty) {
@@ -171,7 +170,6 @@ class VadenApp implements DartVadenApplication {
               if (configurationChecker.hasAnnotationOf(classElement)) {
                 bodyBuffer.writeln(configurationSetup(classElement));
               } else if (controllerChecker.hasAnnotationOf(classElement)) {
-                print(classElement.name);
                 bodyBuffer.writeln(controllerSetup(classElement));
               } else if (dtoChecker.hasAnnotationOf(classElement)) {
                 dtoBuffer.writeln(dtoSetup(classElement));

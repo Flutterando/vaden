@@ -654,7 +654,7 @@ List<MethodElement> _getAllMethods(ClassElement classElement) {
   for (final m in classElement.methods) {
     final name = m.name;
     if (name != null) {
-      allMethods[name] = m.firstFragment as MethodElement;
+      allMethods[name] = m.firstFragment.element;
     }
   }
 
@@ -664,10 +664,7 @@ List<MethodElement> _getAllMethods(ClassElement classElement) {
     for (final method in supertype.element.methods) {
       final name = method.name;
       if (name != null) {
-        allMethods.putIfAbsent(
-          name,
-          () => method.firstFragment as MethodElement,
-        );
+        allMethods.putIfAbsent(name, () => method.firstFragment.element);
       }
     }
   }
