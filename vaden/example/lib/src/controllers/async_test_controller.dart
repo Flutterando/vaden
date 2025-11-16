@@ -25,7 +25,7 @@ class AsyncTestController {
   }
 
   @Get('/:id')
-  Future<Response> getById(Request request, String id) async {
+  Future<Response> getById(Request request, @Param() String id) async {
     try {
       final item = await service.getItemById(id);
       if (item == null) {

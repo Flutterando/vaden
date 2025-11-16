@@ -413,6 +413,33 @@ class JsonIgnore {
   const JsonIgnore();
 }
 
+/// Declares a default value for a DTO field used during JSON deserialization
+/// and exposed in OpenAPI schema generation.
+///
+/// When a field annotated with `@JsonDefault` is absent from the incoming JSON:
+/// - If the field is non-nullable the generated fromJson will inject this value.
+/// - If the field is nullable and missing, it remains `null` unless a default is provided.
+///
+/// Supported default literal types: String, num, bool.
+/// Attempting to use other complex types will still serialize the literal
+/// representation but may not behave as expected.
+///
+/// Example:
+/// ```dart
+/// @DTO()
+/// class UserProfile {
+///   final String id;
+///   @JsonDefault('anonymous')
+///   @JsonKey('display_name', required: false)
+///   final String displayName; // optional in payload, default injected
+///   UserProfile({required this.id, required this.displayName});
+/// }
+/// ```
+class JsonDefault {
+  final Object value;
+  const JsonDefault(this.value);
+}
+
 /// Applies middleware to a controller or endpoint.
 ///
 /// Middleware can be used to intercept and process requests and responses

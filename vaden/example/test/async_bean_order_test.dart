@@ -99,21 +99,24 @@ void main() {
 
       // Verify all components are registered in the correct order
       // If any component fails to resolve, it means the order was incorrect
+      final connection = app.injector.get<DatabaseConnection>();
       expect(
-        app.injector.get<DatabaseConnection>,
+        connection,
         isA<DatabaseConnection>(),
         reason: 'DatabaseConnection (async bean) should be registered first',
       );
 
+      final repository = app.injector.get<AsyncTestRepository>();
       expect(
-        app.injector.get<AsyncTestRepository>,
+        repository,
         isA<AsyncTestRepository>(),
         reason:
             'AsyncTestRepository should be registered after DatabaseConnection',
       );
 
+      final service = app.injector.get<AsyncTestService>();
       expect(
-        app.injector.get<AsyncTestService>,
+        service,
         isA<AsyncTestService>(),
         reason:
             'AsyncTestService should be registered after AsyncTestRepository',

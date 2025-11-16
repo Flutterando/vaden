@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -11,6 +12,10 @@ final useParseChecker = TypeChecker.typeNamed(
 );
 final _jsonIgnoreChecker = TypeChecker.typeNamed(
   JsonIgnore,
+  inPackage: 'vaden_core',
+);
+final _jsonDefaultChecker = TypeChecker.typeNamed(
+  JsonDefault,
   inPackage: 'vaden_core',
 );
 final paramParseChecker = TypeChecker.typeNamed(
@@ -66,6 +71,17 @@ String _toOpenApi(ClassElement classElement) {
     } else {
       schema = _fieldToSchema(field.type);
     }
+    // Inject default into schema if @JsonDefault present
+    if (_jsonDefaultChecker.hasAnnotationOfExact(field)) {
+      final annotation = _jsonDefaultChecker.firstAnnotationOfExact(field);
+      final defaultValue = annotation?.getField('value');
+      if (defaultValue != null) {
+        final dv = _literalToJson(defaultValue);
+        if (schema.endsWith('}')) {
+          schema = '${schema.substring(0, schema.length - 1)}, "default": $dv}';
+        }
+      }
+    }
     if (!first) propertiesBuffer.writeln(',');
     propertiesBuffer.write('    "$fieldName": $schema');
     first = false;
@@ -118,6 +134,21 @@ List<String> computeRequiredFieldsForTest(ClassElement classElement) {
     }
   }
   return requiredFields;
+}
+
+String _literalToJson(DartObject obj) {
+  if (obj.type?.isDartCoreString == true) {
+    return '"${obj.toStringValue()}"';
+  }
+  if (obj.type?.isDartCoreBool == true) {
+    return obj.toBoolValue()! ? 'true' : 'false';
+  }
+  if (obj.type?.isDartCoreInt == true ||
+      obj.type?.isDartCoreDouble == true ||
+      obj.type?.isDartCoreNum == true) {
+    return obj.toString();
+  }
+  return '"${obj.toString()}"';
 }
 
 String _fieldToSchema(DartType type) {
@@ -217,7 +248,17 @@ String _fromJson(ClassElement classElement) {
           "if (json.containsKey('$paramName')) #${parameter.name}: $paramValue,",
         );
       } else {
-        namedArgsBuffer.writeln("#${parameter.name}: $paramValue,");
+        // Support @JsonDefault fallback for non-nullable fields
+        if (isNotNull && _jsonDefaultChecker.hasAnnotationOfExact(field)) {
+          final annotation = _jsonDefaultChecker.firstAnnotationOfExact(field);
+          final defaultObj = annotation?.getField('value');
+          final dv = defaultObj != null ? _literalToJson(defaultObj) : 'null';
+          namedArgsBuffer.writeln(
+            "#${parameter.name}: json.containsKey('$paramName') ? $paramValue : $dv,",
+          );
+        } else {
+          namedArgsBuffer.writeln("#${parameter.name}: $paramValue,");
+        }
       }
     } else {
       positionalArgsBuffer.writeln("    $paramValue,");
