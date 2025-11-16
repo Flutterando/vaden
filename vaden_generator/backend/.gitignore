@@ -5,3 +5,4 @@ temp/
 local/
 lib/vaden_application.dart
 .env
+uploads/

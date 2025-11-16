@@ -16,21 +16,26 @@ class DriftPostgresGenerator extends FileGenerator {
   }) async {
     // Create Drift configuration file
     final libConfigDriftDriftConfiguration = File(
-        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}drift${Platform.pathSeparator}drift_configuration.dart');
+      '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}drift${Platform.pathSeparator}drift_configuration.dart',
+    );
     await libConfigDriftDriftConfiguration.create(recursive: true);
-    await libConfigDriftDriftConfiguration
-        .writeAsString(_libConfigDriftDriftConfigurationContent);
+    await libConfigDriftDriftConfiguration.writeAsString(
+      _libConfigDriftDriftConfigurationContent,
+    );
 
     // Create example database file
     final libConfigDriftAppDatabase = File(
-        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}drift${Platform.pathSeparator}app_database.dart');
+      '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}drift${Platform.pathSeparator}app_database.dart',
+    );
     await libConfigDriftAppDatabase.create(recursive: true);
-    await libConfigDriftAppDatabase
-        .writeAsString(_libConfigDriftAppDatabaseContent);
+    await libConfigDriftAppDatabase.writeAsString(
+      _libConfigDriftAppDatabaseContent,
+    );
 
     // Add Drift dependencies to pubspec.yaml
-    final pubspec =
-        File('${directory.path}${Platform.pathSeparator}pubspec.yaml');
+    final pubspec = File(
+      '${directory.path}${Platform.pathSeparator}pubspec.yaml',
+    );
     await fileManager.insertLineInFile(
       pubspec,
       RegExp(r'^dependencies:$'),
@@ -50,8 +55,9 @@ class DriftPostgresGenerator extends FileGenerator {
     );
 
     // Add Drift configuration to application.yaml
-    final application =
-        File('${directory.path}${Platform.pathSeparator}application.yaml');
+    final application = File(
+      '${directory.path}${Platform.pathSeparator}application.yaml',
+    );
     await fileManager.insertLineInFile(
       position: InsertLinePosition.before,
       application,
@@ -63,13 +69,27 @@ class DriftPostgresGenerator extends FileGenerator {
       RegExp(r'^drift:$'),
       '  log_statements: true',
     );
+
+    // update build.yaml with postgres dialect
+    final buildYaml = File(
+      '${directory.path}${Platform.pathSeparator}build.yaml',
+    );
+    await fileManager.insertLineInFile(
+      buildYaml,
+      RegExp(r'^    builders:$'),
+      '''      drift_dev:
+        options:
+          sql:
+            dialect: postgres
+''',
+    );
   }
 }
 
 const _libConfigDriftDriftConfigurationContent =
-    '''import 'package:drift/drift.dart';
-import 'package:vaden/vaden.dart';
+    '''import 'package:drift_postgres/drift_postgres.dart';
 import 'package:postgres/postgres.dart' as pg;
+import 'package:vaden/vaden.dart';
 
 import 'app_database.dart';
 
@@ -81,22 +101,18 @@ class DriftConfiguration {
     ApplicationSettings settings,
   ) {
     final logStatements = settings['drift']['log_statements'] == 'true';
-    
-    return AppDatabase(
+
+    final connection = PgDatabase.opened(
       postgresConnection,
       logStatements: logStatements,
     );
-  }
-  
-  void closeDatabase(AppDatabase database) {
-    database.close();
+
+    return AppDatabase(connection, logStatements: logStatements);
   }
 }
 ''';
 
-const _libConfigDriftAppDatabaseContent = '''import 'package:drift/drift.dart';
-import 'package:drift_postgres/drift_postgres.dart';
-import 'package:postgres/postgres.dart' as pg;
+const _libConfigDriftAppDatabaseContent = r'''import 'package:drift/drift.dart';
 
 part 'app_database.g.dart';
 
@@ -109,19 +125,8 @@ part 'app_database.g.dart';
 // }
 
 @DriftDatabase(tables: [])
-class AppDatabase extends _\$AppDatabase {
-  final pg.Connection _connection;
-  
-  AppDatabase(
-    this._connection, {
-    bool logStatements = false,
-  }) : super(
-          PgDatabase(
-            endpoint: _connection.endpoint,
-            settings: _connection.settings,
-            logStatements: logStatements,
-          ),
-        );
+class AppDatabase extends _$AppDatabase {
+  AppDatabase(super.e, {bool logStatements = false});
 
   @override
   int get schemaVersion => 1;

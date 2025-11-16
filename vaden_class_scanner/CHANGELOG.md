@@ -1,5 +1,9 @@
-## 1.0.0
+## 1.0.0 (2025/11/16)
 - Release!
+- Class Scanner 4x mais rápido.
+- Atualizado builder para 4.0.0.
+- Correções de bugs.
+- Refatorações no class_scanner.
 - Remove build_runner mirrors.
 
 

@@ -11,27 +11,40 @@ class PostgresGenerator extends FileGenerator {
     Map<String, dynamic> variables = const {},
   }) async {
     final libConfigPostgresPostgresConfiguration = File(
-        '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}postgres${Platform.pathSeparator}postgres_configuration.dart');
+      '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}postgres${Platform.pathSeparator}postgres_configuration.dart',
+    );
     await libConfigPostgresPostgresConfiguration.create(recursive: true);
-    await libConfigPostgresPostgresConfiguration
-        .writeAsString(_libConfigPostgresPostgresConfigurationContent);
+    await libConfigPostgresPostgresConfiguration.writeAsString(
+      _libConfigPostgresPostgresConfigurationContent,
+    );
 
-    final pubspec =
-        File('${directory.path}${Platform.pathSeparator}pubspec.yaml');
+    final pubspec = File(
+      '${directory.path}${Platform.pathSeparator}pubspec.yaml',
+    );
     await fileManager.insertLineInFile(
       pubspec,
       RegExp(r'^dependencies:$'),
       parseVariables('  postgres: {{postgres}}', variables),
     );
 
-    final application =
-        File('${directory.path}${Platform.pathSeparator}application.yaml');
+    final application = File(
+      '${directory.path}${Platform.pathSeparator}application.yaml',
+    );
     await fileManager.insertLineInFile(
       position: InsertLinePosition.before,
       application,
       RegExp(r'^server:$'),
       'postgres:',
     );
+
+    final dockerComposePostgresYml = File(
+      '${directory.path}${Platform.pathSeparator}docker-compose.yml',
+    );
+    await dockerComposePostgresYml.create(recursive: true);
+    await dockerComposePostgresYml.writeAsString(
+      _dockerComposePostgresYmlContent,
+    );
+
     await fileManager.insertLineInFile(
       application,
       RegExp(r'^postgres:$'),
@@ -95,4 +108,21 @@ class PostgresConfiguration {
     );
   }
 }
+''';
+
+const _dockerComposePostgresYmlContent = '''version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: vaden_postgres
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
 ''';
