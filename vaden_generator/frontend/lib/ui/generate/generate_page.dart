@@ -99,7 +99,7 @@ class _GeneratePageState extends State<GeneratePage> {
                           SvgPicture.asset(VadenImage.vadenLogo, width: 48, height: 48),
                           const SizedBox(width: 10),
                           Text(
-                            'VADEN Generator',
+                            'VADEN Generator_',
                             style: GoogleFonts.anekBangla(
                               color: VadenColors.txtSecondary,
                               fontSize: 32,
