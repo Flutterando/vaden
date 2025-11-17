@@ -1,3 +1,8 @@
+
+
+## 1.0.2 (2025/11/16)
+- Fix Json Default Value
+
 ## 1.0.0 (2025/11/16)
 - Release!
 - Class Scanner 4x mais rápido.
