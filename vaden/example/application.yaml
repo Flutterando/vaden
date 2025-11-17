@@ -22,6 +22,7 @@ storage:
 
 database:
   provider: postgres
+  url: "postgres://localhost:5432/vaden_db"
   mysql:
     host: "localhost"
     port: 5432
@@ -35,4 +36,4 @@ security:
   refreshTokenValidity: 604800
   issuer: "vaden"
   audiences:
-    - "vaden"
+  - "vaden"
