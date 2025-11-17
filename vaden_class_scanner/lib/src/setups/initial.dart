@@ -13,6 +13,33 @@ final formatter = DartFormatter(
   languageVersion: DartFormatter.latestLanguageVersion,
 );
 
+/// Defines the priority order for component registration
+/// to ensure dependencies are resolved in the correct order.
+enum ComponentPriority {
+  /// Configuration classes - processed first to register beans
+  configuration(0),
+
+  /// Regular components (Services, Repositories, etc.)
+  component(1),
+
+  /// Controllers - processed last as they depend on other components
+  controller(2),
+
+  /// DTOs and other non-injectable types
+  other(3);
+
+  const ComponentPriority(this.priority);
+  final int priority;
+}
+
+/// Represents a component with its registration code and priority
+class ComponentRegistration {
+  final String code;
+  final ComponentPriority priority;
+
+  ComponentRegistration(this.code, this.priority);
+}
+
 final componentChecker = TypeChecker.typeNamed(
   BaseComponent,
   inPackage: 'vaden_core',
@@ -123,10 +150,27 @@ String Function((ClassElement, bool)) selectComponent({
     exceptionHandlerBuffer: exceptionHandlerBuffer,
     moduleRegisterBuffer: moduleRegisterBuffer,
     importSet: importSet,
+  ).code;
+}
+
+/// Returns ComponentRegistration for proper ordering
+ComponentRegistration Function((ClassElement, bool))
+selectComponentWithPriority({
+  required StringBuffer dtoBuffer,
+  required StringBuffer exceptionHandlerBuffer,
+  required StringBuffer moduleRegisterBuffer,
+  required Set<String> importSet,
+}) {
+  return (record) => _selectComponent(
+    record: record,
+    dtoBuffer: dtoBuffer,
+    exceptionHandlerBuffer: exceptionHandlerBuffer,
+    moduleRegisterBuffer: moduleRegisterBuffer,
+    importSet: importSet,
   );
 }
 
-String _selectComponent({
+ComponentRegistration _selectComponent({
   required (ClassElement, bool) record,
   required StringBuffer dtoBuffer,
   required StringBuffer exceptionHandlerBuffer,
@@ -136,6 +180,7 @@ String _selectComponent({
   final (classElement, registerWithInterfaceOrSuperType) = record;
 
   final bodyBuffer = StringBuffer();
+  ComponentPriority priority = ComponentPriority.other;
 
   final registerText = _componentRegister(
     classElement,
@@ -147,10 +192,13 @@ String _selectComponent({
 
   if (configurationChecker.hasAnnotationOf(classElement)) {
     bodyBuffer.writeln(configurationSetup(classElement));
+    priority = ComponentPriority.configuration;
   } else if (controllerChecker.hasAnnotationOf(classElement)) {
     bodyBuffer.writeln(controllerSetup(classElement));
+    priority = ComponentPriority.controller;
   } else if (dtoChecker.hasAnnotationOf(classElement)) {
     dtoBuffer.writeln(dtoSetup(classElement));
+    priority = ComponentPriority.other;
   } else if (controllerAdviceChecker.hasAnnotationOf(classElement)) {
     final (adviceBody, imports) = controllerAdviceSetup(classElement);
 
@@ -159,6 +207,7 @@ String _selectComponent({
     }
 
     importSet.addAll(imports);
+    priority = ComponentPriority.other;
   } else if (moduleChecker.hasAnnotationOf(classElement)) {
     final name = classElement.name;
 
@@ -167,9 +216,13 @@ String _selectComponent({
     )) {
       moduleRegisterBuffer.writeln('await $name().register(this);');
     }
+    priority = ComponentPriority.other;
+  } else if (registerText.isNotEmpty) {
+    // Regular components (Services, Repositories, etc.)
+    priority = ComponentPriority.component;
   }
 
-  return bodyBuffer.toString();
+  return ComponentRegistration(bodyBuffer.toString(), priority);
 }
 
 String _componentRegister(
@@ -209,15 +262,26 @@ String _componentRegister(
     final interfaceType =
         classElement.interfaces.firstOrNull ?? classElement.supertype;
     if (interfaceType != null && interfaceType.getDisplayString() != 'Object') {
-      return '''
+      // Don't register VadenMiddleware or VadenGuard by their supertype
+      // as multiple implementations would conflict
+      final supertypeDisplay = interfaceType.getDisplayString();
+      final isMiddlewareOrGuard =
+          supertypeDisplay == 'VadenMiddleware' ||
+          supertypeDisplay == 'VadenGuard';
+
+      if (!isMiddlewareOrGuard) {
+        return '''
       _injector.addBind(Bind.withClassName(
       constructor: ${classElement.name}.new,
       type: $bindType,
       className: '${interfaceType.getDisplayString()}',
     ));   
 ''';
+      }
     }
-  } else if (scopeType == 'instance') {
+  }
+
+  if (scopeType == 'instance') {
     return '_injector.add(${classElement.name}.new);';
   } else if (scopeType == 'lazysingleton') {
     return '_injector.addLazySingleton(${classElement.name}.new);';

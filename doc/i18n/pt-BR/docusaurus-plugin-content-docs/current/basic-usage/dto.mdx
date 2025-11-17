@@ -59,6 +59,7 @@ String login(@Body() Credentials credentials) {
   return Response.ok(credentials.username);
 }
 ```
+
 Apenas classes com `@DTO()` são permitidas em parâmetros `@Body()`.
 
 ## DSON
@@ -91,3 +92,63 @@ class DebugService {
 - Totalmente tipado e preparado para OpenAPI.
 
 Ao usar `@DTO()` e `DSON` juntos, o Vaden garante uma troca de dados confiável e limpa entre cliente e servidor.
+
+## Chave JSON (`@JsonKey`)
+
+Se você quiser usar uma chave diferente no JSON do que o nome do campo, utilize `@JsonKey()`:
+
+```dart
+@DTO()
+class Credenciais {
+  @JsonKey('user_name')
+  final String username;
+  final String password;
+
+  Credenciais(this.username, this.password);
+}
+```
+
+### Campos opcionais sem tornar o tipo anulável
+
+Por padrão, todo campo não anulável (sem `?`) aparece como obrigatório no schema OpenAPI. Em alguns casos você quer manter o campo não anulável internamente (sempre populado depois que o objeto é criado), mas permitir que o cliente não o envie na requisição.
+
+Use `@JsonKey('nome', required: false)` para tornar o campo opcional no OpenAPI mesmo sendo não-nullable em Dart:
+
+```dart
+@DTO()
+class UserProfile {
+  final String id; // obrigatório (default)
+
+  @JsonKey('display_name', required: false)
+  final String displayName; // opcional no payload
+
+  final String? bio; // opcional por ser anulável
+
+  UserProfile({
+    required this.id,
+    required this.displayName,
+    this.bio,
+  });
+}
+```
+
+Schema OpenAPI (simplificado):
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "display_name": { "type": "string" },
+    "bio": { "type": "string" }
+  },
+  "required": ["id"]
+}
+```
+
+Resumo:
+
+- Não anulável + `@JsonKey(required: false)` → opcional
+- Não anulável sem anotação → obrigatório
+- Anulável (`Tipo?`) → opcional
+- Mantém a robustez do modelo interno enquanto flexibiliza a entrada do cliente.

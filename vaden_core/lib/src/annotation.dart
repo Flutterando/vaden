@@ -377,10 +377,17 @@ class JsonKey {
   /// The name to use for this field in JSON serialization/deserialization.
   final String name;
 
-  /// Creates a JsonKey annotation with the specified name.
+  /// Whether the field is required in the JSON schema.
+  ///
+  /// When set to false, the field will not be included in the OpenAPI required array
+  /// even if the field type is non-nullable.
+  final bool required;
+
+  /// Creates a JsonKey annotation with the specified name and required flag.
   ///
   /// [name] - The name to use for this field in JSON.
-  const JsonKey(this.name);
+  /// [required] - Whether the field is required (defaults to true).
+  const JsonKey(this.name, {this.required = true});
 }
 
 /// Excludes a field from JSON serialization and deserialization.
@@ -404,6 +411,33 @@ class JsonKey {
 class JsonIgnore {
   /// Creates a JsonIgnore annotation.
   const JsonIgnore();
+}
+
+/// Declares a default value for a DTO field used during JSON deserialization
+/// and exposed in OpenAPI schema generation.
+///
+/// When a field annotated with `@JsonDefault` is absent from the incoming JSON:
+/// - If the field is non-nullable the generated fromJson will inject this value.
+/// - If the field is nullable and missing, it remains `null` unless a default is provided.
+///
+/// Supported default literal types: String, num, bool.
+/// Attempting to use other complex types will still serialize the literal
+/// representation but may not behave as expected.
+///
+/// Example:
+/// ```dart
+/// @DTO()
+/// class UserProfile {
+///   final String id;
+///   @JsonDefault('anonymous')
+///   @JsonKey('display_name', required: false)
+///   final String displayName; // optional in payload, default injected
+///   UserProfile({required this.id, required this.displayName});
+/// }
+/// ```
+class JsonDefault {
+  final Object value;
+  const JsonDefault(this.value);
 }
 
 /// Applies middleware to a controller or endpoint.
