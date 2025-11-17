@@ -70,7 +70,19 @@ String _toOpenApi(ClassElement classElement) {
     propertiesBuffer.write('    "$fieldName": $schema');
     first = false;
 
-    if (field.type.nullabilitySuffix == NullabilitySuffix.none) {
+    // Check if field should be required
+    bool isRequired = field.type.nullabilitySuffix == NullabilitySuffix.none;
+
+    // Check for @JsonKey(required: false) override
+    if (_jsonKeyChecker.hasAnnotationOfExact(field)) {
+      final annotation = _jsonKeyChecker.firstAnnotationOfExact(field);
+      final requiredValue = annotation?.getField('required')?.toBoolValue();
+      if (requiredValue != null) {
+        isRequired = requiredValue;
+      }
+    }
+
+    if (isRequired) {
       requiredFields.add('"$fieldName"');
     }
   }
