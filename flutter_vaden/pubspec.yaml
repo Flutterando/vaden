@@ -1,17 +1,17 @@
 name: flutter_vaden
 description: A Flutter package that provides a simple way to use Vaden, a Dart library for handling HTTP requests and responses.
-version: 1.0.0
+version: 1.0.2
 repository: https://github.com/Flutterando/vaden
 
 resolution: workspace
 
 environment:
-  sdk: ^3.9.2
+  sdk: ^3.10.0
 
 dependencies:
   flutter:
     sdk: flutter
-  vaden_core: ^1.0.0
+  vaden_core: ^1.0.1
   dio: ^5.8.0+1
   auto_injector: ^2.1.1
 
