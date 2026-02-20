@@ -3,6 +3,7 @@ import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
 import 'package:source_gen/source_gen.dart';
+import 'package:vaden_class_scanner/src/setups/api_client_setup.dart';
 import 'package:vaden_class_scanner/src/setups/configuration_setup.dart';
 import 'package:vaden_class_scanner/src/setups/controller_advice_setup.dart';
 import 'package:vaden_class_scanner/src/setups/controller_setup.dart';
@@ -47,6 +48,11 @@ final componentChecker = TypeChecker.typeNamed(
 
 final moduleChecker = TypeChecker.typeNamed(
   VadenModule,
+  inPackage: 'vaden_core',
+);
+
+final apiClientChecker = TypeChecker.typeNamed(
+  ApiClient,
   inPackage: 'vaden_core',
 );
 
@@ -135,22 +141,9 @@ Stream<(ClassElement, bool)> _checkMasterAnnotations(
         }
       }
     }
+  } else if (scopeChecker.hasAnnotationOf(classElement)) {
+    yield (classElement, false);
   }
-}
-
-String Function((ClassElement, bool)) selectComponent({
-  required StringBuffer dtoBuffer,
-  required StringBuffer exceptionHandlerBuffer,
-  required StringBuffer moduleRegisterBuffer,
-  required Set<String> importSet,
-}) {
-  return (record) => _selectComponent(
-    record: record,
-    dtoBuffer: dtoBuffer,
-    exceptionHandlerBuffer: exceptionHandlerBuffer,
-    moduleRegisterBuffer: moduleRegisterBuffer,
-    importSet: importSet,
-  ).code;
 }
 
 /// Returns ComponentRegistration for proper ordering
@@ -160,6 +153,7 @@ selectComponentWithPriority({
   required StringBuffer exceptionHandlerBuffer,
   required StringBuffer moduleRegisterBuffer,
   required Set<String> importSet,
+  StringBuffer? apiClientBuffer,
 }) {
   return (record) => _selectComponent(
     record: record,
@@ -167,6 +161,7 @@ selectComponentWithPriority({
     exceptionHandlerBuffer: exceptionHandlerBuffer,
     moduleRegisterBuffer: moduleRegisterBuffer,
     importSet: importSet,
+    apiClientBuffer: apiClientBuffer,
   );
 }
 
@@ -176,6 +171,7 @@ ComponentRegistration _selectComponent({
   required StringBuffer exceptionHandlerBuffer,
   required StringBuffer moduleRegisterBuffer,
   required Set<String> importSet,
+  StringBuffer? apiClientBuffer,
 }) {
   final (classElement, registerWithInterfaceOrSuperType) = record;
 
@@ -196,6 +192,16 @@ ComponentRegistration _selectComponent({
   } else if (controllerChecker.hasAnnotationOf(classElement)) {
     bodyBuffer.writeln(controllerSetup(classElement));
     priority = ComponentPriority.controller;
+  } else if (apiClientBuffer != null &&
+      apiClientChecker.hasAnnotationOf(classElement)) {
+    final basePath =
+        apiClientChecker
+            .firstAnnotationOf(classElement)
+            ?.getField('basePath')
+            ?.toStringValue() ??
+        '';
+    apiClientBuffer.writeln(apiClientSetup(classElement, basePath));
+    priority = ComponentPriority.component;
   } else if (dtoChecker.hasAnnotationOf(classElement)) {
     dtoBuffer.writeln(dtoSetup(classElement));
     priority = ComponentPriority.other;
@@ -299,6 +305,10 @@ String _componentRegister(
   /// If the class is annotated with @Controller, we register it as a instance.
   if (controllerChecker.hasAnnotationOf(classElement)) {
     return '_injector.add(${classElement.name}.new);';
+  }
+
+  if (apiClientChecker.hasAnnotationOf(classElement)) {
+    return '_injector.addLazySingleton<${classElement.name}>(_${classElement.name}.new);';
   }
 
   return '_injector.addLazySingleton(${classElement.name}.new);';
