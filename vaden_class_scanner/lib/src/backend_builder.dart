@@ -134,16 +134,19 @@ class VadenApp implements DartVadenApplication {
 ''',
     );
 
-    aggregatedBuffer.writeln('''PType? _parse<PType>(String? value) {
+    aggregatedBuffer.writeln('''
+  Type _typeOf<T>() => T;
+
+  PType? _parse<PType>(String? value) {
     if (value == null) {
       return null;
     }
 
-    if(PType == int) {
+    if (PType == int || PType == _typeOf<int?>()) {
       return int.parse(value) as PType;
-    } else if(PType == double) {
+    } else if (PType == double || PType == _typeOf<double?>()) {
       return double.parse(value) as PType;
-    } else if(PType == bool) {
+    } else if (PType == bool || PType == _typeOf<bool?>()) {
       return bool.parse(value) as PType;
     } else {
       return value as PType;
