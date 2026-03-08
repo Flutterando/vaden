@@ -1,4 +1,4 @@
-FROM dart:stable AS build
+FROM dart:3.11.0 AS build
 
 WORKDIR /app
 COPY pubspec.* ./

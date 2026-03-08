@@ -32,7 +32,11 @@ class InitialProjectGenerator extends FileGenerator {
     final dockerFile =
         File('${directory.path}${Platform.pathSeparator}Dockerfile');
     await dockerFile.create(recursive: true);
-    await dockerFile.writeAsString(parseVariables(_dockerFileContent, variables));
+    final dockerVariables = {
+      ...variables,
+      'dartVersion': variables['dartVersion'] ?? '3.11.0',
+    };
+    await dockerFile.writeAsString(parseVariables(_dockerFileContent, dockerVariables));
 
     final analysisOptions =
         File('${directory.path}${Platform.pathSeparator}analysis_options.yaml');
