@@ -32,7 +32,7 @@ class InitialProjectGenerator extends FileGenerator {
     final dockerFile =
         File('${directory.path}${Platform.pathSeparator}Dockerfile');
     await dockerFile.create(recursive: true);
-    await dockerFile.writeAsString(_dockerFileContent);
+    await dockerFile.writeAsString(parseVariables(_dockerFileContent, variables));
 
     final analysisOptions =
         File('${directory.path}${Platform.pathSeparator}analysis_options.yaml');
@@ -169,7 +169,7 @@ env:
 ''';
 
 const _dockerFileContent = '''
-FROM dart:3.6.0 AS build
+FROM dart:{{dartVersion}} AS build
 
 WORKDIR /app
 COPY pubspec.* ./
