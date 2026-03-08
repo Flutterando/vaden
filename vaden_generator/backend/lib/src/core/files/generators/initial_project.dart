@@ -10,10 +10,12 @@ class InitialProjectGenerator extends FileGenerator {
     Directory directory, {
     Map<String, dynamic> variables = const {},
   }) async {
-    final effectiveVariables = {
-      ...variables,
-      'dartVersion': variables['dartVersion'] ?? '3.11.0',
-    };
+    final dartVersion = variables['dartVersion'];
+    if (dartVersion == null || dartVersion is! String || dartVersion.isEmpty) {
+      throw ArgumentError('dartVersion is required for InitialProjectGenerator.');
+    }
+
+    final effectiveVariables = {...variables};
 
     final pubspec =
         File('${directory.path}${Platform.pathSeparator}pubspec.yaml');
