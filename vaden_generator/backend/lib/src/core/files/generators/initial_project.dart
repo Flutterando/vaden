@@ -10,14 +10,19 @@ class InitialProjectGenerator extends FileGenerator {
     Directory directory, {
     Map<String, dynamic> variables = const {},
   }) async {
+    final effectiveVariables = {
+      ...variables,
+      'dartVersion': variables['dartVersion'] ?? '3.11.0',
+    };
+
     final pubspec =
         File('${directory.path}${Platform.pathSeparator}pubspec.yaml');
     await pubspec.create(recursive: true);
-    await pubspec.writeAsString(parseVariables(_pubspecContent, variables));
+    await pubspec.writeAsString(parseVariables(_pubspecContent, effectiveVariables));
 
     final readme = File('${directory.path}${Platform.pathSeparator}README.md');
     await readme.create(recursive: true);
-    await readme.writeAsString(parseVariables(_readmeContent, variables));
+    await readme.writeAsString(parseVariables(_readmeContent, effectiveVariables));
 
     final build = File('${directory.path}${Platform.pathSeparator}build.yaml');
     await build.create(recursive: true);
@@ -27,16 +32,12 @@ class InitialProjectGenerator extends FileGenerator {
         File('${directory.path}${Platform.pathSeparator}application.yaml');
     await application.create(recursive: true);
     await application
-        .writeAsString(parseVariables(_applicationContent, variables));
+        .writeAsString(parseVariables(_applicationContent, effectiveVariables));
 
     final dockerFile =
         File('${directory.path}${Platform.pathSeparator}Dockerfile');
     await dockerFile.create(recursive: true);
-    final dockerVariables = {
-      ...variables,
-      'dartVersion': variables['dartVersion'] ?? '3.11.0',
-    };
-    await dockerFile.writeAsString(parseVariables(_dockerFileContent, dockerVariables));
+    await dockerFile.writeAsString(parseVariables(_dockerFileContent, effectiveVariables));
 
     final analysisOptions =
         File('${directory.path}${Platform.pathSeparator}analysis_options.yaml');
@@ -58,13 +59,13 @@ class InitialProjectGenerator extends FileGenerator {
     );
     await publicIndex.create(recursive: true);
     await publicIndex
-        .writeAsString(parseVariables(_publicIndexContent, variables));
+        .writeAsString(parseVariables(_publicIndexContent, effectiveVariables));
 
     final binServer = File(
       '${directory.path}${Platform.pathSeparator}bin${Platform.pathSeparator}server.dart',
     );
     await binServer.create(recursive: true);
-    await binServer.writeAsString(parseVariables(_binServerContent, variables));
+    await binServer.writeAsString(parseVariables(_binServerContent, effectiveVariables));
 
     final libConfigAppConfiguration = File(
       '${directory.path}${Platform.pathSeparator}lib${Platform.pathSeparator}config${Platform.pathSeparator}app_configuration.dart',
