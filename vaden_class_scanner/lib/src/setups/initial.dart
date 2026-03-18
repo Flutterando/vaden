@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
@@ -191,6 +192,8 @@ ComponentRegistration _selectComponent({
     priority = ComponentPriority.configuration;
   } else if (controllerChecker.hasAnnotationOf(classElement)) {
     bodyBuffer.writeln(controllerSetup(classElement));
+    _collectFieldTypeImports(classElement, importSet);
+    _collectMethodParamTypeImports(classElement, importSet);
     priority = ComponentPriority.controller;
   } else if (apiClientBuffer != null &&
       apiClientChecker.hasAnnotationOf(classElement)) {
@@ -204,6 +207,7 @@ ComponentRegistration _selectComponent({
     priority = ComponentPriority.component;
   } else if (dtoChecker.hasAnnotationOf(classElement)) {
     dtoBuffer.writeln(dtoSetup(classElement));
+    _collectFieldTypeImports(classElement, importSet);
     priority = ComponentPriority.other;
   } else if (controllerAdviceChecker.hasAnnotationOf(classElement)) {
     final (adviceBody, imports) = controllerAdviceSetup(classElement);
@@ -343,4 +347,82 @@ Future<void> writeAndFormatApplication(String text, BuildStep buildStep) async {
   } catch (e) {
     await buildStep.writeAsString(outputId, text);
   }
+}
+
+/// Adds import URIs for non-primitive types referenced by the fields of
+/// [classElement] (and its supertypes) that are not already covered by
+/// annotation-based scanning. This handles enums and other types defined
+/// in separate files.
+void _collectFieldTypeImports(
+  ClassElement classElement,
+  Set<String> importSet,
+) {
+  ClassElement? current = classElement;
+  while (current != null) {
+    for (final field in current.fields) {
+      if (field.isSynthetic || field.isStatic || field.isPrivate) continue;
+      _addTypeImport(field.type, importSet);
+    }
+    final superType = current.supertype;
+    if (superType == null || superType.isDartCoreObject) break;
+    current = superType.element as ClassElement?;
+  }
+}
+
+/// Adds import URIs for non-primitive types referenced by method parameters
+/// of [classElement], covering @Param, @Query and @Body enum types in
+/// controllers. Traverses supertypes to match the same method resolution
+/// used by [controllerSetup].
+void _collectMethodParamTypeImports(
+  ClassElement classElement,
+  Set<String> importSet,
+) {
+  final visited = <String>{};
+
+  void collectFromMethods(InterfaceElement element) {
+    for (final method in element.methods) {
+      if (method.isStatic || method.isPrivate) continue;
+      final name = method.name;
+      if (name == null || !visited.add(name)) continue;
+      for (final param in method.formalParameters) {
+        _addTypeImport(param.type, importSet);
+      }
+      _addTypeImport(method.returnType, importSet);
+    }
+  }
+
+  collectFromMethods(classElement);
+
+  for (final supertype in classElement.allSupertypes) {
+    if (supertype.element.name == 'Object') continue;
+    collectFromMethods(supertype.element);
+  }
+}
+
+/// Resolves the library URI for [type] and adds it to [importSet] if it is
+/// a non-core type (enum, class, etc.) defined outside of dart:core.
+void _addTypeImport(DartType type, Set<String> importSet) {
+  // Unwrap Future / FutureOr
+  if (type.isDartAsyncFuture || type.isDartAsyncFutureOr) {
+    if (type is ParameterizedType && type.typeArguments.isNotEmpty) {
+      _addTypeImport(type.typeArguments.first, importSet);
+    }
+    return;
+  }
+
+  // Unwrap List / Set / Map type arguments
+  if (type is ParameterizedType && type.typeArguments.isNotEmpty) {
+    for (final arg in type.typeArguments) {
+      _addTypeImport(arg, importSet);
+    }
+  }
+
+  final element = type.element;
+  if (element == null) return;
+
+  // Skip dart:core types (int, String, bool, etc.)
+  final uri = element.library?.uri.toString() ?? '';
+  if (uri.isEmpty || uri.startsWith('dart:')) return;
+
+  importSet.add("'$uri';");
 }
