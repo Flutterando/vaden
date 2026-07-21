@@ -31,16 +31,6 @@ class MCPServer {
   Future<void> start() async {
     stderr.writeln('[$_serverName v$_serverVersion] MCP Server starting...');
 
-    // Send server info
-    _sendNotification('initialized', {
-      'serverName': _serverName,
-      'version': _serverVersion,
-      'capabilities': {
-        'tools': true,
-        'resources': true,
-      },
-    });
-
     // Listen to stdin
     await for (final line in stdin.transform(utf8.decoder).transform(const LineSplitter())) {
       if (line.trim().isEmpty) continue;
@@ -215,12 +205,6 @@ class MCPServer {
       error: MCPError(code: code, message: message, data: data),
     );
     _send(response.toJson());
-  }
-
-  /// Send notification
-  void _sendNotification(String method, Map<String, dynamic> params) {
-    final notification = MCPNotification(method: method, params: params);
-    _send(notification.toJson());
   }
 
   /// Send JSON message to stdout
