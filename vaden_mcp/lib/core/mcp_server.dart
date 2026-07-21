@@ -47,6 +47,10 @@ class MCPServer {
 
   /// Handle incoming request
   Future<void> _handleRequest(Map<String, dynamic> json) async {
+    // Per JSON-RPC 2.0, messages without an "id" are notifications and
+    // must never receive a response, even for unknown methods.
+    final isNotification = !json.containsKey('id');
+
     try {
       final request = MCPRequest.fromJson(json);
 
@@ -68,12 +72,16 @@ class MCPServer {
           await _handleResourceRead(request);
           break;
         default:
-          _sendError(request.id, -32601, 'Method not found: ${request.method}');
+          if (!isNotification) {
+            _sendError(request.id, -32601, 'Method not found: ${request.method}');
+          }
       }
     } catch (e, stack) {
       stderr.writeln('Error handling request: $e');
       stderr.writeln(stack);
-      _sendError(null, -32603, 'Internal error: $e');
+      if (!isNotification) {
+        _sendError(null, -32603, 'Internal error: $e');
+      }
     }
   }
 
