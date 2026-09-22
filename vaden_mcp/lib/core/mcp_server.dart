@@ -31,16 +31,6 @@ class MCPServer {
   Future<void> start() async {
     stderr.writeln('[$_serverName v$_serverVersion] MCP Server starting...');
 
-    // Send server info
-    _sendNotification('initialized', {
-      'serverName': _serverName,
-      'version': _serverVersion,
-      'capabilities': {
-        'tools': true,
-        'resources': true,
-      },
-    });
-
     // Listen to stdin
     await for (final line in stdin.transform(utf8.decoder).transform(const LineSplitter())) {
       if (line.trim().isEmpty) continue;
@@ -57,6 +47,10 @@ class MCPServer {
 
   /// Handle incoming request
   Future<void> _handleRequest(Map<String, dynamic> json) async {
+    // Per JSON-RPC 2.0, messages without an "id" are notifications and
+    // must never receive a response, even for unknown methods.
+    final isNotification = !json.containsKey('id');
+
     try {
       final request = MCPRequest.fromJson(json);
 
@@ -78,12 +72,16 @@ class MCPServer {
           await _handleResourceRead(request);
           break;
         default:
-          _sendError(request.id, -32601, 'Method not found: ${request.method}');
+          if (!isNotification) {
+            _sendError(request.id, -32601, 'Method not found: ${request.method}');
+          }
       }
     } catch (e, stack) {
       stderr.writeln('Error handling request: $e');
       stderr.writeln(stack);
-      _sendError(null, -32603, 'Internal error: $e');
+      if (!isNotification) {
+        _sendError(null, -32603, 'Internal error: $e');
+      }
     }
   }
 
@@ -215,12 +213,6 @@ class MCPServer {
       error: MCPError(code: code, message: message, data: data),
     );
     _send(response.toJson());
-  }
-
-  /// Send notification
-  void _sendNotification(String method, Map<String, dynamic> params) {
-    final notification = MCPNotification(method: method, params: params);
-    _send(notification.toJson());
   }
 
   /// Send JSON message to stdout
