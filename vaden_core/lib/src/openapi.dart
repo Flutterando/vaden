@@ -249,3 +249,13 @@ class ApiSecurity {
   /// [schemes] - The list of security scheme names required for the endpoint.
   const ApiSecurity(this.schemes);
 }
+
+class ApiFieldFormat {
+  final FieldFormat format;
+
+  const ApiFieldFormat(this.format);
+}
+
+enum FieldFormat {
+  uuid;
+}

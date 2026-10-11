@@ -18,6 +18,10 @@ final _jsonDefaultChecker = TypeChecker.typeNamed(
   JsonDefault,
   inPackage: 'vaden_core',
 );
+final _apiFieldFormatChecker = TypeChecker.typeNamed(
+  ApiFieldFormat,
+  inPackage: 'vaden_core',
+);
 final paramParseChecker = TypeChecker.typeNamed(
   ParamParse,
   inPackage: 'vaden_core',
@@ -67,9 +71,9 @@ String _toOpenApi(ClassElement classElement) {
     var schema = '';
     if (useParseChecker.hasAnnotationOf(field)) {
       final parser = _getParseConverteType(field);
-      schema = _fieldToSchema(parser);
+      schema = _fieldToSchema(parser, field: field);
     } else {
-      schema = _fieldToSchema(field.type);
+      schema = _fieldToSchema(field.type, field: field);
     }
     // Inject default into schema if @JsonDefault present
     if (_jsonDefaultChecker.hasAnnotationOfExact(field)) {
@@ -151,7 +155,11 @@ String _literalToJson(DartObject obj) {
   return '"${obj.toString()}"';
 }
 
-String _fieldToSchema(DartType type) {
+String _fieldToSchema(DartType type, {FieldElement? field}) {
+  if (_isUuidField(field, type)) {
+    return '{"type": "string", "format": "uuid"}';
+  }
+
   // Se é tipo built-in suportado
   if (isBuiltInSupported(type)) {
     return _getBuiltInOpenApiSchema(type);
@@ -597,6 +605,27 @@ bool _isDuration(DartType type) {
 
 bool _isUri(DartType type) {
   return type.getDisplayString().replaceAll('?', '') == 'Uri';
+}
+
+bool _isUuidField(FieldElement? field, DartType type) {
+  if (field == null || !type.isDartCoreString) {
+    return false;
+  }
+
+  if (!_apiFieldFormatChecker.hasAnnotationOf(field)) {
+    return false;
+  }
+
+  final annotation = _apiFieldFormatChecker.firstAnnotationOf(field);
+  final formatObject = annotation?.getField('format');
+
+  final byName = formatObject?.getField('name')?.toStringValue();
+  if (byName == 'uuid') {
+    return true;
+  }
+
+  final raw = formatObject?.toString();
+  return raw?.contains('uuid') == true;
 }
 
 String _getBuiltInSerializer(
